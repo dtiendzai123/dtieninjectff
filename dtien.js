@@ -34,7 +34,7 @@ const dtienConfig = {
         "lock_target": "Head", // Khóa vào đầu
         "smooth_level": 0.5,   // Độ mượt khi kéo tâm
         "auto_fire": false,
-        "fov_range": 180       // Tầm nhìn quét địch
+        "fov_range": 360       // Tầm nhìn quét địch
     },
     "Advanced_Logic": {
         // --- FIRE STATUS MONITOR ---
