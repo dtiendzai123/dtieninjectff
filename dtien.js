@@ -43,7 +43,7 @@ const dtienConfig = {
         "WriteVectorX": true,
         "WriteVectorY": true,
         "WriteVectorZ": true
-    },
+    }, // Dấu phẩy ở đây để nối tiếp phần dưới
     "Offsets_Player": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
@@ -64,10 +64,10 @@ const dtienConfig = {
     },
     "Aimbot_Logic": {
         "enabled": true,
-        "lock_target": "Head", 
-        "smooth_level": 0.5,   
+        "lock_target": "Head",
+        "smooth_level": 0.5,
         "auto_fire": false,
-        "fov_range": 360       
+        "fov_range": 360
     },
     "Advanced_Logic": {
         "Fire_Monitor": "com.accpt_ffxbase64_Key_allow_Check_Firing_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2dc3804",
@@ -84,8 +84,7 @@ const dtienConfig = {
         "Filter_Dieing": "0x2dc1178"
     },
     "Status": "DTien_Successfully_Injected"
-};
-
+}; // Chỉ đóng ngoặc ở cuối cùng sau khi đã liệt kê hết tất cả.
 // --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
 let body = $response.body;
 
