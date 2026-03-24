@@ -11,6 +11,40 @@ const dtienConfig = {
         "arch": "arm64",
         "uuid": "a41922b7-a25e-396f-b9b3-bb2eda25f0d5"
     },
+    "Engine_Core": {
+        "Enable": true,
+        "LoopInterval": 5,
+        "Library": "libil2cpp.so",
+        "Version": "90-100.uncrack.list"
+    },
+    "Pointers": {
+        "LocalPlayer": "0x4101FF4",
+        "CurrentMatch": "0x3266CC0"
+    },
+    "Conditions": {
+        "IsFiring": "0x2DC3804",
+        "IsSighting": "0x2DC867C",
+        "IsVisible": "0x2DD8F54",
+        "IsDying": "0x2DC1178"
+    },
+    "Target_Selector": {
+        "ScanBestEnemy": true,
+        "ClosestEnemyPriority": true,
+        "TargetBone_Head": "0x2E5A7B4",
+        "IgnoreHipBone": true
+    },
+    "Transform_Engine": {
+        "Internal_GetPosition": "0x6BC248C",
+        "ReadHeadWorldPosition": true
+    },
+    "Aim_Execution": {
+        "SetAimAddress": "0xFFFFFF86E6FEF000",
+        "ForceHeadLock": true,
+        "WriteVectorX": true,
+        "WriteVectorY": true,
+        "WriteVectorZ": true
+    }
+};
     "Offsets_Player": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
@@ -72,7 +106,14 @@ try {
     // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
     obj["mod_menu_config"] = dtienConfig;
     obj["authorized"] = true;
+    // Tiêm (Inject) toàn bộ Engine vào phản hồi từ Host
+    obj["Auto_Headshot_Condition_Lock_Engine"] = autoHeadshotEngine;
     
+    // Thêm các chuỗi Key thô (Raw) nếu Loader yêu cầu chính xác định dạng cũ
+    obj["Raw_Keys"] = {
+        "firing_key": "com.accpt_ffxbase64_Key_allow_Player_IsFiringOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2DC3804",
+        "head_bone_key": "com.accpt_ffxbase64_Key_allow_TargetBone_HeadTransformOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2E5A7B4"
+    };
     body = JSON.stringify(obj);
     
     console.log("-----------------------------------------");
