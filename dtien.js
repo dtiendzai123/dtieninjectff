@@ -3,6 +3,53 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+
+// --- 1. CẤU HÌNH DUY TRÌ KHÓA ĐẦU TUYỆT ĐỐI (CONST) ---
+const DTien_V7_Engine = {
+    "Project": "Permanent_Firing_Head_Lock",
+    "Status": "V7_Ultra_Activated",
+
+    // Tầng 1: Duy trì trạng thái khóa (Lock Maintenance)
+    "FIRING_LOCK_LOGIC": {
+        "Continuous_Lock": true,           // Duy trì khóa liên tục khi bấm bắn
+        "Check_Firing_Offset": "0x2dc3804", // get_IsFiring
+        "Lock_Refresh_Rate": "0ms",         // Tốc độ quét khóa (tức thì)
+        "Sticky_Force": 1.0,               // Lực bám tuyệt đối (100%)
+        "Magnet_Range": "Full_Body_Snap"    // Chạm bất cứ đâu trên người là Snap về đầu
+    },
+
+    // Tầng 2: Vô hiệu hóa sai số (No-Recoil & Zero-Gravity)
+    "STABILITY_CORE": {
+        "Absolute_Precision": true,         // Độ chính xác 100%
+        "Zero_Gravity": true,               // Tắt trọng lực tâm
+        "Anti_Sway_Sync": "0x8a88b1c",      // Forward Sync (Chống rung lắc)
+        "Quaternion_W": 0.999266,           // Khóa trục xoay Camera
+        "No_Spread": true                   // Tắt độ nở tâm (đạn bay thẳng tắp)
+    },
+
+    // Tầng 3: Tọa độ và Ma trận (Matrix Engine)
+    "COORDINATE_SYSTEM": {
+        "Head_Bone_TF": "0x2e5a7b4",        // Mục tiêu: Đầu
+        "Body_Bone_TF": "0x2e5a98c",        // Nhận diện: Thân
+        "Internal_SetPos": "0x6bc252c",     // Hàm ghi đè tọa độ
+        "Camera_Matrix": "0x320",           // Ma trận Camera cha
+        "Force_Y_Offset": 0.285             // Đẩy tâm lên đỉnh đầu
+    },
+
+    // Tầng 4: Lọc mục tiêu an toàn (Safety Filter)
+    "SAFETY_FILTER": {
+        "IsVisible_Offset": "0x2dd8f54",    // Chỉ khóa khi nhìn thấy địch
+        "IsDying_Offset": "0x2dc1178",      // Tự động nhả tâm khi địch chết
+        "Max_FOV": 360                      // Tầm quét 360 độ
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_CONFIG": {
+        "Permanent_Lock": "com.accpt_ffxbase64_Key_allow_Permanent_Firing_Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Bullet_Direct": "com.accpt_ffxbase64_Key_allow_Bullet_Direct_To_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Gravity_Off": "com.accpt_ffxbase64_Key_allow_Disable_Aim_Gravity_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // --- 1. CẤU HÌNH TÂM NGẮM CHÍNH XÁC TUYỆT ĐỐI (CONST) ---
 const DTien_V6_Engine = {
     "Project": "Absolute_Precision_Zero_Gravity",
@@ -310,7 +357,10 @@ try {
     obj["DTien_V6_Absolute"] = DTien_V5_Engine; // Backup V5
     obj["V6_Core_Engine"] = DTien_V6_Engine;    // Main V6
     obj["Precision_Status"] = "Absolute_Lock_On";
-    
+     obj["DTien_V7_Permanent"] = DTien_V7_Engine;
+    obj["System_Log"] = "Head_Lock_Stable_On_Firing";
+    obj["Authorization"] = "V7_Premium_Grant";
+
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
