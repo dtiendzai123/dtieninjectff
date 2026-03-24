@@ -3,6 +3,48 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CẤU HÌNH HỆ THỐNG GHIM TÂM (CONST) ---
+const AIM_LOCK_ENGINE = {
+    "PROJECT": "DTien_Auto_Aim_V4",
+    "LIBRARY": "libil2cpp.so",
+    
+    // Tầng 1: Giám sát trạng thái Bắn (Firing Monitor)
+    "FIRE_CONTROL": {
+        "IsFiring_Offset": "0x2dc3804",
+        "IsSighting_Offset": "0x2dc867c",
+        "Trigger_Logic": "Active_On_Hit",
+        "Check_Visible": "0x2dd8f54"
+    },
+
+    // Tầng 2: Trích xuất Ma trận & Tọa độ (Matrix & Bone)
+    "MATRIX_CALCULATION": {
+        "MainCamera": "0x6a64c64",
+        "CameraTransform": "0x320", // Trích xuất ParentMatrix
+        "Dictionary": "0x58",
+        "Head_Bone_TF": "0x2e5a7b4",
+        "Component_TF": "0x8ca3b10",
+        "Update_Rate": "0ms" // Zero Latency
+    },
+
+    // Tầng 3: Thực thi Ghim tâm (Execution)
+    "EXECUTION_ENGINE": {
+        "Set_Position_Internal": "0x6bc252c",
+        "Get_Position_Internal": "0x6bc248c",
+        "Aim_Address_Static": "0xffffff86e6fef000",
+        "Rotation_W": 0.999266, // Chống rung tâm
+        "Force_Y_Head": 0.285,  // Đẩy tâm lên đỉnh đầu
+        "Smooth": 0.5
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw Keys)
+    "RAW_KEYS": {
+        "Auto_Headshot": "com.accpt_ffxbase64_Key_allow_AutoHeadshotScript_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Head_Lock": "com.accpt_ffxbase64_Key_allow_ReTarget_To_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a7b4",
+        "Matrix_Sync": "com.accpt_ffxbase64_Key_allow_Get_ParentMatrix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x320",
+        "Rot_Sync": "com.accpt_ffxbase64_Key_allow_Rot_W_Value_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0.999266"
+    }
+};
+
 const dtienMatrixEngine = {
     "MATRIX_PARENT_HOOK": {
         "MainCameraTransform": "0x320",
@@ -112,7 +154,10 @@ try {
         "forward_sync": "com.accpt_ffxbase64_Key_allow_Forward_Sync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.QUATERNION_W_STABILIZER.GetForward,
         "component_tf": "com.accpt_ffxbase64_Key_allow_Component_Transform_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.LOCAL_BONE_EXTRACTION.Component_Transform
     };
-
+    // Inject toàn bộ Engine vào Response của Host
+    obj["DTien_AutoAim_Lock"] = AIM_LOCK_ENGINE;
+    obj["Engine_Status"] = "Running_Premium";
+    obj["Target_Lock"] = "Head_Bone_Center";
     // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
     obj["mod_menu_config"] = dtienConfig;
     obj["authorized"] = true;
