@@ -43,8 +43,7 @@ const dtienConfig = {
         "WriteVectorX": true,
         "WriteVectorY": true,
         "WriteVectorZ": true
-    }
-},
+    },
     "Offsets_Player": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
@@ -63,33 +62,24 @@ const dtienConfig = {
         "GetForward": "0x8a88b1c",
         "CurrentMatch": "0x3266cc0"
     },
-   "Aimbot_Logic": {
+    "Aimbot_Logic": {
         "enabled": true,
-        "lock_target": "Head", // Khóa vào đầu
-        "smooth_level": 0.5,   // Độ mượt khi kéo tâm
+        "lock_target": "Head", 
+        "smooth_level": 0.5,   
         "auto_fire": false,
-        "fov_range": 360       // Tầm nhìn quét địch
+        "fov_range": 360       
     },
     "Advanced_Logic": {
-        // --- FIRE STATUS MONITOR ---
         "Fire_Monitor": "com.accpt_ffxbase64_Key_allow_Check_Firing_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2dc3804",
         "Trigger_Logic": "Active_On_Hit",
-        
-        // --- BODY HIT RE-TARGET ---
         "Body_Detect": "com.accpt_ffxbase64_Key_allow_BodyDetect_Zone_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a98c",
         "Neck_Offset": 0.185,
         "Auto_ReTarget": "True",
-        
-        // --- INSTANT HEAD OVERWRITE ---
         "Head_Overwrite": "com.accpt_ffxbase64_Key_allow_ReTarget_To_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a7b4",
         "Velocity": "Instant",
         "Force_Y": 0.285,
-        
-        // --- ROTATION LOCK SYNC ---
         "Rot_W_Lock": 0.999266,
         "Internal_SetPos_Strict": "0x6bc252c",
-        
-        // --- SAFETY FILTER ---
         "Check_Visible": "0x2dd8f54",
         "Filter_Dieing": "0x2dc1178"
     },
@@ -100,31 +90,33 @@ const dtienConfig = {
 let body = $response.body;
 
 try {
-    // Thử giải mã nếu Server trả về JSON
     let obj = JSON.parse(body);
     
-    // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
+    // Tiêm cấu trúc chính
     obj["mod_menu_config"] = dtienConfig;
     obj["authorized"] = true;
-    // Tiêm (Inject) toàn bộ Engine vào phản hồi từ Host
-    obj["Auto_Headshot_Condition_Lock_Engine"] = autoHeadshotEngine;
     
-    // Thêm các chuỗi Key thô (Raw) nếu Loader yêu cầu chính xác định dạng cũ
+    // Gán lại Engine Core từ dtienConfig để tránh lỗi biến chưa định nghĩa
+    obj["Auto_Headshot_Condition_Lock_Engine"] = {
+        "Core": dtienConfig.Engine_Core,
+        "Aim": dtienConfig.Aim_Execution,
+        "Selector": dtienConfig.Target_Selector
+    };
+    
+    // Thêm các chuỗi Key thô (Raw)
     obj["Raw_Keys"] = {
         "firing_key": "com.accpt_ffxbase64_Key_allow_Player_IsFiringOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2DC3804",
         "head_bone_key": "com.accpt_ffxbase64_Key_allow_TargetBone_HeadTransformOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2E5A7B4"
     };
+
     body = JSON.stringify(obj);
     
     console.log("-----------------------------------------");
     console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
-    console.log("Features: Aimbot, Neck Sync, Rotation Lock");
+    console.log("Status: " + dtienConfig.Status);
     console.log("-----------------------------------------");
 } catch (e) {
-    // Nếu dữ liệu không phải JSON (Binary), in log cảnh báo
     console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
-    // Tùy chọn: Bạn có thể cộng thêm chuỗi vào body nếu server chấp nhận chuỗi thô
-    // body += JSON.stringify(dtienConfig);
 }
 
 // --- 3. Trả kết quả về cho Game ---
