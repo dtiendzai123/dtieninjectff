@@ -4,6 +4,49 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG GHIM TÂM (CONST) ---
+const ULTRA_STICKY_AIM = {
+    "Engine_Status": "Ultra_Sensitivity_Enabled",
+    
+    // Tầng 1: Độ nhạy và Gia tốc (Sensitivity & Flick)
+    "SENSITIVITY_CONTROL": {
+        "Flick_Speed": "0ms",            // Phản ứng tức thì không độ trễ
+        "Stick_Power": 1.0,              // Độ bám (1.0 là tối đa, không thể thoát tâm)
+        "Smooth_Factor": 0.0,            // Tắt độ mượt để đạt tốc độ kéo nhanh nhất
+        "FOV_Scan": 360                  // Quét địch toàn màn hình
+    },
+
+    // Tầng 2: Điểm ghim mục tiêu (Target Bone Lock)
+    "BONE_LOCK_LOGIC": {
+        "Head_Bone": "0x2e5a7b4",        // Offset HeadTF
+        "Neck_Correction": 0.185,        // Bù trừ cổ
+        "Force_Y_TopHead": 0.285,        // Đẩy tâm lên đỉnh đầu để tránh bắn vào ngực
+        "Hip_Ignore": true               // Bỏ qua các phần thân dưới
+    },
+
+    // Tầng 3: Ma trận và Ổn định (Matrix & Rotation)
+    "STABILIZER_ENGINE": {
+        "Parent_Matrix": "0x320",        // MainCameraTransform
+        "Matrix_Dict": "0x58",           // Ma trận từ điển
+        "Rotation_W_Fixed": 0.999266,    // Giá trị Quaternion W để ghim cứng trục xoay
+        "Forward_Sync": "0x8a88b1c",     // Đồng bộ hướng nhìn thẳng
+        "Set_Pos_Strict": "0x6bc252c"    // Ghi đè tọa độ tuyệt đối
+    },
+
+    // Tầng 4: Điều kiện kích hoạt (Trigger Conditions)
+    "TRIGGER_FILTER": {
+        "IsFiring": "0x2dc3804",         // Kiểm tra trạng thái bắn
+        "IsSighting": "0x2dc867c",       // Kiểm tra trạng thái ngắm (Scope)
+        "Visible_Only": true,            // Chỉ khóa khi địch lộ diện (Tránh bắn vào tường)
+        "Alive_Check": "0x2dc1178"       // Bỏ qua xác chết
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Keys)
+    "RAW_CONFIG": {
+        "Auto_Lock": "com.accpt_ffxbase64_Key_allow_AutoHeadshot_Instant_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Sticky_Head": "com.accpt_ffxbase64_Key_allow_Sticky_Aim_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Sensitivity_Boost": "com.accpt_ffxbase64_Key_allow_Sensitivity_High_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=100%"
+    }
+};
 const AIM_LOCK_ENGINE = {
     "PROJECT": "DTien_Auto_Aim_V4",
     "LIBRARY": "libil2cpp.so",
@@ -161,7 +204,12 @@ try {
     // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
     obj["mod_menu_config"] = dtienConfig;
     obj["authorized"] = true;
-    
+    obj["DTien_Ultra_Aim"] = ULTRA_STICKY_AIM;
+    obj["Global_Settings"] = {
+        "Aim_Assist_Level": "Maximum",
+        "Recoil_Reduction": "100%",
+        "Server_Authorized": true
+    };
     body = JSON.stringify(obj);
     
     console.log("-----------------------------------------");
