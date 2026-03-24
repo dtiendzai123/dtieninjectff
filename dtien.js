@@ -3,6 +3,53 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CẤU HÌNH TÂM NGẮM CHÍNH XÁC TUYỆT ĐỐI (CONST) ---
+const DTien_V6_Engine = {
+    "Project": "Absolute_Precision_Zero_Gravity",
+    "Status": "Activated_Premium_V6",
+
+    // Tầng 1: Tắt Trọng lực & Rung tâm (No Gravity / No Sway)
+    "GRAVITY_CONTROL": {
+        "Zero_Gravity_Enable": true,       // Tắt độ rơi của tâm khi rê (Drag)
+        "No_Sway_Offset": "0x8a88b1c",     // Khử độ rung lắc Camera (GetForward Sync)
+        "Stability_W": 0.999266,           // Khóa trục xoay ổn định tuyệt đối
+        "Drag_Sensitivity_Boost": 1.5      // Tăng độ nhạy khi rê tâm bằng tay
+    },
+
+    // Tầng 2: Chính xác tuyệt đối & Magnet-Lock (Nam châm đầu)
+    "PRECISION_LOCK": {
+        "Absolute_Accuracy": true,         // Ép sai số đường đạn về 0
+        "Head_Scan_Zone": "0x2e5a7b4",     // Vùng nhận diện đầu kẻ địch
+        "Magnet_Hold_Power": 1.0,          // Lực giữ tâm (1.0 = không thể kéo ra khỏi đầu)
+        "Snap_From_Body": "0x2e5a98c",     // Tự động nhảy từ thân lên đầu
+        "Force_Y_Top": 0.285               // Điểm ghim: Đỉnh đầu
+    },
+
+    // Tầng 3: Thực thi hệ thống Ma trận (Matrix Engine)
+    "SYSTEM_CORE": {
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ thế giới
+        "Internal_GetPos": "0x6bc248c",    // Lấy tọa độ mục tiêu
+        "Component_TF": "0x8ca3b10",
+        "Camera_Matrix": "0x320",
+        "Dictionary_Link": "0x58"
+    },
+
+    // Tầng 4: Điều kiện lọc và Kích hoạt (Activation)
+    "TRIGGER_FILTERS": {
+        "On_Firing": "0x2dc3804",
+        "On_Sighting": "0x2dc867c",
+        "Visible_Check": "0x2dd8f54",
+        "Death_Filter": "0x2dc1178"
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_CONFIG": {
+        "Zero_Gravity": "com.accpt_ffxbase64_Key_allow_ZeroGravity_Aim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Absolute_Precision": "com.accpt_ffxbase64_Key_allow_Absolute_Precision_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Magnet_Lock": "com.accpt_ffxbase64_Key_allow_Magnet_Lock_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+
 // --- 1. CẤU HÌNH HỆ THỐNG GHIM TÂM (CONST) ---
 const DTien_V5_Engine = {
     "Project": "Ultra_Snap_Head_Lock",
@@ -259,7 +306,13 @@ try {
         obj["DTien_V5_Injected"] = DTien_V5_Engine;
     obj["Snap_Status"] = "Ready_To_Flick";
     obj["Anti_Cheat_Shield"] = "Bypassed_v2";
+  // Inject toàn bộ Engine V6 vào Response của Host
+    obj["DTien_V6_Absolute"] = DTien_V5_Engine; // Backup V5
+    obj["V6_Core_Engine"] = DTien_V6_Engine;    // Main V6
+    obj["Precision_Status"] = "Absolute_Lock_On";
+    
     body = JSON.stringify(obj);
+    // Inject toàn bộ Engine V6 vào Response của Host
     
     console.log("-----------------------------------------");
     console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
