@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 
+// --- 1. CẤU HÌNH KHOÁ ĐẦU THEO MỌI HƯỚNG (CONST) ---
+const DTien_V8_Engine = {
+    "Project": "Omni_Directional_Head_Lock",
+    "Status": "V8_Omni_Activated",
+
+    // Tầng 1: Theo dõi mục tiêu di động (Motion Tracking)
+    "MOTION_LOCK": {
+        "Predict_Movement": true,          // Dự đoán hướng di chuyển của địch
+        "Tracking_360": true,              // Khoá mục tiêu ở mọi góc độ
+        "Update_Frequency": "Always",      // Cập nhật liên tục theo Frame
+        "Rotation_Sync_W": 0.999266,       // Giữ ổn định trục xoay khi địch lạng lách
+        "Forward_Vector_Offset": "0x8a88b1c" // Đồng bộ vector hướng di chuyển
+    },
+
+    // Tầng 2: Duy trì khoá khi bắn (Firing Persistence)
+    "FIRING_PERSISTENCE": {
+        "Permanent_Lock_On_Fire": true,    // Duy trì khoá tuyệt đối khi nhấn bắn
+        "IsFiring_Check": "0x2dc3804",     // Offset trạng thái bắn
+        "Sticky_Power": 1.0,               // Lực hút nam châm tối đa
+        "Snap_Speed": "0ms"                // Không có độ trễ khi bám theo địch
+    },
+
+    // Tầng 3: Tọa độ thế giới & Ma trận (World Matrix)
+    "WORLD_MATRIX_CORE": {
+        "Head_Bone": "0x2e5a7b4",          // Tọa độ đầu
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè vị trí tâm ngắm
+        "Transform_Component": "0x8ca3b10",// Trích xuất tọa độ thực thể
+        "Camera_Matrix": "0x320",          // Ma trận Camera cha
+        "Height_Fix": 0.285                // Đẩy tâm lên đỉnh đầu
+    },
+
+    // Tầng 4: Bộ lọc an toàn & Ưu tiên (Safety & Priority)
+    "PRIORITY_FILTERS": {
+        "Visible_Check": "0x2dd8f54",      // Chỉ khoá khi địch lộ diện
+        "Distance_Priority": "Closest",    // Ưu tiên địch gần nhất
+        "Alive_Only": "0x2dc1178",         // Bỏ qua mục tiêu đã gục
+        "FOV_Limit": 360                   // Quét toàn bộ vòng tròn xung quanh
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS": {
+        "Omni_Lock": "com.accpt_ffxbase64_Key_allow_OmniDirectional_Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Motion_Predict": "com.accpt_ffxbase64_Key_allow_Movement_Prediction_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Recoil": "com.accpt_ffxbase64_Key_allow_Zero_Recoil_Permanent_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // --- 1. CẤU HÌNH DUY TRÌ KHÓA ĐẦU TUYỆT ĐỐI (CONST) ---
 const DTien_V7_Engine = {
     "Project": "Permanent_Firing_Head_Lock",
@@ -360,7 +406,10 @@ try {
      obj["DTien_V7_Permanent"] = DTien_V7_Engine;
     obj["System_Log"] = "Head_Lock_Stable_On_Firing";
     obj["Authorization"] = "V7_Premium_Grant";
-
+  // Inject toàn bộ Engine V8 vào Response
+    obj["DTien_V8_Omni"] = DTien_V8_Engine;
+    obj["Tracking_Status"] = "Omni_Lock_Engaged";
+    obj["Precision_Level"] = "Absolute_360";
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
