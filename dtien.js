@@ -1,40 +1,65 @@
 /*
- * Shadowrocket Script: Can thiệp Offset qua Host
- * Cấu trúc: Key-Value Injector
+ * Shadowrocket Script: Can thiệp Offset qua Host (Full Version)
+ * Tính năng: Cấu hình Aimbot & Chỉ số Player
  */
 
-// 1. Khai báo danh sách Offset (Key-Value)
+// 1. Khai báo danh sách Offset đầy đủ (Key-Value)
 const offsets = {
-    "Player": {
+    "Player_Offsets": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
         "GetLocalPlayer": "0x4101ff4",
         "get_IsFiring": "0x2dc3804",
         "get_IsSighting": "0x2dc867c",
         "get_isVisible": "0x2dd8f54",
-        "get_MaxHP": "0x2e3e2e8"
+        "get_MaxHP": "0x2e3e2e8",
+        "get_IsDieing": "0x2dc1178"
     },
-    "Engine": {
+    "Camera_Offsets": {
+        "MainCameraTransform": "0x320",
+        "Camera_main": "0x6a64c64"
+    },
+    "Engine_Offsets": {
+        "Dictionary": "0x58",
         "Component_GetTransform": "0x8ca3b10",
-        "Transform_INTERNAL_SetPosition": "0x6bc252c"
+        "Transform_INTERNAL_SetPosition": "0x6bc252c",
+        "Transform_INTERNAL_GetPosition": "0x6bc248c",
+        "GetForward": "0x8a88b1c",
+        "Curent_Match": "0x3266cc0"
     },
-    "Status": "Activated"
+    "Aimbot_Logic": {
+        "enabled": true,
+        "lock_target": "Head", // Khóa vào đầu
+        "smooth_level": 0.5,   // Độ mượt khi kéo tâm
+        "auto_fire": false,
+        "fov_range": 180       // Tầm nhìn quét địch
+    },
+    "Status": "Activated_By_DTien"
 };
 
-// 2. Lấy nội dung phản hồi gốc từ Host
+// 2. Xử lý dữ liệu từ Host
 let body = $response.body;
 
 try {
-    // Giả sử Host trả về một JSON cấu trúc, ta chèn thêm Offset vào
+    // Giải mã JSON từ Server Game
     let obj = JSON.parse(body);
-    obj["mod_config"] = offsets; 
+    
+    // Gộp (Merge) dữ liệu mod vào gói tin gốc
+    // Chúng ta đặt vào mục 'mod_config' hoặc ghi đè tùy cấu trúc game
+    obj["mod_data"] = offsets;
+    obj["server_status"] = "stable";
+    
+    // Chuyển lại thành chuỗi để gửi về game
     body = JSON.stringify(obj);
     
-    console.log("Đã tiêm Offset vào Host thành công!");
+    console.log("-----------------------------------------");
+    console.log("Inject thành công Offset cho FreeFire");
+    console.log("Target: " + offsets.Aimbot_Logic.lock_target);
+    console.log("-----------------------------------------");
 } catch (e) {
-    // Nếu body không phải JSON (dạng binary), ta có thể ghi đè trực tiếp nếu biết cấu trúc
-    console.log("Không thể parse JSON, kiểm tra lại định dạng phản hồi của Host");
+    // Trường hợp dữ liệu không phải JSON (Binary/Protobuf)
+    console.log("Lỗi: Server trả về định dạng không phải JSON. Cần sử dụng xử lý Byte.");
 }
 
-// 3. Trả lại dữ liệu đã chỉnh sửa cho Game
+// 3. Phản hồi kết quả cuối cùng
 $done({ body });
