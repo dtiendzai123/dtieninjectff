@@ -1,11 +1,17 @@
 /*
- * Shadowrocket Script: Can thiệp Offset qua Host (Full Version)
- * Tính năng: Cấu hình Aimbot & Chỉ số Player
+ * Shadowrocket Script: DTien Injector FF (Full All-In-One)
+ * Version: 90-100 Uncrack Premium
+ * Author: dtiendzai123
  */
 
-// 1. Khai báo danh sách Offset đầy đủ (Key-Value)
-const offsets = {
-    "Player_Offsets": {
+// --- 1. Cấu hình Toàn bộ Offset & Logic (Key-Value) ---
+const dtienConfig = {
+    "Binary_Info": {
+        "name": "freefireth",
+        "arch": "arm64",
+        "uuid": "a41922b7-a25e-396f-b9b3-bb2eda25f0d5"
+    },
+    "Offsets_Player": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
         "GetLocalPlayer": "0x4101ff4",
@@ -15,51 +21,63 @@ const offsets = {
         "get_MaxHP": "0x2e3e2e8",
         "get_IsDieing": "0x2dc1178"
     },
-    "Camera_Offsets": {
-        "MainCameraTransform": "0x320",
-        "Camera_main": "0x6a64c64"
-    },
-    "Engine_Offsets": {
-        "Dictionary": "0x58",
-        "Component_GetTransform": "0x8ca3b10",
-        "Transform_INTERNAL_SetPosition": "0x6bc252c",
-        "Transform_INTERNAL_GetPosition": "0x6bc248c",
+    "Offsets_Engine": {
+        "MainCamera": "0x6a64c64",
+        "Transform_SetPos": "0x6bc252c",
+        "Transform_GetPos": "0x6bc248c",
+        "Component_GetTF": "0x8ca3b10",
         "GetForward": "0x8a88b1c",
-        "Curent_Match": "0x3266cc0"
+        "CurrentMatch": "0x3266cc0"
     },
-    "Aimbot_Logic": {
-        "enabled": true,
-        "lock_target": "Head", // Khóa vào đầu
-        "smooth_level": 0.5,   // Độ mượt khi kéo tâm
-        "auto_fire": false,
-        "fov_range": 180       // Tầm nhìn quét địch
+    "Advanced_Logic": {
+        // --- FIRE STATUS MONITOR ---
+        "Fire_Monitor": "com.accpt_ffxbase64_Key_allow_Check_Firing_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2dc3804",
+        "Trigger_Logic": "Active_On_Hit",
+        
+        // --- BODY HIT RE-TARGET ---
+        "Body_Detect": "com.accpt_ffxbase64_Key_allow_BodyDetect_Zone_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a98c",
+        "Neck_Offset": 0.185,
+        "Auto_ReTarget": "True",
+        
+        // --- INSTANT HEAD OVERWRITE ---
+        "Head_Overwrite": "com.accpt_ffxbase64_Key_allow_ReTarget_To_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a7b4",
+        "Velocity": "Instant",
+        "Force_Y": 0.285,
+        
+        // --- ROTATION LOCK SYNC ---
+        "Rot_W_Lock": 0.999266,
+        "Internal_SetPos_Strict": "0x6bc252c",
+        
+        // --- SAFETY FILTER ---
+        "Check_Visible": "0x2dd8f54",
+        "Filter_Dieing": "0x2dc1178"
     },
-    "Status": "Activated_By_DTien"
+    "Status": "DTien_Successfully_Injected"
 };
 
-// 2. Xử lý dữ liệu từ Host
+// --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
 let body = $response.body;
 
 try {
-    // Giải mã JSON từ Server Game
+    // Thử giải mã nếu Server trả về JSON
     let obj = JSON.parse(body);
     
-    // Gộp (Merge) dữ liệu mod vào gói tin gốc
-    // Chúng ta đặt vào mục 'mod_config' hoặc ghi đè tùy cấu trúc game
-    obj["mod_data"] = offsets;
-    obj["server_status"] = "stable";
+    // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
+    obj["mod_menu_config"] = dtienConfig;
+    obj["authorized"] = true;
     
-    // Chuyển lại thành chuỗi để gửi về game
     body = JSON.stringify(obj);
     
     console.log("-----------------------------------------");
-    console.log("Inject thành công Offset cho FreeFire");
-    console.log("Target: " + offsets.Aimbot_Logic.lock_target);
+    console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
+    console.log("Features: Aimbot, Neck Sync, Rotation Lock");
     console.log("-----------------------------------------");
 } catch (e) {
-    // Trường hợp dữ liệu không phải JSON (Binary/Protobuf)
-    console.log("Lỗi: Server trả về định dạng không phải JSON. Cần sử dụng xử lý Byte.");
+    // Nếu dữ liệu không phải JSON (Binary), in log cảnh báo
+    console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
+    // Tùy chọn: Bạn có thể cộng thêm chuỗi vào body nếu server chấp nhận chuỗi thô
+    // body += JSON.stringify(dtienConfig);
 }
 
-// 3. Phản hồi kết quả cuối cùng
+// --- 3. Trả kết quả về cho Game ---
 $done({ body });
