@@ -44,7 +44,7 @@ const dtienConfig = {
         "WriteVectorY": true,
         "WriteVectorZ": true
     }
-};
+},
     "Offsets_Player": {
         "HeadTF": "0x2e5a7b4",
         "HipTF": "0x2e5a98c",
