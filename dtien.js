@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG GHIM TÂM (CONST) ---
+const DTien_V5_Engine = {
+    "Project": "Ultra_Snap_Head_Lock",
+    "Status": "Activated_Premium",
+
+    // Tầng 1: Logic Snap (Từ Thân về Đầu)
+    "SNAP_LOGIC": {
+        "Body_Detect_Zone": "0x2e5a98c",  // HipTF (Vùng nhận diện thân)
+        "Head_Target_Lock": "0x2e5a7b4",  // HeadTF (Điểm Snap đến)
+        "Snap_Speed": "0ms",               // Tốc độ nhảy tâm tức thì
+        "Auto_Correction_Force": 1.0,      // Lực ép Snap tuyệt đối
+        "Height_Compensation": 0.285       // Bù trừ trục Y để dính đỉnh đầu
+    },
+
+    // Tầng 2: Độ nhạy và Ghim cứng (Sticky & Sensitive)
+    "SENSITIVITY_ENGINE": {
+        "Flick_Power": "Maximum",
+        "Sticky_Aim": true,
+        "Rotation_W_Fixed": 0.999266,     // Khóa trục xoay chống rung
+        "Smooth_Level": 0.0,               // Không mượt để snap nhanh nhất
+        "FOV_Range": 360
+    },
+
+    // Tầng 3: Ma trận và Thực thi hệ thống
+    "SYSTEM_EXECUTION": {
+        "Internal_SetPos": "0x6bc252c",
+        "Internal_GetPos": "0x6bc248c",
+        "Component_TF": "0x8ca3b10",
+        "Main_Camera": "0x6a64c64",
+        "Camera_TF": "0x320"
+    },
+
+    // Tầng 4: Điều kiện lọc (Trigger Filters)
+    "TRIGGER_CONDITIONS": {
+        "On_Firing": "0x2dc3804",
+        "On_Sighting": "0x2dc867c",
+        "Visible_Only": true,
+        "Filter_Dieing": "0x2dc1178"
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS": {
+        "Body_To_Head": "com.accpt_ffxbase64_Key_allow_BodyToHead_Snap_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Instant_Lock": "com.accpt_ffxbase64_Key_allow_Instant_Head_Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Recoil_Sync": "com.accpt_ffxbase64_Key_allow_Zero_Recoil_Sync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x8a88b1c"
+    }
+};
 const ULTRA_STICKY_AIM = {
     "Engine_Status": "Ultra_Sensitivity_Enabled",
     
@@ -210,6 +256,9 @@ try {
         "Recoil_Reduction": "100%",
         "Server_Authorized": true
     };
+        obj["DTien_V5_Injected"] = DTien_V5_Engine;
+    obj["Snap_Status"] = "Ready_To_Flick";
+    obj["Anti_Cheat_Shield"] = "Bypassed_v2";
     body = JSON.stringify(obj);
     
     console.log("-----------------------------------------");
