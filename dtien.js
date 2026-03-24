@@ -100,7 +100,7 @@ try {
         "Core": dtienConfig.Engine_Core,
         "Aim": dtienConfig.Aim_Execution,
         "Selector": dtienConfig.Target_Selector
-    };
+    }
     
     // Thêm các chuỗi Key thô (Raw)
     obj["Raw_Keys"] = {
