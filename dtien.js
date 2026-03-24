@@ -1,80 +1,96 @@
 /*
- * Shadowrocket Script: DTien Premium Injector
- * Version: 3.0 (All-In-One Optimized)
+ * Shadowrocket Script: DTien Injector FF (Full All-In-One)
+ * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
 
-// --- 1. ĐỊNH NGHĨA CẤU HÌNH (CONST OBJECT) ---
-const CONFIG_MOD = {
-    "Project": "90-100_Uncrack_List",
-    "Status": "Active_Premium",
-    
-    // Nhóm 1: Thông tin hệ thống và Pointers
-    "Engine_Core": {
-        "lib": "libil2cpp.so",
-        "interval": 5,
-        "LocalPlayer": "0x4101FF4",
-        "CurrentMatch": "0x3266CC0"
+// --- 1. Cấu hình Toàn bộ Offset & Logic (Key-Value) ---
+const dtienConfig = {
+    "Binary_Info": {
+        "name": "freefireth",
+        "arch": "arm64",
+        "uuid": "a41922b7-a25e-396f-b9b3-bb2eda25f0d5"
     },
-
-    // Nhóm 2: Các điều kiện kiểm tra (Conditions)
-    "Check_List": {
-        "Firing": "0x2DC3804",
-        "Sighting": "0x2DC867C",
-        "Visible": "0x2DD8F54",
-        "Dying": "0x2DC1178"
+   "Fire_Status": {
+        "Check_Firing_Offset": "0x2dc3804",
+        "Trigger_Logic": "Active_On_Hit",
+        "Package": "com.dts.freefireth"
     },
-
-    // Nhóm 3: Logic Aimbot & Bone Target
-    "Aim_Logic": {
-        "Target_Head": "0x2E5A7B4",
-        "Target_Hip": "0x2E5A98C",
-        "Force_Y": 0.285,
+   
+    "Aimbot_Logic": {
+        "enabled": true,
+        "lock_target": "Head", // Khóa vào đầu
+        "smooth_level": 0.5,   // Độ mượt khi kéo tâm
+        "auto_fire": false,
+        "fov_range": 360       // Tầm nhìn quét địch
+    },
+    "Offsets_Player": {
+        "HeadTF": "0x2e5a7b4",
+        "HipTF": "0x2e5a98c",
+        "GetLocalPlayer": "0x4101ff4",
+        "get_IsFiring": "0x2dc3804",
+        "get_IsSighting": "0x2dc867c",
+        "get_isVisible": "0x2dd8f54",
+        "get_MaxHP": "0x2e3e2e8",
+        "get_IsDieing": "0x2dc1178"
+    },
+    "Offsets_Engine": {
+        "MainCamera": "0x6a64c64",
+        "Transform_SetPos": "0x6bc252c",
+        "Transform_GetPos": "0x6bc248c",
+        "Component_GetTF": "0x8ca3b10",
+        "GetForward": "0x8a88b1c",
+        "CurrentMatch": "0x3266cc0"
+    },
+    "Advanced_Logic": {
+        // --- FIRE STATUS MONITOR ---
+        "Fire_Monitor": "com.accpt_ffxbase64_Key_allow_Check_Firing_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2dc3804",
+        "Trigger_Logic": "Active_On_Hit",
+        
+        // --- BODY HIT RE-TARGET ---
+        "Body_Detect": "com.accpt_ffxbase64_Key_allow_BodyDetect_Zone_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a98c",
         "Neck_Offset": 0.185,
-        "Rotation_W": 0.999266,
-        "Smooth": 0.5,
-        "FOV": 360
+        "Auto_ReTarget": "True",
+        
+        // --- INSTANT HEAD OVERWRITE ---
+        "Head_Overwrite": "com.accpt_ffxbase64_Key_allow_ReTarget_To_Head_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2e5a7b4",
+        "Velocity": "Instant",
+        "Force_Y": 0.285,
+        
+        // --- ROTATION LOCK SYNC ---
+        "Rot_W_Lock": 0.999266,
+        "Internal_SetPos_Strict": "0x6bc252c",
+        
+        // --- SAFETY FILTER ---
+        "Check_Visible": "0x2dd8f54",
+        "Filter_Dieing": "0x2dc1178"
     },
-
-    // Nhóm 4: Các hàm thực thi (Execution)
-    "Execution": {
-        "SetPos": "0x6BC252C",
-        "GetPos": "0x6BC248C",
-        "GetTF": "0x8CA3B10",
-        "Camera": "0x6A64C64",
-        "AimAddr": "0xFFFFFF86E6FEF000"
-    }
+    "Status": "DTien_Successfully_Injected"
 };
 
-// --- 2. XỬ LÝ LOGIC TRÊN SHADOWROCKET ---
+// --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
 let body = $response.body;
 
 try {
-    // Thử giải mã JSON từ Host
+    // Thử giải mã nếu Server trả về JSON
     let obj = JSON.parse(body);
-
-    // Tiêm (Inject) dữ liệu vào gói tin phản hồi
-    obj["dtien_premium_v3"] = CONFIG_MOD;
-    obj["auth_token"] = "DTIEN_" + Math.random().toString(36).substr(2, 9);
     
-    // Ghi đè các Key dài (Raw) nếu Loader yêu cầu chính xác định dạng cũ
-    obj["Game_Config"] = {
-        "Auto_Headshot": "com.accpt_ffxbase64_Key_allow_AutoHeadshotScript_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Firing_Check": "com.accpt_ffxbase64_Key_allow_Player_IsFiringOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + CONFIG_MOD.Check_List.Firing,
-        "Set_Aim": "com.accpt_ffxbase64_Key_allow_AimSystem_SetAimAddress_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + CONFIG_MOD.Execution.AimAddr
-    };
-
+    // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
+    obj["mod_menu_config"] = dtienConfig;
+    obj["authorized"] = true;
+    
     body = JSON.stringify(obj);
-
+    
     console.log("-----------------------------------------");
-    console.log("DTIEN INJECTOR V3: ĐÃ KÍCH HOẠT");
-    console.log("Hệ thống: " + CONFIG_MOD.Project);
+    console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
+    console.log("Features: Aimbot, Neck Sync, Rotation Lock");
     console.log("-----------------------------------------");
-
 } catch (e) {
-    // Nếu host trả về dữ liệu thô (không phải JSON)
-    console.log("DTien Warning: Dữ liệu host không phải JSON, chuyển sang chế độ dự phòng.");
+    // Nếu dữ liệu không phải JSON (Binary), in log cảnh báo
+    console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
+    // Tùy chọn: Bạn có thể cộng thêm chuỗi vào body nếu server chấp nhận chuỗi thô
+    // body += JSON.stringify(dtienConfig);
 }
 
-// --- 3. KẾT THÚC ---
+// --- 3. Trả kết quả về cho Game ---
 $done({ body });
