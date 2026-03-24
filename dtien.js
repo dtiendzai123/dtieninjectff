@@ -13,7 +13,7 @@ const DTien_V6_Engine = {
         "Zero_Gravity_Enable": true,       // Tắt độ rơi của tâm khi rê (Drag)
         "No_Sway_Offset": "0x8a88b1c",     // Khử độ rung lắc Camera (GetForward Sync)
         "Stability_W": 0.999266,           // Khóa trục xoay ổn định tuyệt đối
-        "Drag_Sensitivity_Boost": 10.0      // Tăng độ nhạy khi rê tâm bằng tay
+        "Drag_Sensitivity_Boost": 100.0      // Tăng độ nhạy khi rê tâm bằng tay
     },
 
     // Tầng 2: Chính xác tuyệt đối & Magnet-Lock (Nam châm đầu)
