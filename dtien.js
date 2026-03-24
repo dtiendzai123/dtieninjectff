@@ -29,6 +29,13 @@ const dtienConfig = {
         "GetForward": "0x8a88b1c",
         "CurrentMatch": "0x3266cc0"
     },
+   "Aimbot_Logic": {
+        "enabled": true,
+        "lock_target": "Head", // Khóa vào đầu
+        "smooth_level": 0.5,   // Độ mượt khi kéo tâm
+        "auto_fire": false,
+        "fov_range": 180       // Tầm nhìn quét địch
+    },
     "Advanced_Logic": {
         // --- FIRE STATUS MONITOR ---
         "Fire_Monitor": "com.accpt_ffxbase64_Key_allow_Check_Firing_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0x2dc3804",
