@@ -3,7 +3,51 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CẤU HÌNH SNAP TÂM TRƯỚC KHI VUỐT (CONST) ---
+const DTien_V10_Engine = {
+    "Project": "Pre_Input_Snap_Instant",
+    "Status": "V10_PreSnap_Activated",
 
+    // Tầng 1: Logic Snap tức thời (Pre-Aim Logic)
+    "PRE_SNAP_LOGIC": {
+        "Instant_Snap_On_Touch": true,     // Snap ngay khi chạm nút (chưa kịp vuốt)
+        "Zero_Travel_Time": true,          // Triệt tiêu thời gian di chuyển của tâm
+        "Target_Priority": "Head_Bone",    // Ưu tiên: Đầu
+        "Snap_Trigger_Offset": "0x2dc867c",// Kích hoạt ngay khi mở ống ngắm (Sighting)
+        "Fire_Trigger_Offset": "0x2dc3804" // Kích hoạt ngay khi bấm bắn (Firing)
+    },
+
+    // Tầng 2: Vô hiệu hóa vật lý (No-Delay Engine)
+    "NO_DELAY_ENGINE": {
+        "Bypass_Input_Lag": true,          // Bỏ qua độ trễ cảm ứng màn hình
+        "Hard_Lock_Strength": 1.0,         // Lực khóa tuyệt đối
+        "Stability_W_Sync": 0.999266,      // Khóa trục xoay Camera cố định
+        "Forward_Vector_Sync": "0x8a88b1c" // Đồng bộ hướng đạn tức thì
+    },
+
+    // Tầng 3: Tọa độ và Ma trận thế giới (Matrix Core)
+    "COORDINATE_SYSTEM": {
+        "Head_Bone_TF": "0x2e5a7b4",        // HeadTF
+        "Body_Bone_TF": "0x2e5a98c",        // HipTF (Dùng để nhận diện nhảy lên đầu)
+        "Internal_SetPos": "0x6bc252c",     // Ghi đè tọa độ tuyệt đối
+        "Matrix_Transform": "0x320",        // Ma trận cha từ Camera
+        "Y_Axis_Correction": 0.285          // Ghim chính xác đỉnh đầu
+    },
+
+    // Tầng 4: Bộ lọc thông minh (Smart Filter)
+    "SMART_FILTER": {
+        "Visible_Check": "0x2dd8f54",       // Chỉ Snap khi địch lộ diện
+        "FOV_Scan_Range": 360,              // Quét mục tiêu toàn cảnh
+        "Auto_Unlock_On_Kill": true         // Nhả tâm ngay khi địch gục
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS": {
+        "Pre_Snap": "com.accpt_ffxbase64_Key_allow_PreInput_Snap_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Instant_Lock": "com.accpt_ffxbase64_Key_allow_Instant_Headshot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Input_Lag": "com.accpt_ffxbase64_Key_allow_Bypass_Input_Lag_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // --- 1. CẤU HÌNH CHÍNH XÁC TUYỆT ĐỐI & FIX LỐ TÂM (CONST) ---
 const DTien_V9_Engine = {
     "Project": "Absolute_Distance_Precision",
@@ -461,7 +505,9 @@ try {
     obj["DTien_V9_HardStop"] = DTien_V9_Engine;
     obj["Precision_Status"] = "Absolute_Distance_Locked";
     obj["Overshoot_Fix"] = "Enabled_Maximum";
-
+obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
+    obj["Snap_Status"] = "Instant_Head_Locked";
+    obj["Speed_Boost"] = "Zero_Delay_Mode";
     
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
