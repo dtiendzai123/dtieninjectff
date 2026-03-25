@@ -4,6 +4,58 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V11_Engine = {
+    "PROJECT": "V11_Tracking_Smooth_Master",
+    "STATUS": "Activated_V11",
+
+    // Mô-đun 1: Phát hiện và truy xuất xương (Bone Tracking)
+    "TARGET_HEAD_DETECTION": {
+        "HeadBoneTracking": true,
+        "UseHumanoidHead": true,
+        "FallbackBone": "bone_head",
+        "HeadOffsetY": 0.045
+    },
+
+    // Mô-đun 2: Điều khiển Camera Auto Aim
+    "CAMERA_CONTROL": {
+        "AutoAimEnable": true,
+        "TrackSpeed": 5.2,
+        "InputBlend": 0.25,      // Tỉ lệ giữa auto và tay
+        "RotationSmoothing": 0.35,
+        "SnapLimiter": 0.6       // Giới hạn tốc độ snap
+    },
+
+    // Mô-đun 3: Hệ thống Crosshair (Tâm ngắm màn hình)
+    "CROSSHAIR_TRACKING": {
+        "FollowHead": true,
+        "MoveSpeed": 11.5,
+        "Projection_WorldToScreen": true,
+        "Mapping_ScreenToCanvas": true,
+        "LerpSmoothing": 0.4
+    },
+
+    // Mô-đun 4: Kiểm tra hiển thị (Visibility)
+    "SCREEN_CHECK": {
+        "VisibilityCheck": true,
+        "HideBehindCamera": true,
+        "DepthCheck_Z": 0.0
+    },
+
+    // Mô-đun 5: Kiểm soát độ ổn định (Stability)
+    "SMART_STABILITY": {
+        "TrackingStability": 0.7,
+        "ProximityDamping": 0.55, // Chống lố khi gần đầu
+        "MicroCorrection": 0.2,   // Sửa lỗi từng frame
+        "GlobalSmooth": 0.35
+    },
+
+    // Mô-đun 6: Đồng bộ hóa Animation (Late Update)
+    "LATE_UPDATE_SYNC": {
+        "LateUpdateEnable": true,
+        "AnimationSyncHead": true,
+        "DefaultOutput": true
+    }
+};
 const DTien_HeadLock_Master = {
     "ABSOLUTE_HEAD_LOCK": {
         "HardLock_Enable": true,
@@ -562,6 +614,16 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
         "ADS_Snap_Key": "com.accpt_ffxbase64_Key_allow_ADS_HeadSnap_Enable_app_com.dts.freefireth=True",
         "Bullet_Path_Key": "com.accpt_ffxbase64_Key_allow_Bullet_Path_Correction_app_com.dts.freefireth=bone_Head",
         "Precision_Key": "com.accpt_ffxbase64_Key_allow_WorldPosition_Precision_Fix_app_com.dts.freefireth=-0.005812380"
+    };
+     // Inject toàn bộ Engine V11 vào Response
+    obj["DTien_V11_Engine"] = DTien_V11_Engine;
+    obj["System_Priority"] = "LateUpdate_High";
+    
+    // Tự động tạo Raw Keys để nạp vào hệ thống game
+    obj["Raw_Keys_V11"] = {
+        "tracking_key": "com.accpt_ffxbase64_Key_allow_HeadBoneTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "smooth_key": "com.accpt_ffxbase64_Key_allow_GlobalSmoothInterpolation_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0.35",
+        "sync_key": "com.accpt_ffxbase64_Key_allow_LateUpdateSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     };
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
