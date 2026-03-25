@@ -4,6 +4,48 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V13_Engine = {
+    "PROJECT": "V13_TargetRed_Aimlock",
+    "STATUS": "V13_Active_On_Target",
+
+    // Mô-đun 1: Nhận diện tâm đỏ (Target Detection)
+    "TARGET_VALIDATION": {
+        "OnTarget_Red_Check": true,        // Chỉ kích hoạt khi tâm hiện đỏ
+        "Detection_Offset": "0x2dd8f54",   // IsVisible/IsTargetValid
+        "Target_Selection_Priority": "Head",
+        "Reaction_Delay": "0ms"             // Khóa ngay lập tức khi tâm đỏ
+    },
+
+    // Mô-đun 2: Khóa vị trí tuyệt đối (Position Lock)
+    "POSITION_TRANSFORM": {
+        "Head_Bone_TF": "0x2e5a7b4",       // Bone đầu mục tiêu
+        "Internal_SetPos": "0x6bc252c",    // Ép vị trí Camera
+        "Follow_Velocity": true,           // Bám theo tốc độ chạy của địch
+        "Height_Fix_Y": 0.045              // Căn chỉnh ngay giữa trán
+    },
+
+    // Mô-đun 3: Khóa trục xoay Camera (Rotation Lock)
+    "ROTATION_CONTROL": {
+        "Lock_Rotation_W": 0.999266,       // Khóa trục W chống rung lắc
+        "Forward_Sync_Offset": "0x8a88b1c",// Đồng bộ hướng nhìn thẳng vào đầu
+        "Smooth_Slerp_Factor": 0.0,         // Độ mượt = 0 để khóa cứng (Sticky)
+        "No_Drift_Active": true            // Chống trôi tâm khi sấy đạn
+    },
+
+    // Mô-đun 4: Điều kiện duy trì (Maintenance)
+    "LOCK_PERSISTENCE": {
+        "Maintain_On_Firing": true,        // Duy trì khi đang xả đạn
+        "Auto_Release_On_Dead": true,      // Tự động nhả tâm khi địch gục
+        "Snap_Force_Multiplier": 1.0       // Lực hút tối đa
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V13": {
+        "Aimlock_Pos": "com.accpt_ffxbase64_Key_allow_Aimlock_Position_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Aimlock_Rot": "com.accpt_ffxbase64_Key_allow_Aimlock_Rotation_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "OnTarget_Only": "com.accpt_ffxbase64_Key_allow_OnlyLockOnRedCrosshair_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V12_Engine = {
     "PROJECT": "V12_Global_Magnet_Matrix",
     "STATUS": "V12_Extreme_Activated",
@@ -692,6 +734,11 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
         "matrix_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_ComputeMatrix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
         "local_pos_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_LocalPos_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=-0.045697,-0.004478,-0.020043"
     };
+     // Inject Engine V13 vào phản hồi
+    obj["DTien_V13_TargetRed"] = DTien_V13_Engine;
+    obj["Aim_Engine_Status"] = "Waiting_For_Red_Crosshair";
+
+    
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
