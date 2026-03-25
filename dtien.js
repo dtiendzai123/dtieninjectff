@@ -3,53 +3,54 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
-// --- 1. CẤU HÌNH KHOÁ ĐẦU THEO MỌI HƯỚNG (CONST) ---
-const DTien_V8_Engine = {
-    "Project": "Omni_Directional_Head_Lock",
-    "Status": "V8_Omni_Activated",
 
-    // Tầng 1: Theo dõi mục tiêu di động (Motion Tracking)
-    "MOTION_LOCK": {
-        "Predict_Movement": true,          // Dự đoán hướng di chuyển của địch
-        "Tracking_360": true,              // Khoá mục tiêu ở mọi góc độ
-        "Update_Frequency": "Always",      // Cập nhật liên tục theo Frame
-        "Rotation_Sync_W": 0.999266,       // Giữ ổn định trục xoay khi địch lạng lách
-        "Forward_Vector_Offset": "0x8a88b1c" // Đồng bộ vector hướng di chuyển
+// --- 1. CẤU HÌNH CHÍNH XÁC TUYỆT ĐỐI & FIX LỐ TÂM (CONST) ---
+const DTien_V9_Engine = {
+    "Project": "Absolute_Distance_Precision",
+    "Status": "V9_HardStop_Activated",
+
+    // Tầng 1: Chống lố tâm & Lệch tâm (Anti-Overshoot)
+    "DRAG_FIX_LOGIC": {
+        "Hard_Stop_At_Head": true,         // Tự động dừng drag khi chạm đầu
+        "Overshoot_Reduction": 1.0,        // Triệt tiêu gia tốc thừa của tay
+        "Stick_Boundary": "0x2e5a7b4",     // Ranh giới khóa: HeadTF
+        "Magnet_Strength": "Maximum",      // Lực hút nam châm cực đại
+        "Flick_Correction": true           // Tự động nắn lại nếu tâm lỡ lướt qua
     },
 
-    // Tầng 2: Duy trì khoá khi bắn (Firing Persistence)
-    "FIRING_PERSISTENCE": {
-        "Permanent_Lock_On_Fire": true,    // Duy trì khoá tuyệt đối khi nhấn bắn
-        "IsFiring_Check": "0x2dc3804",     // Offset trạng thái bắn
-        "Sticky_Power": 1.0,               // Lực hút nam châm tối đa
-        "Snap_Speed": "0ms"                // Không có độ trễ khi bám theo địch
+    // Tầng 2: Chính xác tuyệt đối mọi khoảng cách (Distance Sync)
+    "DISTANCE_ADAPTIVE": {
+        "Auto_Distance_Scaling": true,     // Tự động bù trừ theo khoảng cách
+        "Far_Target_Magnet_Boost": 1.5,    // Tăng lực hút khi địch ở xa
+        "Near_Target_Smooth": 0.2,         // Làm mượt khi địch ở quá gần
+        "Bullet_Drop_Fix": "0x8a88b1c",    // Khử độ rơi đạn (Forward Sync)
+        "Zero_Sway": true                  // Tâm đứng im tuyệt đối
     },
 
-    // Tầng 3: Tọa độ thế giới & Ma trận (World Matrix)
-    "WORLD_MATRIX_CORE": {
-        "Head_Bone": "0x2e5a7b4",          // Tọa độ đầu
-        "Internal_SetPos": "0x6bc252c",    // Ghi đè vị trí tâm ngắm
-        "Transform_Component": "0x8ca3b10",// Trích xuất tọa độ thực thể
-        "Camera_Matrix": "0x320",          // Ma trận Camera cha
-        "Height_Fix": 0.285                // Đẩy tâm lên đỉnh đầu
+    // Tầng 3: Duy trì khóa & Ma trận (Core Engine)
+    "SYSTEM_CORE": {
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ Camera
+        "Internal_GetPos": "0x6bc248c",    // Lấy tọa độ mục tiêu thực
+        "Matrix_Camera": "0x320",          // Ma trận cha
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay chống lệch
+        "Y_Axis_Force": 0.285              // Ghim chính xác đỉnh đầu
     },
 
-    // Tầng 4: Bộ lọc an toàn & Ưu tiên (Safety & Priority)
-    "PRIORITY_FILTERS": {
-        "Visible_Check": "0x2dd8f54",      // Chỉ khoá khi địch lộ diện
-        "Distance_Priority": "Closest",    // Ưu tiên địch gần nhất
-        "Alive_Only": "0x2dc1178",         // Bỏ qua mục tiêu đã gục
-        "FOV_Limit": 360                   // Quét toàn bộ vòng tròn xung quanh
+    // Tầng 4: Điều kiện kích hoạt & An toàn
+    "TRIGGER_SAFETY": {
+        "On_Firing": "0x2dc3804",
+        "Visible_Check": "0x2dd8f54",      // Chỉ khóa khi thấy địch
+        "Auto_Unlock_On_Death": true,      // Nhả tâm ngay khi địch gục
+        "FOV_Scan": 360
     },
 
-    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    // Tầng 5: Chuỗi Key nguyên bản (Raw)
     "RAW_KEYS": {
-        "Omni_Lock": "com.accpt_ffxbase64_Key_allow_OmniDirectional_Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Motion_Predict": "com.accpt_ffxbase64_Key_allow_Movement_Prediction_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        "No_Recoil": "com.accpt_ffxbase64_Key_allow_Zero_Recoil_Permanent_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+        "Distance_Sync": "com.accpt_ffxbase64_Key_allow_Distance_Adaptive_Precision_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Hard_Stop": "com.accpt_ffxbase64_Key_allow_Hard_Stop_Overshoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Sway_Permanent": "com.accpt_ffxbase64_Key_allow_Permanent_NoSway_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
-
 // --- 1. CẤU HÌNH KHOÁ ĐẦU THEO MỌI HƯỚNG (CONST) ---
 const DTien_V8_Engine = {
     "Project": "Omni_Directional_Head_Lock",
@@ -456,10 +457,12 @@ try {
     obj["DTien_V8_Omni"] = DTien_V8_Engine;
     obj["Tracking_Status"] = "Omni_Lock_Engaged";
     obj["Precision_Level"] = "Absolute_360";
- // Inject toàn bộ Engine V8 vào Response
-    obj["DTien_V8_Omni"] = DTien_V8_Engine;
-    obj["Tracking_Status"] = "Omni_Lock_Engaged";
-    obj["Precision_Level"] = "Absolute_360";
+     // Inject toàn bộ Engine V9 vào Response
+    obj["DTien_V9_HardStop"] = DTien_V9_Engine;
+    obj["Precision_Status"] = "Absolute_Distance_Locked";
+    obj["Overshoot_Fix"] = "Enabled_Maximum";
+
+    
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
