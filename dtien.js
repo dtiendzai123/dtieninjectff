@@ -3,6 +3,49 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_HeadLock_Master = {
+    "ABSOLUTE_HEAD_LOCK": {
+        "HardLock_Enable": true,
+        "Efficiency": "98%",
+        "Priority": "Head_Only",
+        "Stickiness": 1.0
+    },
+    "BULLET_SYNC_98": {
+        "Redirection_Enable": true,
+        "Path_Correction": "bone_Head",
+        "Hitbox_Enlargement": true,
+        "Instant_Kill_Optimization": true
+    },
+    "WORLD_ANCHOR_ZERO_DRIFT": {
+        "Anchor_X": true,
+        "Anchor_Y": true,
+        "Precision_Fix": -0.00581238,
+        "Snap_Force": 2.0
+    },
+    "ANTI_RECOIL_STAY": {
+        "PostShot_Stability": "Maximum",
+        "Recoil_Freezing_Head": true,
+        "Vertical_Bypass": true
+    },
+    "AUTO_SCOPE_SNAP": {
+        "ADS_HeadSnap_Enable": true,
+        "Snap_Speed": "Instant",
+        "Snap_Force": 2.0,
+        "FOV_Precision": "High"
+    },
+    "LOCK_ON_ADS_LOGIC": {
+        "ScopeIn_AutoLock": true,
+        "TargetBone_Hash": 96688289,
+        "Stickiness": 1.0,
+        "UpdateRate": "0ms"
+    },
+    "STABILITY_FOV": {
+        "Vibration_Reduction": true,
+        "Dynamic_FOV_Scaling": "Active",
+        "Zero_Delay_Trigger": true
+    }
+};
 // --- 1. CẤU HÌNH SNAP TÂM TRƯỚC KHI VUỐT (CONST) ---
 const DTien_V10_Engine = {
     "Project": "Pre_Input_Snap_Instant",
@@ -508,7 +551,18 @@ try {
 obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
     obj["Snap_Status"] = "Instant_Head_Locked";
     obj["Speed_Boost"] = "Zero_Delay_Mode";
-    
+    // Tiêm (Inject) toàn bộ cấu trúc Master vào phản hồi
+    obj["DTien_HeadLock_Master"] = DTien_HeadLock_Master;
+    obj["Authorized_User"] = "dtiendzai123";
+    obj["Injection_Status"] = "Success_98_Percent";
+
+    // Tạo các chuỗi Key thô (Raw Keys) tự động từ Object
+    obj["Raw_Keys_Payload"] = {
+        "Aim_Lock_Key": "com.accpt_ffxbase64_Key_allow_AimLock_HardLock_Enable_app_com.dts.freefireth=True",
+        "ADS_Snap_Key": "com.accpt_ffxbase64_Key_allow_ADS_HeadSnap_Enable_app_com.dts.freefireth=True",
+        "Bullet_Path_Key": "com.accpt_ffxbase64_Key_allow_Bullet_Path_Correction_app_com.dts.freefireth=bone_Head",
+        "Precision_Key": "com.accpt_ffxbase64_Key_allow_WorldPosition_Precision_Fix_app_com.dts.freefireth=-0.005812380"
+    };
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
