@@ -21,7 +21,7 @@ const DTien_V9_Engine = {
     // Tầng 2: Chính xác tuyệt đối mọi khoảng cách (Distance Sync)
     "DISTANCE_ADAPTIVE": {
         "Auto_Distance_Scaling": true,     // Tự động bù trừ theo khoảng cách
-        "Far_Target_Magnet_Boost": 1.5,    // Tăng lực hút khi địch ở xa
+        "Far_Target_Magnet_Boost": 10.0,    // Tăng lực hút khi địch ở xa
         "Near_Target_Smooth": 0.2,         // Làm mượt khi địch ở quá gần
         "Bullet_Drop_Fix": "0x8a88b1c",    // Khử độ rơi đạn (Forward Sync)
         "Zero_Sway": true                  // Tâm đứng im tuyệt đối
@@ -153,7 +153,7 @@ const DTien_V6_Engine = {
         "Zero_Gravity_Enable": true,       // Tắt độ rơi của tâm khi rê (Drag)
         "No_Sway_Offset": "0x8a88b1c",     // Khử độ rung lắc Camera (GetForward Sync)
         "Stability_W": 0.999266,           // Khóa trục xoay ổn định tuyệt đối
-        "Drag_Sensitivity_Boost": 70.0      // Tăng độ nhạy khi rê tâm bằng tay
+        "Drag_Sensitivity_Boost": 100.0      // Tăng độ nhạy khi rê tâm bằng tay
     },
 
     // Tầng 2: Chính xác tuyệt đối & Magnet-Lock (Nam châm đầu)
