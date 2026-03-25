@@ -4,6 +4,61 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V12_Engine = {
+    "PROJECT": "V12_Global_Magnet_Matrix",
+    "STATUS": "V12_Extreme_Activated",
+
+    // Mô-đun 1: Lực hút đầu toàn cầu (Không cần vào vùng)
+    "GLOBAL_HEAD_MAGNET": {
+        "Enable": true,
+        "Force": 1.0,
+        "IgnoreZone": true,        // Aim ở đâu cũng tự kéo về đầu
+        "AlwaysActive": true,
+        "InstantPull": true,
+        "TargetBone": "bone_head",
+        "ForceVertical": 1.0,      // Ép trục dọc tuyệt đối
+        "CenterLock": 1.0
+    },
+
+    // Mô-đun 2: Chống mục tiêu Teleport/Lag (Hardlock Resist)
+    "TELEPORT_RESIST": {
+        "Enable": true,
+        "Strength": 1.0,
+        "PredictInstant": true,
+        "NoBreak": true,           // Không bị nhả tâm khi địch blink/lag
+        "ReacquireTime": 0.0,      // Thời gian bắt lại mục tiêu: 0ms
+        "InstantReLock": true,
+        "TrackVelocity": true      // Bám theo vận tốc di chuyển
+    },
+
+    // Mô-đun 3: Hệ định vị Head World Position (Core)
+    "WORLD_POSITION_CORE": {
+        "Enable": true,
+        "RealTimeUpdate": true,
+        "UseHumanoid": true,
+        "HumanoidBone": "Head",
+        "ParentHash": 96688289,    // Hash định danh xương cha
+        "ComputeMatrix": true,     // Bật tính toán Ma trận
+        "MatrixMultiply": true     // Nhân Matrix Parent * Local
+    },
+
+    // Mô-đun 4: Dữ liệu biến đổi cục bộ (Local Transform Data)
+    "LOCAL_TRANSFORM": {
+        "Position": [-0.045697, -0.004478, -0.020043],
+        "Rotation": [0.025817, -0.08611, -0.140211, 0.986032], // Quaternion
+        "Scale": [1, 1, 1]
+    },
+
+    // Mô-đun 5: Đầu ra và Đồng bộ (Final Output)
+    "FINAL_OUTPUT_SYNC": {
+        "ForceHeadPriority": true,
+        "NoChestLock": true,       // Tuyệt đối không dính vào ngực
+        "DefaultHeadOutput": true,
+        "OutputRotation": true,
+        "DebugLog": true,
+        "LogRate": 0.1
+    }
+};
 const DTien_V11_Engine = {
     "PROJECT": "V11_Tracking_Smooth_Master",
     "STATUS": "Activated_V11",
@@ -624,6 +679,18 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
         "tracking_key": "com.accpt_ffxbase64_Key_allow_HeadBoneTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
         "smooth_key": "com.accpt_ffxbase64_Key_allow_GlobalSmoothInterpolation_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0.35",
         "sync_key": "com.accpt_ffxbase64_Key_allow_LateUpdateSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    };
+   // Inject Engine V12 vào phản hồi của Game Host
+    obj["DTien_V12_Core"] = DTien_V12_Engine;
+    obj["Magnet_Status"] = "Global_Locked";
+    obj["Matrix_Sync"] = "Active_High_Precision";
+
+    // Tạo các Raw Keys cần thiết cho bộ nạp (Loader) của Game
+    obj["Raw_Keys_V12"] = {
+        "magnet_key": "com.accpt_ffxbase64_Key_allow_GlobalHeadMagnet_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "teleport_fix": "com.accpt_ffxbase64_Key_allow_TeleportResistHeadLock_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "matrix_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_ComputeMatrix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "local_pos_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_LocalPos_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=-0.045697,-0.004478,-0.020043"
     };
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
