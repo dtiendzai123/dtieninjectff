@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V15_Engine = {
+    "PROJECT": "V15_Bullet_Tracer_Master",
+    "STATUS": "V15_Ultimate_Activated",
+
+    // Tầng 1: Đường đạn ảo (Bullet-Tracer-Lock)
+    "BULLET_TRACER_SYSTEM": {
+        "Enable_Tracer_Lock": true,        // Kích hoạt đường đạn bám đuổi
+        "Vector_Redirection": true,        // Bẻ cong quỹ đạo đạn về phía đầu
+        "Tracer_Magnet_Force": 1.0,        // Lực hút đạn tối đa
+        "Bullet_Velocity_Sync": "0x8a88b1c", // Đồng bộ tốc độ đạn với hướng địch chạy
+        "Max_Curve_Angle": 35.0            // Góc bẻ đạn tối đa (35 độ)
+    },
+
+    // Tầng 2: Ưu tiên Headshot (Bullet-Priority)
+    "DAMAGE_PRIORITY_LOCK": {
+        "Priority_Level": "100%_Head",     // Ưu tiên đầu tuyệt đối
+        "Force_Collision_Head": true,      // Ép va chạm vào xương đầu
+        "Ignore_Limb_Damage": true,        // Bỏ qua sát thương tay chân/thân
+        "Instant_Kill_Sync": "0x2e5a7b4",  // Đồng bộ điểm kết liễu: HeadTF
+        "Critical_Hit_Always": true        // Luôn tính là đòn chí mạng
+    },
+
+    // Tầng 3: Duy trì khóa & Chống tuột tâm (Anchor V14 Integration)
+    "PERMANENT_ANCHOR": {
+        "No_Hips_Reversion": true,         // Không giật tâm xuống hông
+        "Head_Anchor_Persistence": 1.0,    // Giữ mỏ neo đầu 100%
+        "Target_Red_Maintain": true,       // Duy trì khi tâm còn đỏ
+        "Lock_On_Velocity": true           // Khóa theo vận tốc địch
+    },
+
+    // Tầng 4: Thực thi hệ thống Ma trận (Matrix Execution)
+    "EXECUTION_CORE": {
+        "Internal_SetPos": "0x6bc252c",
+        "Head_Bone_Offset": 0.285,
+        "Rotation_W_Stability": 0.999266,
+        "Zero_Delay_Trigger": true
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V15": {
+        "Bullet_Tracer": "com.accpt_ffxbase64_Key_allow_BulletTracerLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Priority_Head": "com.accpt_ffxbase64_Key_allow_BulletPriorityHeadshot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Vector_Bypass": "com.accpt_ffxbase64_Key_allow_BulletVectorBypass_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V14_Engine = {
     "PROJECT": "V14_Head_Anchor_System",
     "STATUS": "V14_Extreme_Activated",
@@ -778,7 +823,9 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
  obj["DTien_V14_Anchor"] = DTien_V14_Engine;
     obj["AutoAim_Mode"] = "Head_Only_Strict";
     obj["Hips_Bypass"] = "Fully_Disabled";
-    
+     obj["DTien_V15_Ultimate"] = DTien_V15_Engine;
+    obj["Bullet_Logic"] = "Tracer_Lock_Engaged";
+    obj["Damage_Type"] = "Headshot_Only";
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
