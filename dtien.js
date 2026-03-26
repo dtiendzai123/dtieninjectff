@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V16_Engine = {
+    "PROJECT": "V16_Adaptive_HardLock",
+    "STATUS": "V16_Premium_Activated",
+
+    // Tầng 1: Chống Drag lố tâm (Anti-Overshoot)
+    "ANTI_OVERSHOOT": {
+        "Hard_Stop_At_Boundary": true,     // Tự động dừng drag khi chạm ranh giới
+        "Overshoot_Reduction": 1.0,        // Triệt tiêu 100% gia tốc thừa của tay
+        "Stick_Boundary_TF": "0x2e5a7b4",  // Ranh giới cứng: HeadTF
+        "Flick_Correction": true,           // Nắn lại tâm tức thì nếu lỡ lướt qua
+        "Magnet_Range": "Head_Scan_Strict"  // Vùng quét hẹp chỉ quanh đầu
+    },
+
+    // Tầng 2: Mượt adapt theo khoảng cách (Adaptive-Smoothing)
+    "ADAPTIVE_SMOOTHING": {
+        "Enable_Distance_Adaptive": true,  // Bật mượt adapt theo khoảng cách
+        "Far_Target_Magnet_Boost": 1.8,    // Tăng lực hút nam châm khi địch ở xa
+        "Near_Target_Smooth_Factor": 0.2,   // Tăng mượt khi địch quá gần
+        "Distance_Scaling_Matrix": "0x320", // Ma trận Camera dùng tính khoảng cách
+        "Zero_Drift_Active": true          // Đứng im tại đầu khi đã ghim
+    },
+
+    // Tầng 3: Khóa đầu tuyệt đối (Absolute Head-Anchor V15)
+    "ULTIMATE_BULLET_ENGINE": {
+        "Bullet_Tracer_Lock": true,        // Đạn bẻ cong đuổi theo đầu
+        "Absolute_Priority_Head": true,    // Ưu tiên sát thương đầu 100%
+        "Ignore_Limb_Damage": true,        // Bỏ qua sát thương chân tay/thân
+        "Head_Bone_Offset": 0.285,         // Điểm ghim: Đỉnh đầu
+        "Hips_Bypass": "Fully_Disabled"    // Bỏ qua Hông, Spince (Chống tuột)
+    },
+
+    // Tầng 4: Thực thi hệ thống Ma trận & Xoay (Execution)
+    "SYSTEM_CORE": {
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ Camera
+        "Internal_GetPos": "0x6bc248c",    // Lấy tọa độ mục tiêu thế giới
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay Camera chống lệch
+        "Velocity_Sync_Active": true       // Bám theo vận tốc địch khi chạy
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V16": {
+        "Anti_Overshoot": "com.accpt_ffxbase64_Key_allow_HardStopDragAtHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Adaptive_Precision": "com.accpt_ffxbase64_Key_allow_DistanceAdaptivePrecision_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Drift_Stable": "com.accpt_ffxbase64_Key_allow_PermanentZeroDriftHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V15_Engine = {
     "PROJECT": "V15_Bullet_Tracer_Master",
     "STATUS": "V15_Ultimate_Activated",
@@ -826,6 +872,10 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
      obj["DTien_V15_Ultimate"] = DTien_V15_Engine;
     obj["Bullet_Logic"] = "Tracer_Lock_Engaged";
     obj["Damage_Type"] = "Headshot_Only";
+     obj["DTien_V16_Adaptive"] = DTien_V16_Engine;
+    obj["Overshoot_Fix"] = "Enabled_Maximum";
+    obj["Adaptive_Mode"] = "Distance_Locked";
+    
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
