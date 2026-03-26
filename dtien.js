@@ -4,6 +4,44 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V14_Engine = {
+    "PROJECT": "V14_Head_Anchor_System",
+    "STATUS": "V14_Extreme_Activated",
+
+    // Tầng 1: Chống giật tâm xuống Hips (Anti-Hips Logic)
+    "ANTI_HIPS_REVERSION": {
+        "Anchor_Head_Only": true,          // Chỉ neo vào đầu, bỏ qua các Bone khác
+        "Ignore_Hips_Bone": "0x2e5a98c",   // Offset Hips - Chặn hoàn toàn lực hút tại đây
+        "Force_Release_Chest": true,       // Ép nhả tâm nếu lỡ dính vào ngực
+        "Lock_Persistence": 1.0,           // Duy trì khóa 100% khi đã chạm đầu
+        "Reset_Target_On_Kill": true       // Chỉ nhả tâm khi địch chết (0x2dc1178)
+    },
+
+    // Tầng 2: Theo dõi hướng di chuyển (Velocity-Sync)
+    "MOTION_TRACKING_360": {
+        "Predict_Velocity": true,          // Dự đoán vận tốc địch để đón đầu
+        "Movement_Compensation": 1.2,      // Bù trừ di chuyển (Tránh lệch tâm khi địch chạy)
+        "Rotation_W_Fixed": 0.999266,      // Khóa trục xoay ổn định
+        "Update_Rate": "0ms"               // Cập nhật tọa độ tức thì
+    },
+
+    // Tầng 3: Nhận diện tâm đỏ & Thực thi (Execution)
+    "TARGET_RED_EXECUTION": {
+        "Lock_On_Red": true,               // Chỉ ghim khi tâm hiện đỏ
+        "Detection_Offset": "0x2dd8f54",   // Kiểm tra Target Valid
+        "Head_Bone_Pos": "0x2e5a7b4",      // Tọa độ đầu thực tế
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ Camera
+        "Y_Axis_Push": 0.285               // Luôn đẩy tâm lên đỉnh đầu
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V14": {
+        "No_Hips_Lock": "com.accpt_ffxbase64_Key_allow_IgnoreHipsAndBody_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Velocity_Sync": "com.accpt_ffxbase64_Key_allow_HeadVelocityTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Permanent_Head": "com.accpt_ffxbase64_Key_allow_PermanentHeadAnchor_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+
 const DTien_V13_Engine = {
     "PROJECT": "V13_TargetRed_Aimlock",
     "STATUS": "V13_Active_On_Target",
@@ -737,7 +775,9 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
      // Inject Engine V13 vào phản hồi
     obj["DTien_V13_TargetRed"] = DTien_V13_Engine;
     obj["Aim_Engine_Status"] = "Waiting_For_Red_Crosshair";
-
+ obj["DTien_V14_Anchor"] = DTien_V14_Engine;
+    obj["AutoAim_Mode"] = "Head_Only_Strict";
+    obj["Hips_Bypass"] = "Fully_Disabled";
     
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
