@@ -4,6 +4,95 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V18_Engine = {
+    "PROJECT": "V18_Micro_Touch_Snap",
+    "STATUS": "V18_Instant_Activated",
+
+    // Tầng 1: Kích hoạt khi nhích nhẹ (Touch Sensitivity)
+    "MICRO_TOUCH_LOGIC": {
+        "Instant_Snap_On_Touch": true,     // Chạm nhẹ là Snap ngay
+        "Input_Threshold": 0.01,           // Ngưỡng nhận diện cực nhạy
+        "Bypass_Drag_Phase": true,         // Bỏ qua giai đoạn kéo tâm thủ công
+        "Trigger_Offset": "0x2dc3804",     // Trạng thái nút bắn (IsFiring/Touch)
+        "Response_Time": "0ms"             // Phản hồi không độ trễ
+    },
+
+    // Tầng 2: Khóa biến đổi tuyệt đối (Pos & Rot Lock)
+    "TRANSFORM_TELEPORT": {
+        "Target_Bone": "0x2e5a7b4",        // Bone Head
+        "Internal_SetPos": "0x6bc252c",    // Ép vị trí (Position)
+        "Internal_SetRot": "0x8a88b1c",    // Ép góc xoay (Rotation)
+        "Lock_Rotation_W": 0.999266,       // Khóa trục ổn định
+        "Zero_Drift": true                 // Chống trôi tâm khi đã Snap
+    },
+
+    // Tầng 3: Chống lố & Duy trì (Stabilization)
+    "STABILITY_CONTROL": {
+        "Hard_Stop_At_Head": true,         // Dừng tuyệt đối tại đầu
+        "Anti_Hips_Reversion": true,       // Chống tuột tâm xuống hông
+        "Velocity_Compensation": 1.25,     // Bù trừ tốc độ di chuyển của địch
+        "Anchor_Persistence": 1.0,         // Lực giữ mỏ neo tối đa
+        "Y_Axis_Push": 0.285               // Ghim đỉnh đầu
+    },
+
+    // Tầng 4: Ưu tiên đạn và Sát thương (Bullet Priority)
+    "BULLET_ENGINE_V18": {
+        "Bullet_Tracer_Lock": true,        // Đạn bẻ cong tìm đầu
+        "Priority_Headshot": true,         // Ưu tiên sát thương đầu 100%
+        "Ignore_Body_Damage": true         // Bỏ qua sát thương thân
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V18": {
+        "Micro_Snap": "com.accpt_ffxbase64_Key_allow_MicroTouchSnap_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Instant_Pos_Rot": "com.accpt_ffxbase64_Key_allow_InstantPosRotLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Travel_Time": "com.accpt_ffxbase64_Key_allow_ZeroTravelTimeAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+const DTien_V17_Engine = {
+    "PROJECT": "V17_RedTarget_LockOn",
+    "STATUS": "V17_RTLO_Activated",
+
+    // Tầng 1: Nhận diện trạng thái tâm đỏ (Red-Target Detection)
+    "DETECTION_SYSTEM": {
+        "Lock_On_Red_Only": true,          // Chỉ khóa khi tâm hiện đỏ
+        "Target_Validation_Offset": "0x2dd8f54", // Kiểm tra mục tiêu hợp lệ
+        "Crosshair_Color_Sync": true,      // Đồng bộ theo màu tâm ngắm
+        "Trigger_Delay": "0ms"             // Phản ứng tức thì không độ trễ
+    },
+
+    // Tầng 2: Khóa biến đổi (Transform Lock: Pos & Rot)
+    "TRANSFORM_LOCK": {
+        "Head_Bone_TF": "0x2e5a7b4",       // Bone mục tiêu: Đầu
+        "Internal_SetPos": "0x6bc252c",    // Ép vị trí Camera (Position)
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay Camera (Rotation)
+        "Forward_Vector_Sync": "0x8a88b1c",// Đồng bộ hướng nhìn thẳng vào đầu
+        "Hard_Stop_Active": true           // Chặn đứng gia tốc tay khi đã khóa
+    },
+
+    // Tầng 3: Chống tuột và Duy trì (Persistence)
+    "LOCK_MAINTENANCE": {
+        "Anti_Hips_Reversion": true,       // Chống tuột tâm xuống hông/ngực
+        "Ignore_Body_Bones": ["0x2e5a98c"],// Bỏ qua xương hông
+        "Maintain_While_Firing": true,     // Duy trì khóa trong suốt lúc bắn
+        "Velocity_Prediction": 1.2,        // Dự đoán hướng chạy của địch để bám theo
+        "Auto_Unlock_On_Death": true       // Nhả tâm ngay khi địch gục
+    },
+
+    // Tầng 4: Độ chính xác đạn (Bullet Sync)
+    "BULLET_SYNC": {
+        "Bullet_Tracer_Lock": true,        // Đạn tự tìm đầu (Tracer)
+        "Absolute_Priority": true,         // Ưu tiên sát thương đầu 100%
+        "Height_Push_Y": 0.285             // Đẩy điểm ghim lên đỉnh đầu
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V17": {
+        "Red_Lock_Pos": "com.accpt_ffxbase64_Key_allow_LockPosOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Red_Lock_Rot": "com.accpt_ffxbase64_Key_allow_LockRotOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Anti_Overshoot": "com.accpt_ffxbase64_Key_allow_FixDragOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V16_Engine = {
     "PROJECT": "V16_Adaptive_HardLock",
     "STATUS": "V16_Premium_Activated",
@@ -875,6 +964,13 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
      obj["DTien_V16_Adaptive"] = DTien_V16_Engine;
     obj["Overshoot_Fix"] = "Enabled_Maximum";
     obj["Adaptive_Mode"] = "Distance_Locked";
+    obj["DTien_V17_RTLO"] = DTien_V17_Engine;
+    obj["Aim_Status"] = "Waiting_For_Red_Crosshair";
+    obj["Lock_Mode"] = "Position_Rotation_Strict";
+    obj["DTien_V18_Instant"] = DTien_V18_Engine;
+    obj["Snap_Mode"] = "Micro_Touch_Activated";
+    obj["Lock_Status"] = "Position_Rotation_Synced";
+    
     
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
