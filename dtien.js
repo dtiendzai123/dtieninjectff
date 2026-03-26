@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V19_Engine = {
+    "PROJECT": "V19_Ultimate_Head_Anchor",
+    "STATUS": "V19_Kinetic_Activated",
+
+    // Tầng 1: Ghìm tâm vùng đầu khi Drag (Drag-Assist)
+    "DRAG_HEAD_ANCHOR": {
+        "Auto_Grip_Head": true,            // Tự động bám đầu khi đang kéo tâm
+        "Drag_Force_Multiplier": 1.5,      // Tăng lực hút vùng đầu khi drag
+        "Hard_Stop_At_Head": true,         // Chặn đứng tâm tại đầu (Fix lố tâm)
+        "Anti_Hips_Filter": "0x2e5a98c",   // Chặn hoàn toàn lực hút xuống hông
+        "Sticky_Head_Radius": "Max"        // Mở rộng vùng dính đầu ảo
+    },
+
+    // Tầng 2: Chính xác mọi khoảng cách & Hướng (Kinetic-Sync)
+    "KINETIC_MOTION_SYNC": {
+        "Predict_360_Movement": true,      // Dự đoán hướng chạy 360 độ
+        "Velocity_Compensation": 1.35,     // Bù trừ vận tốc cực cao (Địch chạy nhanh vẫn trúng)
+        "Distance_Matrix_Scale": "0x320",  // Tính toán khoảng cách để bù trừ độ rơi đạn
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay Camera chống lệch hướng
+        "Zero_Drift_Active": true          // Đứng im tại đầu khi đã ghim
+    },
+
+    // Tầng 3: Đường đạn và Sát thương (Bullet Vector Lock)
+    "BULLET_VECTOR_LOCK": {
+        "Bullet_Tracer_Always_Head": true, // Đạn luôn tìm đầu bất kể hướng bắn
+        "Vector_Bending_Angle": 360.0,      // Góc bẻ đạn cực rộng (45 độ)
+        "Priority_Damage_Head": true,      // Ưu tiên sát thương đầu 100%
+        "Ignore_Obstacle_Minor": true      // Bỏ qua vật cản nhỏ (Lá cây, rào)
+    },
+
+    // Tầng 4: Thực thi hệ thống (Core Engine)
+    "SYSTEM_CORE_V19": {
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ Camera
+        "Head_Bone_TF": "0x2e5a7b4",       // Tọa độ đầu thực tế
+        "Update_Frequency": "0ms",         // Cập nhật liên tục theo Frame
+        "Y_Axis_Offset": 0.285             // Luôn đẩy tâm lên đỉnh đầu
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V19": {
+        "Kinetic_Sync": "com.accpt_ffxbase64_Key_allow_KineticMovementSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Absolute_Head": "com.accpt_ffxbase64_Key_allow_AbsoluteHeadAnchor_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Distance_Fix": "com.accpt_ffxbase64_Key_allow_AllDistancePrecision_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V18_Engine = {
     "PROJECT": "V18_Micro_Touch_Snap",
     "STATUS": "V18_Instant_Activated",
@@ -970,7 +1015,10 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
     obj["DTien_V18_Instant"] = DTien_V18_Engine;
     obj["Snap_Mode"] = "Micro_Touch_Activated";
     obj["Lock_Status"] = "Position_Rotation_Synced";
-    
+    obj["DTien_V19_Kinetic"] = DTien_V19_Engine;
+    obj["Aim_Mode"] = "Ultimate_Head_Anchor";
+    obj["Sync_Status"] = "360_Omni_Directional_Active";
+
     
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
