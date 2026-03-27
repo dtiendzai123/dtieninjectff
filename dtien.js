@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V22_Engine = {
+    "PROJECT": "V22_RedZone_HardLock",
+    "STATUS": "V22_Activated_Extreme",
+
+    // Tầng 1: Nhận diện vùng đỏ (Red-Zone Detection)
+    "DETECTION_LOGIC": {
+        "Lock_Only_On_Red": true,           // Chỉ khóa cứng khi tâm hiện đỏ
+        "IsTargetValid_Offset": "0x2dd8f54",// Mã kiểm tra mục tiêu lộ diện
+        "Trigger_Boundary": "Head_Scan",    // Quét vùng đầu
+        "Response_Delay": "0ms"             // Phản hồi tức thì
+    },
+
+    // Tầng 2: Khóa biến đổi toàn phần (Pos & Rot Motion-Freeze)
+    "TRANSFORM_FREEZE": {
+        "Head_Bone_Anchor": "0x2e5a7b4",    // Bone đầu mục tiêu
+        "Internal_SetPos": "0x6bc252c",     // Ép vị trí (Position)
+        "Internal_SetRot": "0x8a88b1c",     // Ép góc xoay (Rotation)
+        "Hard_Boundary_Lock": true,         // Chặn đứng gia tốc tay (Fix lố)
+        "Rotation_W_Stable": 0.999266       // Khóa trục xoay chống rung
+    },
+
+    // Tầng 3: Bám sát mục tiêu di chuyển (Motion-Sync)
+    "MOTION_SYNC_360": {
+        "Velocity_Prediction": true,        // Dự đoán hướng chạy 360 độ
+        "Distance_Matrix_Sync": "0x320",    // Fix hụt ở mọi khoảng cách (Xa/Gần)
+        "Movement_Compensation": 1.45,      // Bù trừ vận tốc cực cao
+        "Anti_Hips_Reversion": true,        // Chống tuột tâm xuống hông/ngực
+        "Zero_Drift_Active": true           // Đứng im tại đầu khi đã ghim
+    },
+
+    // Tầng 4: Ưu tiên đạn và Sát thương (Bullet Priority)
+    "BULLET_ENGINE_V22": {
+        "Bullet_Tracer_Always_Head": true,  // Đạn tự tìm đầu (Tracer)
+        "Vector_Bending_Angle": 360.0,       // Góc bẻ đạn rộng (45 độ)
+        "Priority_Headshot": true,          // Ưu tiên sát thương đầu 100%
+        "Instant_Hit_Logic": true           // Bắn là trúng (No Travel Time)
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V22": {
+        "Red_HardLock": "com.accpt_ffxbase64_Key_allow_HardLockOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "No_Overshoot": "com.accpt_ffxbase64_Key_allow_FixDragOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Motion_Freeze": "com.accpt_ffxbase64_Key_allow_MotionFreezeHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V21_Engine = {
     "PROJECT": "V21_Velocity_Lock_Omni",
     "STATUS": "V21_Activated",
@@ -1114,7 +1159,10 @@ obj["DTien_V20_VectorForce"] = DTien_V20_Engine;
 obj["DTien_V21_Velocity"] = DTien_V21_Engine;
     obj["Sync_Status"] = "Omni_Locked_On_Firing";
     obj["Movement_Mode"] = "Velocity_Predict_Active";
-    
+    obj["DTien_V22_HardLock"] = DTien_V22_Engine;
+    obj["Aim_Status"] = "Red_Zone_Locked";
+    obj["Lock_Mode"] = "Position_Rotation_Freeze";
+
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
