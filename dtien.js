@@ -4,6 +4,50 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V23_Engine = {
+    "PROJECT": "V23_Axis_Constraint_Lock",
+    "STATUS": "V23_Cartesian_Active",
+
+    // Tầng 1: Fix Lố Y - Chống vọt tâm qua đầu (Vertical Control)
+    "VERTICAL_Y_CONSTRAINT": {
+        "Anti_Overshoot_Y": true,          // Chặn đứng lực kéo vọt lên trời
+        "Hard_Stop_Upper_Boundary": 0.045, // Giới hạn dừng tại đỉnh đầu
+        "Y_Axis_Damping_Force": 1.0,       // Lực phanh trục Y tối đa
+        "Recoil_Y_Bypass": "0x6bc252c",    // Triệt tiêu độ nảy dọc của súng
+        "Gravity_Pull_Head": true          // Luôn kéo tâm về điểm Y của Bone Head
+    },
+
+    // Tầng 2: Fix Lệch X - Chống trôi tâm sang hai bên (Horizontal Control)
+    "HORIZONTAL_X_CONSTRAINT": {
+        "Anti_Drift_X": true,              // Chống trôi tâm khi địch chạy ngang
+        "X_Axis_Stickiness": 1.0,          // Độ dính trục X tuyệt đối
+        "Velocity_Predict_X": true,        // Dự đoán hướng chạy X để đón đầu
+        "Centering_Force_X": 1.0,          // Ép tâm vào chính giữa trục dọc của đầu
+        "Omni_Directional_Sync": true      // Đồng bộ 360 độ theo địch
+    },
+
+    // Tầng 3: Khóa biến đổi Transform (Pos & Rot)
+    "TRANSFORM_STABILIZER": {
+        "Head_Bone_TF": "0x2e5a7b4",       // Bone đầu mục tiêu
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay chống rung lắc
+        "Internal_SetPos_Update": "0ms",   // Cập nhật vị trí tức thì
+        "Distance_Adaptive_X_Y": true      // Tự điều chỉnh lực phanh theo khoảng cách
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Tracer V23)
+    "BULLET_AXIS_SYNC": {
+        "Tracer_Lock_On_Target": true,     // Đạn bẻ cong theo tọa độ X-Y đầu
+        "Priority_Headshot_100": true,     // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 45.0       // Góc bẻ đạn rộng
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V23": {
+        "Fix_Overshoot_Y": "com.accpt_ffxbase64_Key_allow_FixVerticalOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Fix_Drift_X": "com.accpt_ffxbase64_Key_allow_FixHorizontalDrift_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Cartesian_Lock": "com.accpt_ffxbase64_Key_allow_CartesianCoordinateLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V22_Engine = {
     "PROJECT": "V22_RedZone_HardLock",
     "STATUS": "V22_Activated_Extreme",
@@ -1162,7 +1206,9 @@ obj["DTien_V21_Velocity"] = DTien_V21_Engine;
     obj["DTien_V22_HardLock"] = DTien_V22_Engine;
     obj["Aim_Status"] = "Red_Zone_Locked";
     obj["Lock_Mode"] = "Position_Rotation_Freeze";
-
+obj["DTien_V23_Axis"] = DTien_V23_Engine;
+    obj["Axis_Status"] = "X_Y_Constraint_Locked";
+    obj["Damping_Mode"] = "Anti_Overshoot_Active";
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
