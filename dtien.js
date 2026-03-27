@@ -4,6 +4,50 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V21_Engine = {
+    "PROJECT": "V21_Velocity_Lock_Omni",
+    "STATUS": "V21_Activated",
+
+    // Tầng 1: Kích hoạt khóa khi bắn (Firing Trigger Lock)
+    "FIRING_LOCK_SYSTEM": {
+        "Trigger_Offset": "0x2dc3804",     // Trạng thái nút bắn (Firing)
+        "Instant_Lock_On_Fire": true,      // Nhấn bắn là khóa chặt ngay
+        "Lock_Persistence": 1.0,           // Lực giữ mỏ neo tối đa (100%)
+        "Zero_Delay_Update": true          // Cập nhật tọa độ 0ms
+    },
+
+    // Tầng 2: Theo dõi hướng di chuyển (Velocity-Tracking)
+    "VELOCITY_TRACKING_360": {
+        "Predict_Directional_Movement": true, // Dự đoán hướng chạy 360 độ
+        "Velocity_Compensation_Factor": 1.45, // Bù trừ vận tốc (Địch chạy nhanh vẫn dính)
+        "Movement_Stickiness": 1.0,        // Độ dính theo chuyển động
+        "Rotation_W_Stabilizer": 0.999266  // Khóa trục xoay Camera chống lệch
+    },
+
+    // Tầng 3: Chống tuột và Fix lố (Anti-Drift & Overshoot)
+    "STABILITY_ANCHOR": {
+        "Head_Bone_TF": "0x2e5a7b4",       // Tọa độ xương đầu
+        "Internal_SetPos": "0x6bc252c",    // Ép vị trí Camera
+        "Ignore_Hips_Reversion": true,     // Chống tuột tâm xuống hông/ngực
+        "Hard_Stop_At_Head": true,         // Chặn đứng gia tốc tay khi đã khóa
+        "Y_Axis_Push": 0.285               // Ghim chính xác đỉnh đầu
+    },
+
+    // Tầng 4: Đường đạn đồng bộ (Bullet Path Sync)
+    "BULLET_PATH_SYNC": {
+        "Bullet_Tracer_Lock": true,        // Đạn bẻ cong tìm đầu
+        "Vector_Bending_Angle": 45.0,      // Góc bẻ đạn cực rộng
+        "Priority_Head_Damage": true,      // Ưu tiên sát thương đầu 100%
+        "Instant_Hit_Logic": true          // Đồng bộ đạn trúng ngay khi bắn
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V21": {
+        "Velocity_Lock": "com.accpt_ffxbase64_Key_allow_VelocityDirectionalLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Omni_Sync": "com.accpt_ffxbase64_Key_allow_OmniDirectionalSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Hard_Lock": "com.accpt_ffxbase64_Key_allow_HardLockHeadOnFire_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V20_Engine = {
     "PROJECT": "V20_VectorForce_SnapCorrection",
     "STATUS": "V17_Extreme_Activated",
@@ -1067,7 +1111,9 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
 obj["DTien_V20_VectorForce"] = DTien_V20_Engine;
     obj["Aim_Mode"] = "Absolute_Head_Locked";
     obj["Correction_Status"] = "Instant_Assign_Active";
-
+obj["DTien_V21_Velocity"] = DTien_V21_Engine;
+    obj["Sync_Status"] = "Omni_Locked_On_Firing";
+    obj["Movement_Mode"] = "Velocity_Predict_Active";
     
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
