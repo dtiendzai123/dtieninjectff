@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V25_Engine = {
+    "PROJECT": "V25_Auto_Transformation_Lock",
+    "STATUS": "V25_HardLock_Activated",
+
+    // Tầng 1: Chuyển đổi cơ chế (Auto-Aim Transformation)
+    "AIM_TRANSFORMATION": {
+        "Override_Default_Aim": true,       // Ghi đè ngắm mặc định của game
+        "Auto_Switch_To_Head": true,       // Tự động chuyển mục tiêu về đầu
+        "Lock_Trigger_Condition": "Red_Color", // Kích hoạt khi tâm đổi màu
+        "Firing_Sync_Active": true,         // Khóa chặt khi bắt đầu nhấn bắn
+        "Reaction_Speed": "0ms"             // Phản hồi tức thì
+    },
+
+    // Tầng 2: Khóa chặt theo di chuyển (Motion-Anchor 360)
+    "MOTION_ANCHOR_360": {
+        "Head_Bone_TF": "0x2e5a7b4",        // Bone mục tiêu: Đầu
+        "Velocity_Prediction": 1.5,         // Dự đoán hướng chạy (Địch chạy nhanh vẫn dính)
+        "Angular_Stability": 0.999266,      // Khóa góc xoay Camera (Rotation)
+        "Position_Sticky_Force": 1.0,       // Lực dính vị trí tuyệt đối (Position)
+        "Zero_Drift_On_Target": true        // Chống trôi tâm khi địch lạng lách
+    },
+
+    // Tầng 3: Fix Lố & Trục tọa độ (Axis-Control V24)
+    "AXIS_PRECISION_FIX": {
+        "Hard_Stop_At_Boundary": true,      // Chặn đứng gia tốc tay (Fix lố Y/X)
+        "Y_Axis_Push_Offset": 0.285,        // Ghim chính xác đỉnh đầu
+        "Anti_Hips_Reversion": true,        // Chống tuột tâm xuống hông/ngực
+        "Distance_Adaptive": true           // Tự điều chỉnh lực khóa theo khoảng cách
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V25": {
+        "Bullet_Tracer_Always_Head": true,  // Đạn tự tìm đầu (Tracer)
+        "Vector_Bending_Angle": 360.0,       // Góc bẻ đạn cực rộng
+        "Priority_Headshot_100": true,      // Ưu tiên sát thương đầu
+        "Instant_Hit_No_Delay": true        // Bắn là trúng (No Travel Time)
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V25": {
+        "Auto_Transform": "com.accpt_ffxbase64_Key_allow_AutoAimToHardLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Red_HardLock": "com.accpt_ffxbase64_Key_allow_LockPosRotOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Motion_Freeze": "com.accpt_ffxbase64_Key_allow_MotionFreezeHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V24_Engine = {
     "PROJECT": "V24_Kinetic_Brake_System",
     "STATUS": "V24_Velocity_Damping_Active",
@@ -1257,7 +1302,10 @@ obj["DTien_V23_Axis"] = DTien_V23_Engine;
     obj["Brake_Status"] = "Ready_To_Snap";
     obj["Y_Axis_Mode"] = "Variable_Acceleration_Active";
     
-    
+    obj["DTien_V25_Transform"] = DTien_V25_Engine;
+    obj["Aim_Engine"] = "HardLock_Omni_Directional";
+    obj["Status"] = "Ready_To_Lock_On_Red";
+
     
 
     
