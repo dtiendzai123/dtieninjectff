@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V20_Engine = {
+    "PROJECT": "V20_VectorForce_SnapCorrection",
+    "STATUS": "V17_Extreme_Activated",
+
+    // Tầng 1: Tự chỉnh tâm ngay lập tức khi lệch (Instant Correction)
+    "AUTO_SNAP_CORRECTION": {
+        "Auto_Target_Validation": true,    // Tự động kiểm tra mục tiêu hợp lệ
+        "Detection_Offset": "0x2dd8f54",   // IsVisible/IsTargetValid
+        "Correction_Rate": "0ms",          // Sửa lỗi tức thì không độ trễ
+        "Trigger_Boundary": "Boundary_None",// Chạm bất cứ đâu cũng Snap về đầu
+        "Response_Force": "Instant_Assign" // Gán tọa độ trực tiếp (Teleport Aim)
+    },
+
+    // Tầng 2: Drag không bao giờ lệch đầu (Vector-Force Control)
+    "Vector_Force_Control": {
+        "Dynamic_Head_Anchor": true,       // Mỏ neo đầu di động
+        "Velocity_Sync_Active": true,      // Bám theo vận tốc kẻ thù 360 độ
+        "Input_Drag_Override": 1.0,        // Đè gia tốc tay drag bằng lực hút đầu
+        "Hard_Stop_Boundary_TF": "0x2e5a7b4",// Chặn gia tốc tay tại ranh giới đầu
+        "Y_Axis_Force_Offset": 0.285       // Ghim ngay giữa trán (Tránh ngực)
+    },
+
+    // Tầng 3: Độ ổn định & Chống trôi (Stabilization)
+    "STABILIZATION_CORE_V20": {
+        "Zero_Drift_Permanent": true,      // Đứng im tại đầu khi đã ghim
+        "Rotation_W_Fixed": 0.999266,      // Khóa trục xoay ổn định
+        "Tracking_Frequency": "Always",    // Cập nhật tọa độ theo Frame
+        "Bullet_Tracer_Always_Head": true, // Đạn đuổi tìm đầu
+        "Vector_Bending_Angle": 360.0       // Góc bẻ đạn cực rộng (45 độ)
+    },
+
+    // Tầng 4: Thực thi hệ thống Ma trận (Core Execution)
+    "SYSTEM_CORE_V20": {
+        "Internal_SetPos": "0x6bc252c",    // Ghi đè tọa độ Camera
+        "Head_Bone_TF": "0x2e5a7b4",       // Tọa độ đầu thực tế
+        "Matrix_Transform": "0x320",       // Ma trận Camera dùng tính khoảng cách
+        "Ignore_Hips_Filter": "0x2e5a98c"  // Bỏ qua hông, bụng (Chống tuột)
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V20": {
+        "Snap_Correction": "com.accpt_ffxbase64_Key_allow_InstantCorrectionIfMiss_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Vector_Force": "com.accpt_ffxbase64_Key_allow_AbsoluteVectorHeadLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Kinetic_Sync": "com.accpt_ffxbase64_Key_allow_KineticMovementSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V19_Engine = {
     "PROJECT": "V19_Ultimate_Head_Anchor",
     "STATUS": "V19_Kinetic_Activated",
@@ -1018,6 +1064,9 @@ obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
     obj["DTien_V19_Kinetic"] = DTien_V19_Engine;
     obj["Aim_Mode"] = "Ultimate_Head_Anchor";
     obj["Sync_Status"] = "360_Omni_Directional_Active";
+obj["DTien_V20_VectorForce"] = DTien_V20_Engine;
+    obj["Aim_Mode"] = "Absolute_Head_Locked";
+    obj["Correction_Status"] = "Instant_Assign_Active";
 
     
     body = JSON.stringify(obj);
