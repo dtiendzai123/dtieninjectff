@@ -10,10 +10,10 @@ const DTien_V24_Engine = {
 
     // Tầng 1: Siêu nhạy trục Y khi chưa tới mục tiêu (High-Speed Travel)
     "HIGH_SPEED_SNAP_Y": {
-        "Y_Axis_Travel_Acceleration": 5.0, // Gia tốc vuốt cực đại (X5)
+        "Y_Axis_Travel_Acceleration": 10.0, // Gia tốc vuốt cực đại (X5)
         "Lower_Zone_Sensitivity": "Max",   // Nhạy tối đa khi ở dưới cổ
         "Instant_Travel_Logic": true,      // Giảm thiểu thời gian rê tâm
-        "Input_Boost_Multiplier": 2.5      // Nhân đôi lực vuốt từ ngón tay
+        "Input_Boost_Multiplier": 10.5      // Nhân đôi lực vuốt từ ngón tay
     },
 
     // Tầng 2: Phanh khẩn cấp tại đầu (Kinetic-Brake)
@@ -37,7 +37,7 @@ const DTien_V24_Engine = {
     "BULLET_ENGINE_V24": {
         "Bullet_Tracer_Always_Head": true, // Đạn tự tìm đầu
         "Priority_Headshot_100": true,     // Ưu tiên sát thương đầu
-        "Vector_Bending_Angle": 45.0       // Góc bẻ đạn rộng
+        "Vector_Bending_Angle": 360.0       // Góc bẻ đạn rộng
     },
 
     // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
