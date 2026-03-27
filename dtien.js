@@ -4,6 +4,49 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V24_Engine = {
+    "PROJECT": "V24_Kinetic_Brake_System",
+    "STATUS": "V24_Velocity_Damping_Active",
+
+    // Tầng 1: Siêu nhạy trục Y khi chưa tới mục tiêu (High-Speed Travel)
+    "HIGH_SPEED_SNAP_Y": {
+        "Y_Axis_Travel_Acceleration": 5.0, // Gia tốc vuốt cực đại (X5)
+        "Lower_Zone_Sensitivity": "Max",   // Nhạy tối đa khi ở dưới cổ
+        "Instant_Travel_Logic": true,      // Giảm thiểu thời gian rê tâm
+        "Input_Boost_Multiplier": 2.5      // Nhân đôi lực vuốt từ ngón tay
+    },
+
+    // Tầng 2: Phanh khẩn cấp tại đầu (Kinetic-Brake)
+    "KINETIC_BRAKE_LOGIC": {
+        "Head_Boundary_Detection": "0x2e5a7b4", 
+        "Brake_Force_On_Touch": 1.0,       // Lực phanh 100% khi chạm ranh giới đầu
+        "Precision_Damping": 0.0,          // Ép độ nhạy về 0 khi đã ghim đầu
+        "Anti_Overshoot_Y": true,          // Tuyệt đối không cho vọt quá đỉnh đầu
+        "Hard_Stop_Offset_Y": 0.285        // Điểm dừng: Chính giữa trán
+    },
+
+    // Tầng 3: Khóa biến đổi toàn phần (Pos & Rot Lock)
+    "TRANSFORM_STABILIZER": {
+        "Rotation_W_Stable": 0.999266,     // Khóa trục xoay chống rung khi phanh gấp
+        "Internal_SetPos_Update": "0ms",   // Cập nhật tọa độ tức thì
+        "Velocity_Predict_360": true,      // Bám theo hướng chạy của địch
+        "Zero_Drift_Active": true          // Đứng im tại đầu sau khi phanh
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Sync)
+    "BULLET_ENGINE_V24": {
+        "Bullet_Tracer_Always_Head": true, // Đạn tự tìm đầu
+        "Priority_Headshot_100": true,     // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 45.0       // Góc bẻ đạn rộng
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V24": {
+        "Kinetic_Brake": "com.accpt_ffxbase64_Key_allow_KineticBrakeAtHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Variable_Sens_Y": "com.accpt_ffxbase64_Key_allow_VariableVerticalSensitivity_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Hard_Stop": "com.accpt_ffxbase64_Key_allow_HardStopDragAtTarget_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V23_Engine = {
     "PROJECT": "V23_Axis_Constraint_Lock",
     "STATUS": "V23_Cartesian_Active",
@@ -1209,7 +1252,17 @@ obj["DTien_V21_Velocity"] = DTien_V21_Engine;
 obj["DTien_V23_Axis"] = DTien_V23_Engine;
     obj["Axis_Status"] = "X_Y_Constraint_Locked";
     obj["Damping_Mode"] = "Anti_Overshoot_Active";
-    body = JSON.stringify(obj);
+ 
+  obj["DTien_V24_Kinetic"] = DTien_V24_Engine;
+    obj["Brake_Status"] = "Ready_To_Snap";
+    obj["Y_Axis_Mode"] = "Variable_Acceleration_Active";
+    
+    
+    
+
+    
+    
+body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
     console.log("-----------------------------------------");
