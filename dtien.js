@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V29_Engine = {
+    "PROJECT": "V29_Bone_Priority_Teleport",
+    "STATUS": "V29_Hard_Snap_Active",
+
+    // Bước 1 & 2: Định nghĩa Bone & Lấy tọa độ (BONE_HEAD 0)
+    "BONE_DEFINITION_SYSTEM": {
+        "BONE_HEAD_ID": 0,                   // Ép mục tiêu duy nhất: ĐẦU
+        "IGNORE_BONE_NECK": 1,               // Bỏ qua Cổ
+        "IGNORE_BONE_CHEST": 2,              // Bỏ qua Ngực
+        "Target_Bone_TF": "0x2e5a7b4",       // Bone Head thực tế trong RAM
+        "Validation_Check": "0x2dd8f54"      // enemy.IsAlive & IsInFOV
+    },
+
+    // Bước 3 & 4: WorldToScreen & SetCursorPos (Teleport Snap)
+    "TELEPORT_SNAP_LOGIC": {
+        "W2S_Matrix_Sync": "0x320",          // Ma trận 3D -> 2D
+        "Internal_SetPos": "0x6bc252c",      // Hàm dịch chuyển tâm (SetCursorPos)
+        "Snap_Speed": "Instant_0ms",         // "Nhảy" tâm tức thì, không rê
+        "FOV_Limit": 120.0,                  // Tầm nhìn quét Snap
+        "Y_Axis_Push": 0.285                 // Ghim chính xác đỉnh đầu
+    },
+
+    // Bước 5: Giữ chặt & Ngắt cảm ứng tay (Disable Manual Movement)
+    "INPUT_BYPASS_CONTROL": {
+        "Disable_Manual_Y_Movement": true,   // Chặn đứng lực vuốt tay xuống (Fix tuột)
+        "Disable_Manual_X_Drift": true,      // Chặn đứng lực lệch ngang
+        "Hard_Lock_On_Target": true,         // Khóa chết tọa độ khi đã ghim
+        "Input_Override_Priority": "High",   // Ưu tiên tọa độ Script hơn tọa độ Tay
+        "Zero_Drift_Active": true            // Chống trôi tâm tuyệt đối
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V29": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 45.0,        // Góc bẻ đạn cực rộng
+        "No_Recoil_Compensate": true         // Kháng giật 100%
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V29": {
+        "Bone_Priority": "com.accpt_ffxbase64_Key_allow_BoneHeadPriority_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Manual_Bypass": "com.accpt_ffxbase64_Key_allow_DisableManualInputOnLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Snap_Teleport": "com.accpt_ffxbase64_Key_allow_InstantTeleportAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V28_Engine = {
     "PROJECT": "V28_Sticky_Anchor_System",
     "STATUS": "V28_NoRecoil_Active",
@@ -1449,7 +1495,9 @@ obj["DTien_V27_Kernel"] = DTien_V27_Engine;
     obj["DTien_V28_Sticky"] = DTien_V28_Engine;
     obj["Aim_Logic"] = "C_Plus_Plus_Sticky_Loop";
     obj["Recoil_Status"] = "Compensated_Zero_Drift";
-
+obj["DTien_V29_Teleport"] = DTien_V29_Engine;
+    obj["Aim_Engine"] = "BONE_HEAD_ONLY_SNAP";
+    obj["Manual_Input"] = "Bypassed_While_Locked";
     
     
 body = JSON.stringify(obj);
