@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V27_Engine = {
+    "PROJECT": "V27_Kernel_Snap_Sync",
+    "STATUS": "V27_C_Plus_Plus_Engine_Active",
+
+    // Bước 1 & 2: GetBonePosition & WorldToScreen (3D -> 2D)
+    "COORDINATE_TRANSFORM": {
+        "Head_Bone_3D": "0x2e5a7b4",        // Tọa độ 3D Xương Đầu
+        "W2S_Matrix": "0x320",              // Ma trận WorldToScreen
+        "Internal_GetPos": "0x6bc248c",     // Hàm lấy vị trí thực thể
+        "Update_Frequency": "1ms",          // Tương đương Sleep(1) trong C++
+        "FOV_Check": 120.0                  // Tầm nhìn quét mục tiêu
+    },
+
+    // Bước 3 & 4: Offset Calculation & MoveTouch (Smooth = 1.0)
+    "SNAP_EXECUTION": {
+        "Trigger_Condition": "0x2dc3804",   // isFiring (Nút bắn đang nhấn)
+        "Smooth_Factor": 1.0,               // Smooth = 1.0f (Khóa chặt, Snap cực mạnh)
+        "Offset_X_Correction": true,        // Tự động bù lệch trục X
+        "Offset_Y_Correction": true,        // Tự động bù lệch trục Y
+        "Internal_SetPos": "0x6bc252c",     // Hàm di chuyển tâm (MoveTouch)
+        "Hard_Stop_Boundary": true          // Chặn đứng tại điểm đích (Fix lố)
+    },
+
+    // Tầng 3: Bám đuổi di động (Velocity-Sync từ V21)
+    "MOTION_TRACKING_360": {
+        "Velocity_Prediction": 1.5,         // Bám theo hướng chạy địch
+        "Rotation_W_Stable": 0.999266,      // Khóa trục xoay Camera (Rotation)
+        "Anti_Hips_Reversion": true,        // Tuyệt đối không tụt xuống hông
+        "Y_Axis_Push": 0.285                // Ghim chính xác đỉnh đầu
+    },
+
+    // Tầng 4: Thực thi đạn (Bullet Priority)
+    "BULLET_ENGINE_V27": {
+        "Bullet_Tracer_Always_Head": true,  // Đạn tự tìm đầu
+        "Priority_Headshot_100": true,      // Ưu tiên sát thương đầu
+        "Instant_Hit_No_Delay": true        // Bắn là trúng ngay
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V27": {
+        "WorldToScreen_Lock": "com.accpt_ffxbase64_Key_allow_W2SHeadLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Smooth_Snap_1.0": "com.accpt_ffxbase64_Key_allow_SmoothFactor1.0_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Drift_X_Y": "com.accpt_ffxbase64_Key_allow_ZeroOffsetCorrection_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V26_Engine = {
     "PROJECT": "V26_Dynamic_Pull_Sync",
     "STATUS": "V26_Active_Headshot_Only",
@@ -1352,7 +1397,9 @@ obj["DTien_V23_Axis"] = DTien_V23_Engine;
  obj["DTien_V26_PullSync"] = DTien_V26_Engine;
     obj["Pull_Speed_Status"] = "Synced_To_Head_Bone";
     obj["Target_Lock"] = "Absolute_Headshot_Only";
-
+obj["DTien_V27_Kernel"] = DTien_V27_Engine;
+    obj["Logic_Mode"] = "C_Plus_Plus_Simulation";
+    obj["Snap_Status"] = "Locked_With_Smooth_1.0";
     
 
     
