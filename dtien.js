@@ -12,7 +12,7 @@ const DTien_V29_Engine = {
     "BONE_DEFINITION_SYSTEM": {
         "BONE_HEAD_ID": 0,                   // Ép mục tiêu duy nhất: ĐẦU
         "IGNORE_BONE_NECK": 1,               // Bỏ qua Cổ
-        "IGNORE_BONE_CHEST": 2,              // Bỏ qua Ngực
+        "IGNORE_BONE_HIPS": 2,              // Bỏ qua Ngực
         "Target_Bone_TF": "0x2e5a7b4",       // Bone Head thực tế trong RAM
         "Validation_Check": "0x2dd8f54"      // enemy.IsAlive & IsInFOV
     },
