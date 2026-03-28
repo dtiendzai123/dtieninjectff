@@ -13,8 +13,8 @@ const DTien_V27_Engine = {
         "Head_Bone_3D": "0x2e5a7b4",        // Tọa độ 3D Xương Đầu
         "W2S_Matrix": "0x320",              // Ma trận WorldToScreen
         "Internal_GetPos": "0x6bc248c",     // Hàm lấy vị trí thực thể
-        "Update_Frequency": "1ms",          // Tương đương Sleep(1) trong C++
-        "FOV_Check": 120.0                  // Tầm nhìn quét mục tiêu
+        "Update_Frequency": "0ms",          // Tương đương Sleep(1) trong C++
+        "FOV_Check": 360.0                  // Tầm nhìn quét mục tiêu
     },
 
     // Bước 3 & 4: Offset Calculation & MoveTouch (Smooth = 1.0)
