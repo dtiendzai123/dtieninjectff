@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V31_Engine = {
+    "PROJECT": "V31_Hyper_Sampling_Snap",
+    "STATUS": "V31_Impulse_Active",
+
+    // Bước 1: BoostSensitivity & Touch Sampling (1000Hz)
+    "TOUCH_BOOST_SYSTEM": {
+        "Sensitivity_Multiplier": 2.5,       // Tăng độ nhạy 250% (2.5f)
+        "Touch_Latency_Min": "0.001ms",      // Giảm độ trễ xuống mức tối thiểu
+        "Sampling_Rate_Override": "1000Hz",  // Ép tần số quét cảm ứng tối đa
+        "Input_Recognition_Speed": "Instant" // Nhận diện lực vuốt thần tốc
+    },
+
+    // Bước 2: Impulse Snap (Kéo vọt lên đầu trong 0.05s)
+    "IMPULSE_SNAP_LOGIC": {
+        "Trigger_IsFiring": "0x2dc3804",    // Trạng thái nhấn nút bắn
+        "Snap_Force_Impulse": 0.8,           // Xung lực kéo vọt (snapForce * 0.8f)
+        "Travel_Time_Limit": "0.05s",        // Thời gian đạt đỉnh đầu cực ngắn
+        "Vertical_Vector_Up": true,          // Chỉ đẩy mạnh trục Y lên trên
+        "Internal_MoveCrosshair": "0x6bc252c" // Hàm thực thi dịch chuyển tâm
+    },
+
+    // Bước 3: Fix Nặng Tâm & Đóng băng trục Y (Sticky & Brake)
+    "STICKY_BRAKE_LOCK": {
+        "Head_Bone_TF": "0x2e5a7b4",         // Bone Head mục tiêu
+        "Distance_Threshold": 5.0,           // Ngưỡng dính < 5 pixel
+        "Lock_Axis_Y_At_Head": true,         // Đóng băng trục Y tại đầu (LockAxisY)
+        "Disable_Recoil_Sync": true,         // Triệt tiêu hoàn toàn độ nảy (No Recoil)
+        "Manual_Input_Bypass": "Active",     // Chặn lực vuốt tay thừa (Fix Lố)
+        "Zero_Drift_Active": true            // Chống trôi tâm tuyệt đối
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V31": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 360.0,        // Góc bẻ đạn cực rộng
+        "Instant_Hit_Logic": true            // Bắn là trúng ngay (0ms travel)
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V31": {
+        "Hyper_Sampling": "com.accpt_ffxbase64_Key_allow_TouchSampling1000Hz_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Impulse_Snap": "com.accpt_ffxbase64_Key_allow_ImpulseSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Axis_Y_Clamp": "com.accpt_ffxbase64_Key_allow_VerticalAxisFreeze_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V30_Engine = {
     "PROJECT": "V30_Anti_Gravity_Clamp",
     "STATUS": "V30_Y_Axis_Locked",
@@ -1546,7 +1592,9 @@ obj["DTien_V29_Teleport"] = DTien_V29_Engine;
 obj["DTien_V30_Clamp"] = DTien_V30_Engine;
     obj["Aim_Engine"] = "FIXED_HEAD_LOCK_V30";
     obj["Y_Axis_Status"] = "Clamped_At_Head_Bone";
-
+obj["DTien_V31_Hyper"] = DTien_V31_Engine;
+    obj["Touch_Status"] = "1000Hz_Active";
+    obj["Snap_Mode"] = "Impulse_Brake_Locked";
     
     
 body = JSON.stringify(obj);
