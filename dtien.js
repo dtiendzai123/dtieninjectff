@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V30_Engine = {
+    "PROJECT": "V30_Anti_Gravity_Clamp",
+    "STATUS": "V30_Y_Axis_Locked",
+
+    // Bước 1 & 2: Xác định tọa độ & Tính toán Delta Y (Head-Tracking)
+    "DELTA_TRACKING_SYSTEM": {
+        "Target_Bone_TF": "0x2e5a7b4",       // Bone Head mục tiêu
+        "W2S_Matrix_Sync": "0x320",          // Ma trận đồng bộ tọa độ 2D
+        "Update_Frequency": "1ms",           // Tương đương Sleep(1)
+        "IsAiming_Check": "0x2dc3804"        // Trạng thái đang ngắm/bắn
+    },
+
+    // Bước 3: Lực bù trừ đẩy tâm ngược lên (Anti-Gravity Force)
+    "ANTI_GRAVITY_FORCE": {
+        "Auto_Lift_Head": true,              // Tự động đẩy tâm lên đầu
+        "Force_Multiplier_Y": 1.5,           // Hệ số bù trừ 1.5f (Kháng lực hút game)
+        "Instant_Correction": "0ms",         // Sửa lỗi tức thì
+        "Internal_MoveMouse": "0x6bc252c",   // Hàm thực thi di chuyển tâm
+        "Y_Axis_Push_Offset": 0.285          // Ghim chính xác đỉnh đầu (Trán)
+    },
+
+    // Bước 4: Đóng băng trục Y (Y-Axis Clamp)
+    "VERTICAL_CLAMP_LOGIC": {
+        "Clamp_Movement_At_Head": true,      // Khóa cứng chuyển động tại tọa độ Head
+        "Disable_Downward_Input": true,      // Chặn hoàn toàn lực vuốt tay xuống thân
+        "Bypass_Manual_Y": "High_Priority",  // Ưu tiên tọa độ Script > Cảm ứng tay
+        "Zero_Drift_Active": true,           // Chống trôi tâm tuyệt đối
+        "Anti_Hips_Reversion": "0x2e5a98c"   // Bỏ qua hoàn toàn Bone Hông/Thân
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V30": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu (Tracer)
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 45.0,        // Góc bẻ đạn cực rộng
+        "No_Recoil_Compensate": true         // Kháng giật 100%
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V30": {
+        "Anti_Gravity": "com.accpt_ffxbase64_Key_allow_AntiGravityHeadLift_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Y_Axis_Clamp": "com.accpt_ffxbase64_Key_allow_VerticalMovementClamp_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Fixed_Head_Lock": "com.accpt_ffxbase64_Key_allow_FixedHeadLockNoReversion_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V29_Engine = {
     "PROJECT": "V29_Bone_Priority_Teleport",
     "STATUS": "V29_Hard_Snap_Active",
@@ -1498,6 +1543,10 @@ obj["DTien_V27_Kernel"] = DTien_V27_Engine;
 obj["DTien_V29_Teleport"] = DTien_V29_Engine;
     obj["Aim_Engine"] = "BONE_HEAD_ONLY_SNAP";
     obj["Manual_Input"] = "Bypassed_While_Locked";
+obj["DTien_V30_Clamp"] = DTien_V30_Engine;
+    obj["Aim_Engine"] = "FIXED_HEAD_LOCK_V30";
+    obj["Y_Axis_Status"] = "Clamped_At_Head_Bone";
+
     
     
 body = JSON.stringify(obj);
