@@ -12,7 +12,7 @@ const DTien_V30_Engine = {
     "DELTA_TRACKING_SYSTEM": {
         "Target_Bone_TF": "0x2e5a7b4",       // Bone Head mục tiêu
         "W2S_Matrix_Sync": "0x320",          // Ma trận đồng bộ tọa độ 2D
-        "Update_Frequency": "1ms",           // Tương đương Sleep(1)
+        "Update_Frequency": "0ms",           // Tương đương Sleep(1)
         "IsAiming_Check": "0x2dc3804"        // Trạng thái đang ngắm/bắn
     },
 
@@ -161,11 +161,11 @@ const DTien_V27_Engine = {
         "Offset_X_Correction": true,        // Tự động bù lệch trục X
         "Offset_Y_Correction": true,        // Tự động bù lệch trục Y
         "Internal_SetPos": "0x6bc252c",     // Hàm di chuyển tâm (MoveTouch)
-        "Hard_Stop_Boundary": true          // Chặn đứng tại điểm đích (Fix lố)
+        "DragHard_Stop_Boundary": true          // Chặn đứng tại điểm đích (Fix lố)
     },
 
     // Tầng 3: Bám đuổi di động (Velocity-Sync từ V21)
-    "MOTION_TRACKING_360": {
+    "PULL_MOTION_TRACKING_360": {
         "Velocity_Prediction": 1.5,         // Bám theo hướng chạy địch
         "Rotation_W_Stable": 0.999266,      // Khóa trục xoay Camera (Rotation)
         "Anti_Hips_Reversion": true,        // Tuyệt đối không tụt xuống hông
@@ -181,7 +181,7 @@ const DTien_V27_Engine = {
 
     // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
     "RAW_KEYS_V27": {
-        "WorldToScreen_Lock": "com.accpt_ffxbase64_Key_allow_W2SHeadLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "WorldToScreen_DragLock": "com.accpt_ffxbase64_Key_allow_W2SHeadLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
         "Smooth_Snap_1.0": "com.accpt_ffxbase64_Key_allow_SmoothFactor1.0_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
         "No_Drift_X_Y": "com.accpt_ffxbase64_Key_allow_ZeroOffsetCorrection_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
