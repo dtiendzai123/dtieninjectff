@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V28_Engine = {
+    "PROJECT": "V28_Sticky_Anchor_System",
+    "STATUS": "V28_NoRecoil_Active",
+
+    // Bước 1 & 2: GetEnemyHead & Distance Calculation
+    "STICKY_COORDINATE_SYNC": {
+        "Target_Bone_TF": "0x2e5a7b4",       // Bone Head mục tiêu
+        "W2S_Matrix_Sync": "0x320",          // Ma trận đồng bộ tọa độ màn hình
+        "Refresh_Rate": "1ms",               // Tương đương Sleep(1)
+        "Detection_Radius": "Omni_360",      // Quét mục tiêu mọi hướng
+        "IsTargetInSight_Check": "0x2dd8f54" // Kiểm tra địch trong tầm nhìn
+    },
+
+    // Bước 3: UpdateCrosshair (Smooth = 0 - Dính tuyệt đối)
+    "CROSSHAIR_STICKY_LOCK": {
+        "Trigger_IsFiring": "0x2dc3804",    // Trạng thái nhấn nút bắn
+        "Smooth_Travel_Factor": 0.0,         // Smooth = 0 (Snap & Sticky cực chặt)
+        "Instant_Pos_Assign": "0x6bc252c",   // Ép tọa độ tâm = tọa độ đầu
+        "Stickiness_Force": 1.0,             // Lực dính mỏ neo 100%
+        "Hard_Boundary_Lock": true           // Fix lố X-Y tuyệt đối
+    },
+
+    // Bước 4: Kháng giật (ApplyRecoilCompensation)
+    "NO_RECOIL_COMPENSATION": {
+        "Enable_Anti_Recoil": true,          // Kích hoạt kháng giật
+        "Vertical_Bypass_Y": "0x6bc252c",    // Triệt tiêu lực nảy dọc
+        "Horizontal_Stabilize_X": true,      // Triệt tiêu lực rung ngang
+        "Stability_W_Lock": 0.999266,        // Khóa trục xoay Camera ổn định
+        "Zero_Drift_Active": true            // Giữ tâm đứng yên khi sấy đạn
+    },
+
+    // Tầng 5: Thực thi đạn và Sát thương (Bullet Priority)
+    "BULLET_ENGINE_V28": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu (Tracer)
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
+        "Vector_Bending_Angle": 45.0,        // Góc bẻ đạn cực rộng
+        "Y_Axis_Push_Offset": 0.285          // Ghim đỉnh đầu
+    },
+
+    // Tầng 6: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V28": {
+        "Sticky_Aim": "com.accpt_ffxbase64_Key_allow_StickyHeadAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Zero_Recoil": "com.accpt_ffxbase64_Key_allow_NoRecoilActive_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Absolute_Anchor": "com.accpt_ffxbase64_Key_allow_PermanentHeadAnchor_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V27_Engine = {
     "PROJECT": "V27_Kernel_Snap_Sync",
     "STATUS": "V27_C_Plus_Plus_Engine_Active",
@@ -1400,7 +1446,9 @@ obj["DTien_V23_Axis"] = DTien_V23_Engine;
 obj["DTien_V27_Kernel"] = DTien_V27_Engine;
     obj["Logic_Mode"] = "C_Plus_Plus_Simulation";
     obj["Snap_Status"] = "Locked_With_Smooth_1.0";
-    
+    obj["DTien_V28_Sticky"] = DTien_V28_Engine;
+    obj["Aim_Logic"] = "C_Plus_Plus_Sticky_Loop";
+    obj["Recoil_Status"] = "Compensated_Zero_Drift";
 
     
     
