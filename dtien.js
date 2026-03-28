@@ -4,6 +4,50 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V26_Engine = {
+    "PROJECT": "V26_Dynamic_Pull_Sync",
+    "STATUS": "V26_Active_Headshot_Only",
+
+    // Tầng 1: Logic kéo tâm (Pull-Speed Simulation)
+    "FIRE_BUTTON_LOGIC": {
+        "Trigger_Offset": "0x2dc3804",      // Trạng thái nhấn nút bắn
+        "Base_Pull_Speed": 15,              // Tốc độ kéo mặc định (tương đương logic cũ)
+        "Dynamic_Distance_Boost": true,     // Tự tăng pull_speed nếu địch ở xa
+        "Instant_Snap_Y": true,             // Dịch chuyển trục Y tức thì lên đầu
+        "Response_Rate": "0ms"              // Cập nhật từng Frame
+    },
+
+    // Tầng 2: Cố định điểm đến (Target Bone: Head)
+    "MOVE_CURSOR_TO_HEAD": {
+        "Head_Bone_TF": "0x2e5a7b4",        // Điểm đích cố định (Headshot)
+        "Internal_SetPos": "0x6bc252c",     // Hàm thực thi di chuyển tâm
+        "Internal_SetRot": "0x8a88b1c",     // Khóa góc xoay Camera (Rotation)
+        "Hard_Boundary_Lock": true,         // Chặn đứng tâm tại điểm đích (Fix Lố Y)
+        "Y_Axis_Push": 0.285                // Ghim chính xác đỉnh đầu
+    },
+
+    // Tầng 3: Bám mục tiêu di chuyển (360 Motion Sync)
+    "MOTION_TRACKING": {
+        "Velocity_Prediction": 1.5,         // Bù trừ hướng chạy của địch
+        "Anti_Hips_Reversion": true,        // Chống tuột tâm xuống hông/ngực
+        "Zero_Drift_Active": true,          // Đứng im tại đầu sau khi snap
+        "X_Axis_Centering": 1.0             // Ép tâm vào giữa trục X của đầu
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V26": {
+        "Bullet_Tracer_Always_Head": true,  // Đạn tự tìm đầu (Tracer)
+        "Priority_Headshot_100": true,      // Ưu tiên sát thương đầu 100%
+        "Vector_Bending_Angle": 45.0        // Góc bẻ đạn rộng
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V26": {
+        "Auto_Pull": "com.accpt_ffxbase64_Key_allow_AutoPullToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Snap_Correction": "com.accpt_ffxbase64_Key_allow_InstantCorrectionIfMiss_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "No_Overshoot": "com.accpt_ffxbase64_Key_allow_FixVerticalOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V25_Engine = {
     "PROJECT": "V25_Auto_Transformation_Lock",
     "STATUS": "V25_HardLock_Activated",
@@ -1305,6 +1349,9 @@ obj["DTien_V23_Axis"] = DTien_V23_Engine;
     obj["DTien_V25_Transform"] = DTien_V25_Engine;
     obj["Aim_Engine"] = "HardLock_Omni_Directional";
     obj["Status"] = "Ready_To_Lock_On_Red";
+ obj["DTien_V26_PullSync"] = DTien_V26_Engine;
+    obj["Pull_Speed_Status"] = "Synced_To_Head_Bone";
+    obj["Target_Lock"] = "Absolute_Headshot_Only";
 
     
 
