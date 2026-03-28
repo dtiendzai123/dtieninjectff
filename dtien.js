@@ -22,7 +22,7 @@ const DTien_V29_Engine = {
         "W2S_Matrix_Sync": "0x320",          // Ma trận 3D -> 2D
         "Internal_SetPos": "0x6bc252c",      // Hàm dịch chuyển tâm (SetCursorPos)
         "Snap_Speed": "Instant_0ms",         // "Nhảy" tâm tức thì, không rê
-        "FOV_Limit": 120.0,                  // Tầm nhìn quét Snap
+        "FOV_Limit": 360.0,                  // Tầm nhìn quét Snap
         "Y_Axis_Push": 0.285                 // Ghim chính xác đỉnh đầu
     },
 
@@ -39,7 +39,7 @@ const DTien_V29_Engine = {
     "BULLET_ENGINE_V29": {
         "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu
         "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
-        "Vector_Bending_Angle": 45.0,        // Góc bẻ đạn cực rộng
+        "Vector_Bending_Angle": 360.0,        // Góc bẻ đạn cực rộng
         "No_Recoil_Compensate": true         // Kháng giật 100%
     },
 
