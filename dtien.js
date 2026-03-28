@@ -11,7 +11,7 @@ const DTien_V26_Engine = {
     // Tầng 1: Logic kéo tâm (Pull-Speed Simulation)
     "FIRE_BUTTON_LOGIC": {
         "Trigger_Offset": "0x2dc3804",      // Trạng thái nhấn nút bắn
-        "Base_Pull_Speed": 25,              // Tốc độ kéo mặc định (tương đương logic cũ)
+        "Base_Pull_Speed": 35,              // Tốc độ kéo mặc định (tương đương logic cũ)
         "Dynamic_Distance_Boost": true,     // Tự tăng pull_speed nếu địch ở xa
         "Instant_Snap_Y": true,             // Dịch chuyển trục Y tức thì lên đầu
         "Response_Rate": "0ms"              // Cập nhật từng Frame
@@ -34,7 +34,7 @@ const DTien_V26_Engine = {
         "X_Axis_Centering": 1.0             // Ép tâm vào giữa trục X của đầu
     },
 
-    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority) nó
     "BULLET_ENGINE_V26": {
         "Bullet_Tracer_Always_Head": true,  // Đạn tự tìm đầu (Tracer)
         "Priority_Headshot_100": true,      // Ưu tiên sát thương đầu 100%
