@@ -12,7 +12,7 @@ const DTien_V28_Engine = {
     "STICKY_COORDINATE_SYNC": {
         "Target_Bone_TF": "0x2e5a7b4",       // Bone Head mục tiêu
         "W2S_Matrix_Sync": "0x320",          // Ma trận đồng bộ tọa độ màn hình
-        "Refresh_Rate": "1ms",               // Tương đương Sleep(1)
+        "Refresh_Rate": "0ms",               // Tương đương Sleep(1)
         "Detection_Radius": "Omni_360",      // Quét mục tiêu mọi hướng
         "IsTargetInSight_Check": "0x2dd8f54" // Kiểm tra địch trong tầm nhìn
     },
@@ -39,7 +39,7 @@ const DTien_V28_Engine = {
     "BULLET_ENGINE_V28": {
         "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu (Tracer)
         "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
-        "Vector_Bending_Angle": 45.0,        // Góc bẻ đạn cực rộng
+        "Vector_Bending_Angle": 360.0,        // Góc bẻ đạn cực rộng
         "Y_Axis_Push_Offset": 0.285          // Ghim đỉnh đầu
     },
 
