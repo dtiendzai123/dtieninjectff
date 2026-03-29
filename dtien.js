@@ -59,7 +59,7 @@ const DTien_V34_Engine = {
         "ViewAngle_Inject": "com.accpt_ffxbase64_Key_allow_ViewAngleInjection_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
         "Anti_Overaim": "com.accpt_ffxbase64_Key_allow_NoInputOnFiring_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
-
+};
 const DTien_V33_Engine = {
     "PROJECT": "V33_Absolute_Kinetic_System",
     "STATUS": "V33_ViewAngle_Override_Active",
