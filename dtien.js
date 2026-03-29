@@ -10,7 +10,7 @@ const DTien_V31_Engine = {
 
     // Bước 1: BoostSensitivity & Touch Sampling (1000Hz)
     "TOUCH_BOOST_SYSTEM": {
-        "Sensitivity_Multiplier": 5.5,       // Tăng độ nhạy 250% (2.5f)
+        "Sensitivity_Multiplier": 4.5,       // Tăng độ nhạy 250% (2.5f)
         "Touch_Latency_Min": "0.001ms",      // Giảm độ trễ xuống mức tối thiểu
         "Sampling_Rate_Override": "1000Hz",  // Ép tần số quét cảm ứng tối đa
         "Input_Recognition_Speed": "Instant" // Nhận diện lực vuốt thần tốc
