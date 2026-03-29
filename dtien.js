@@ -159,7 +159,7 @@ const DTien_V31_Engine = {
 
     // Bước 1: BoostSensitivity & Touch Sampling (1000Hz)
     "TOUCH_BOOST_SYSTEM": {
-        "Sensitivity_Multiplier": 400.0,       // Tăng độ nhạy 250% (2.5f)
+        "Sensitivity_Multiplier": 500.0,       // Tăng độ nhạy 250% (2.5f)
         "Touch_Latency_Min": "0.001ms",      // Giảm độ trễ xuống mức tối thiểu
         "Sampling_Rate_Override": "1000Hz",  // Ép tần số quét cảm ứng tối đa
         "Input_Recognition_Speed": "Instant" // Nhận diện lực vuốt thần tốc
@@ -344,7 +344,7 @@ const DTien_V26_Engine = {
     // Tầng 1: Logic kéo tâm (Pull-Speed Simulation)
     "FIRE_BUTTON_LOGIC": {
         "Trigger_Offset": "0x2dc3804",      // Trạng thái nhấn nút bắn
-        "Base_Pull_Speed": 40,              // Tốc độ kéo mặc định (tương đương logic cũ)
+        "Base_Pull_Speed": 42,              // Tốc độ kéo mặc định (tương đương logic cũ)
         "Dynamic_Distance_Boost": true,     // Tự tăng pull_speed nếu địch ở xa
         "Instant_Snap_Y": true,             // Dịch chuyển trục Y tức thì lên đầu
         "Response_Rate": "0ms"              // Cập nhật từng Frame
