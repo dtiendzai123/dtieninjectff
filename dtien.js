@@ -32,7 +32,7 @@ const DTien_V34_Engine = {
     "VIEW_ANGLE_INJECTION": {
         "Trigger_IsFiring": "0x2dc3804",    // Khi nhấn nút bắn (IsPressingFireButton)
         "Write_Memory_ViewAngles": "0x8a88b1c", // Ghi đè trực tiếp ViewAngles
-        "Injection_Speed": "1ms",            // Cập nhật liên tục (Sleep 1)
+        "Injection_Speed": "0ms",            // Cập nhật liên tục (Sleep 1)
         "Hard_Rotation_Lock": true,          // Xoay tâm theo hướng di chuyển của đầu
         "Internal_SetPos": "0x6bc252c"       // Cập nhật vị trí hiển thị
     },
