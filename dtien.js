@@ -4,6 +4,52 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V33_Engine = {
+    "PROJECT": "V33_Absolute_Kinetic_System",
+    "STATUS": "V33_ViewAngle_Override_Active",
+
+    // Bước 1 & 2: Color Trigger & Entity Query (360 FOV)
+    "ENTITY_SCANNER_360": {
+        "FOV_Radius": 360.0,                 // Vòng quét toàn cảnh (fov = 360.0f)
+        "Color_Trigger_Hex": "0xFF0000",     // Kích hoạt khi tâm đỏ
+        "Detection_Offset": "0x2dd8f54",     // Kiểm tra màu sắc thực tế
+        "Target_Bone_ID": 0,                 // BONE_HEAD (Xương đầu)
+        "Target_Validation": "IsAlive_InFOV" // Kiểm tra thực thể còn sống
+    },
+
+    // Bước 3: Dự đoán vị trí (Kinetic Prediction & Ping Compensation)
+    "PREDICTION_ENGINE": {
+        "Velocity_Offset": "0x6bc248c",      // Lấy vận tốc thực thể (GetVelocity)
+        "Ping_Compensation": true,           // Bù trừ độ trễ mạng (Ping/1000.0f)
+        "Prediction_Factor": 1.55,           // Hệ số dự đoán hướng di chuyển
+        "Jump_Flight_Sync": true,            // Đồng bộ tọa độ khi địch nhảy/bay
+        "Update_Rate": "0ms"                 // Tốc độ phản hồi Sleep(0)
+    },
+
+    // Bước 4 & 5: WorldToScreen & ViewAngle Hard-Lock (Smooth = 0)
+    "HARD_LOCK_EXECUTION": {
+        "W2S_Matrix": "0x320",               // ProjectWorldToScreen logic
+        "ViewAngle_Override": "0x8a88b1c",   // Ghi đè trực tiếp góc nhìn (SetViewAngles)
+        "Smooth_Factor": 0.0,                // Smooth = 0 (Khóa chặt tuyệt đối)
+        "Instant_Pos_Assign": "0x6bc252c",   // Ép tọa độ tâm = tọa độ đầu dự đoán
+        "Input_Bypass": "Permanent"          // Lờ đi hoàn toàn lực vuốt tay khi đã khóa
+    },
+
+    // Bước 6: Loại bỏ sai số (No Spread & No Recoil)
+    "BULLET_STABILIZER": {
+        "Fix_Bullet_Spread": true,           // Loại bỏ độ tỏa của đạn (No Spread)
+        "Zero_Recoil_Val": 0.0,              // Triệt tiêu độ giật (SetRecoil 0,0)
+        "Bullet_Tracer_V33": "Always_Head",  // Đạn tự tìm đầu (Tracer)
+        "Instant_Hit_Logic": true            // Bắn là trúng ngay (No travel time)
+    },
+
+    // Tầng 7: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V33": {
+        "Absolute_Aim": "com.accpt_ffxbase64_Key_allow_AbsoluteAimLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Kinetic_Pred": "com.accpt_ffxbase64_Key_allow_KineticPrediction_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "ViewAngle_Lock": "com.accpt_ffxbase64_Key_allow_ViewAngleOverride_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V32_Engine = {
     "PROJECT": "V32_Chromatic_Lock_System",
     "STATUS": "V32_Red_Lock_Active",
@@ -1599,6 +1645,9 @@ obj["DTien_V31_Hyper"] = DTien_V31_Engine;
       obj["DTien_V32_Chromatic"] = DTien_V32_Engine;
     obj["Aim_Engine"] = "RED_COLOR_HARDLOCK_V32";
     obj["Recoil_Status"] = "Zero_Recoil_Active_On_Red";
+ obj["DTien_V33_Absolute"] = DTien_V33_Engine;
+    obj["Aim_Mode"] = "HARD_LOCK_360_PREDICTION";
+    obj["Sync_Status"] = "Ping_Compensated_Locked";
 
     
 body = JSON.stringify(obj);
