@@ -4,6 +4,53 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V32_Engine = {
+    "PROJECT": "V32_Chromatic_Lock_System",
+    "STATUS": "V32_Red_Lock_Active",
+
+    // Bước 1 & 2: Định nghĩa mã màu & Kiểm tra tâm đỏ (Chromatic Scan)
+    "COLOR_DETECTION_SYSTEM": {
+        "Target_Red_Hex": "0xFF0000",        // Mã màu đỏ mục tiêu
+        "Scan_Radius_Pixel": 5,              // Quét 5 pixel quanh tâm (SCAN_RADIUS)
+        "Color_Memory_Offset": "0x2dd8f54",  // Địa chỉ bộ nhớ chứa màu tâm ngắm
+        "Update_Frequency": "0ms",           // Tốc độ phản hồi Sleep(0)
+        "IsPlayerFiring_Check": "0x2dc3804"  // Trạng thái đang nhấn nút bắn
+    },
+
+    // Bước 3 & 4: Kích hoạt Aimlock & ForceCrosshair (Hard-Lock)
+    "HARD_LOCK_EXECUTION": {
+        "Get_Best_Target": "Closest_To_Crosshair", // Lấy địch gần tâm nhất
+        "Head_Bone_TF": "0x2e5a7b4",         // Bone Head mục tiêu
+        "W2S_Matrix_Sync": "0x320",          // Ma trận đồng bộ tọa độ màn hình
+        "Force_Crosshair_To": "0x6bc252c",   // Hàm ép tọa độ (ForceCrosshairTo)
+        "Input_Override_Priority": "High",   // Script chiếm quyền điều khiển tay
+        "Y_Axis_Push_Offset": 0.285          // Ghim chính xác đỉnh đầu
+    },
+
+    // Bước 5: Giữ tâm không giật (Zero Recoil 0.0f)
+    "ZERO_RECOIL_CORE": {
+        "Weapon_Recoil_Val": 0.0,            // Triệt tiêu độ giật về 0 (SetWeaponRecoil)
+        "Anti_Vertical_Kick": true,          // Kháng giật dọc 100%
+        "Anti_Horizontal_Shake": true,       // Kháng rung ngang 100%
+        "Stability_W_Lock": 0.999266,        // Khóa trục xoay Camera ổn định
+        "Zero_Drift_Active": true            // Chống trôi tâm tuyệt đối khi đang đỏ
+    },
+
+    // Tầng 4: Thực thi đạn đuổi (Bullet Priority)
+    "BULLET_ENGINE_V32": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu (Tracer)
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu 100%
+        "Vector_Bending_Angle": 360.0,        // Góc bẻ đạn cực rộng
+        "Instant_Hit_No_Delay": true        // Bắn là trúng ngay (0ms travel)
+    },
+
+    // Tầng 5: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V32": {
+        "Red_Aimlock": "com.accpt_ffxbase64_Key_allow_LockOnRedColor_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Zero_Recoil": "com.accpt_ffxbase64_Key_allow_ZeroRecoilOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Hard_Lock": "com.accpt_ffxbase64_Key_allow_ForceCrosshairToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V31_Engine = {
     "PROJECT": "V31_Hyper_Sampling_Snap",
     "STATUS": "V31_Impulse_Active",
@@ -1549,7 +1596,10 @@ obj["DTien_V30_Clamp"] = DTien_V30_Engine;
 obj["DTien_V31_Hyper"] = DTien_V31_Engine;
     obj["Touch_Status"] = "1000Hz_Active";
     obj["Snap_Mode"] = "Impulse_Brake_Locked";
-    
+      obj["DTien_V32_Chromatic"] = DTien_V32_Engine;
+    obj["Aim_Engine"] = "RED_COLOR_HARDLOCK_V32";
+    obj["Recoil_Status"] = "Zero_Recoil_Active_On_Red";
+
     
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
