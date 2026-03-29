@@ -4,6 +4,62 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V34_Engine = {
+    "PROJECT": "V34_Ultimate_HeadLock_System",
+    "STATUS": "V34_ViewAngle_Injection_Active",
+
+    // Bước 1: Target Acquisition (Quét mục tiêu theo khoảng cách)
+    "TARGET_ACQUISITION": {
+        "GetBestTarget_Distance": true,      // Ưu tiên địch gần nhất
+        "IsLocalPlayerAlive_Check": "0x2dc3804", 
+        "Target_Bone_Index": 8,              // headBoneIndex = 8 (Chỉ số xương đầu)
+        "Bone_Matrix_Offset": "0x2e5a7b4"    // Ma trận xương thực tế trong RAM
+    },
+
+    // Bước 2 & 3: Tính toán góc nhìn (Trigonometric Aim Angles)
+    "TRIGONOMETRIC_CALCULATION": {
+        "Get_Eye_Position": "0x6bc248c",     // Vị trí mắt người chơi (myPos)
+        "Delta_Vector_Calculation": true,    // Tính toán độ lệch (delta)
+        "Formula_Pitch_Yaw": {
+            "Pitch_X": "-asin(delta.z / delta.Length) * (180/PI)",
+            "Yaw_Y": "atan2(delta.y, delta.x) * (180/PI)"
+        },
+        "Smoothness": 0.0,                   // smoothness = 0.0f (Snap tức thời - Nhẹ nhất)
+        "Static_Lock_Rate": 1.0              // Khóa chặt 100% (staticLock)
+    },
+
+    // Bước 4: Thực thi khóa chặt (Hard Lock Injection)
+    "VIEW_ANGLE_INJECTION": {
+        "Trigger_IsFiring": "0x2dc3804",    // Khi nhấn nút bắn (IsPressingFireButton)
+        "Write_Memory_ViewAngles": "0x8a88b1c", // Ghi đè trực tiếp ViewAngles
+        "Injection_Speed": "0ms",            // Cập nhật liên tục (Sleep 1)
+        "Hard_Rotation_Lock": true,          // Xoay tâm theo hướng di chuyển của đầu
+        "Internal_SetPos": "0x6bc252c"       // Cập nhật vị trí hiển thị
+    },
+
+    // Bước 5: Fix lố tâm & Chặn Input tay (Anti-Overaim)
+    "INPUT_BYPASS_FIX": {
+        "Set_Mouse_Multiplier_Firing": 0.0,  // Khi bắn: Vô hiệu hóa tay (Fix lố 100%)
+        "Set_Mouse_Multiplier_Idle": 1.0,    // Khi không bắn: Trả lại độ nhạy 100%
+        "Manual_Y_X_Bypass": "Active",       // Lờ đi hoàn toàn lực vuốt tay khi khóa
+        "Zero_Drift_Active": true            // Chống trôi tâm tuyệt đối
+    },
+
+    // Tầng 6: Thực thi đạn và Sát thương (Bullet Priority)
+    "BULLET_ENGINE_V34": {
+        "Fix_Bullet_Spread": true,           // No Spread (Đạn không tỏa)
+        "Zero_Recoil_Sync": true,            // Triệt tiêu độ nảy (SetRecoil 0,0)
+        "Priority_Headshot_100": true,       // Ưu tiên sát thương đầu
+        "Instant_Hit_No_Delay": true        // Bắn là trúng ngay
+    },
+
+    // Tầng 7: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V34": {
+        "Ultimate_Lock": "com.accpt_ffxbase64_Key_allow_UltimateHeadLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "ViewAngle_Inject": "com.accpt_ffxbase64_Key_allow_ViewAngleInjection_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Anti_Overaim": "com.accpt_ffxbase64_Key_allow_NoInputOnFiring_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+
 const DTien_V33_Engine = {
     "PROJECT": "V33_Absolute_Kinetic_System",
     "STATUS": "V33_ViewAngle_Override_Active",
@@ -1648,6 +1704,9 @@ obj["DTien_V31_Hyper"] = DTien_V31_Engine;
  obj["DTien_V33_Absolute"] = DTien_V33_Engine;
     obj["Aim_Mode"] = "HARD_LOCK_360_PREDICTION";
     obj["Sync_Status"] = "Ping_Compensated_Locked";
+obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
+    obj["Aim_Logic"] = "TRIGO_VIEWANGLE_HARDLOCK";
+    obj["Input_Status"] = "MouseMultiplier_Dynamic";
 
     
 body = JSON.stringify(obj);
