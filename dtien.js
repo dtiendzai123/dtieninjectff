@@ -38,7 +38,7 @@ const DTien_V42_Engine = {
     // Tầng 3: Tích hợp V39 & V40 (ChestToHead & No Recoil)
     "CORE_STABILIZER": {
         "Auto_Drag_Mode": "ChestToHead_Hard",
-        "Drag_Speed": 1.85,                  // Tốc độ kéo cực nhanh
+        "Drag_Speed": 2.85,                  // Tốc độ kéo cực nhanh
         "Fix_Neck_Stuck": 0.015,             // Chống dính cổ
         "No_Recoil_Hardware": "Active",      // Kháng giật phần cứng V40
         "Bullet_Spread": "Zero_Spread"       // Đạn không tỏa
@@ -85,8 +85,8 @@ const DTien_V43_Engine = {
 
     // Tầng 3: Khóa cứng đầu (Head Lock)
     "HEAD_LOCK_FINAL": {
-        "Lock_Strength": 0.98,               // Độ dính tâm khi đã chạm đầu
-        "Stable_Time": 0.30,                 // Giữ tâm 0.3 giây sau khi khóa
+        "Lock_Strength": 1.0,               // Độ dính tâm khi đã chạm đầu
+        "Stable_Time": 0.90,                 // Giữ tâm 0.3 giây sau khi khóa
         "Head_Offset_Push": 0.03,            // Đẩy tâm lên trán (V38)
         "Prediction_Velocity": 1.2           // Dự đoán địch chạy
     },
