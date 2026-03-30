@@ -3,7 +3,67 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+const FF_OFFSETS_V45 = {
+    // Tọa độ thực thể (Bones)
+    "Head_Transform": "0x2e5a7b4",          // Xương đầu (HeadTF)
+    "Hip_Transform": "0x2e5a98c",           // Xương hông (HipTF)
+    
+    // Camera & View (Góc nhìn)
+    "Main_Camera": "0x320",                 // Transform Camera chính
+    "Camera_Main_Ptr": "0x6a64c64",         // Con trỏ Camera.get_main
+    "Internal_SetPos": "0x6bc252c",         // Hàm ghi tọa độ (SetPosition)
+    "Internal_GetPos": "0x6bc248c",         // Hàm lấy tọa độ (GetPosition)
+    "Get_Forward": "0x8a88b1c",             // Hướng mặt (GetForward)
 
+    // Trạng thái nhân vật (Triggers)
+    "Is_Firing": "0x2dc3804",               // Đang bắn (get_IsFiring)
+    "Is_Sighting": "0x2dc867c",             // Đang ngắm/mở ống ngắm
+    "Is_Visible": "0x2dd8f54",              // Địch lộ diện (get_isVisible)
+    "Is_Dying": "0x2dc1178",                // Địch đã chết hay chưa
+    "Max_HP": "0x2e3e2e8",                  // Máu tối đa (get_MaxHP)
+
+    // Hệ thống & Team
+    "Local_Player": "0x4101ff4",            // Lấy người chơi hiện tại
+    "Current_Match": "0x3266cc0",           // Trận đấu hiện hành
+    "Local_Team_Check": "0x86e6fef000",     // Kiểm tra đồng đội (get_isLocalTeam)
+    "Set_Aim_Fixed": "0x86e6fef000"          // Ghi đè Aim tuyệt đối
+};
+
+const DTien_V45_Engine = {
+    "PROJECT": "V45_Offset_Mapping_System",
+    "STATUS": "V45_Full_Core_Active",
+
+    // Tầng 1: Điều kiện lọc mục tiêu (Target Filtering)
+    "TARGET_SCANNER": {
+        "Address_Visible": FF_OFFSETS_V45.Is_Visible,
+        "Address_Dying": FF_OFFSETS_V45.Is_Dying,
+        "Team_Filter": FF_OFFSETS_V45.Local_Team_Check,
+        "Logic": "If (Visible && !Dying && !LocalTeam) -> Lock"
+    },
+
+    // Tầng 2: Khóa mục tiêu nâng cao (Aimlock Execution)
+    "AIMLOCK_EXECUTION": {
+        "Trigger_On_Fire": FF_OFFSETS_V45.Is_Firing,
+        "Target_Bone_Head": FF_OFFSETS_V45.Head_Transform,
+        "Write_Position": FF_OFFSETS_V45.Internal_SetPos,
+        "Forward_Push_Sync": FF_OFFSETS_V45.Get_Forward,
+        "Snap_Logic": "Instant_Snap_Bone8"
+    },
+
+    // Tầng 3: Đồng bộ Camera (Camera Transform)
+    "VIEW_SYNC": {
+        "Camera_Transform": FF_OFFSETS_V45.Main_Camera,
+        "Camera_Pointer": FF_OFFSETS_V45.Camera_Main_Ptr,
+        "Zero_Drift": true
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V45": {
+        "Offset_Sync": "com.accpt_ffxbase64_Key_allow_OffsetMappingV45_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Set_Aim_Hard": "com.accpt_ffxbase64_Key_allow_SetAimHard_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Is_Firing_Trigger": "com.accpt_ffxbase64_Key_allow_IsFiringTrigger_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // Patch 1: Triệt tiêu độ tỏa của đạn (Zero Spread - Đạn đi thẳng tắp)
 const HEX_ZERO_SPREAD_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E3`;
 const HEX_ZERO_SPREAD_REPLACE = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 00 A0 E3`;
@@ -2252,7 +2312,9 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V44_Precision"] = DTien_V44_Engine;
     obj["Accuracy_Status"] = "MAXIMUM_PRECISION";
     obj["Bone_Targeting"] = "STATIC_HEAD_8";
-    
+    obj["DTien_V45_Mapping"] = DTien_V45_Engine;
+    obj["Offset_Status"] = "ALL_OFFSETS_DONE";
+    obj["Core_Engine"] = "IL2CPP_INTERNAL_PATCH";
     
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
