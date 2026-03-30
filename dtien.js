@@ -4,6 +4,41 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V41_Engine = {
+    "PROJECT": "V41_Hex_Headshot_System",
+    "STATUS": "V41_Bone_8_Hardlocked",
+
+    // Tầng 1: Patch Hex Khóa Đầu (Head Injection)
+    "HEX_BONE_LOCK": {
+        "Target_Bone": "Head_ID_8",
+        "Original_Opcode": HEAD_LOCK_FIND,
+        "Modified_Opcode": HEAD_LOCK_REPLACE,
+        "Memory_Region": "liban_r.so / libil2cpp.so", // Vùng nhớ can thiệp
+        "Effect": "Force_Aim_To_Head"
+    },
+
+    // Tầng 2: Fix Tâm Đỏ & Tốc độ Snap (V39 Evolution)
+    "SNAP_LOGIC_SYNC": {
+        "Auto_Snap_Speed": 0.0,             // 0 = Nhảy tâm tức thì (Snap)
+        "Trigger_Color": "0xFF0000",        // Tâm đỏ là khóa
+        "Aim_Distance_Limit": 500.0,        // Khóa mục tiêu lên đến 500m
+        "Static_Bone_Lock": true            // Không cho phép tâm lệch sang vai/cổ
+    },
+
+    // Tầng 3: Tích hợp No Recoil V40 (Hex Patch)
+    "RECOIL_STABILIZER": {
+        "Hardware_Recoil_Fix": "EF 44 F0 48", // Mã Hex kháng giật từ V40
+        "Stability_Factor": 1.0,
+        "Bullet_Spread_Fix": true            // Đạn đi thẳng 100%
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V41": {
+        "Head_Hex": "com.accpt_ffxbase64_Key_allow_HexHeadShot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Bone_8_Lock": "com.accpt_ffxbase64_Key_allow_HardBoneLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Auto_Snap": "com.accpt_ffxbase64_Key_allow_InstantSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V40_Engine = {
     "PROJECT": "V40_Hex_Injection_System",
     "STATUS": "V40_Opcode_Patched",
@@ -2055,7 +2090,9 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V40_Hex"] = DTien_V40_Engine;
     obj["Memory_Status"] = "PATCHED_SUCCESSFULLY";
     obj["Opcode_Mode"] = "HEX_REPLACE_ACTIVE";
-
+  obj["DTien_V41_Headshot"] = DTien_V41_Engine;
+    obj["Aimbot_Status"] = "HEX_HEAD_LOCKED";
+    obj["Patch_Priority"] = "Critical";
     
     
 
