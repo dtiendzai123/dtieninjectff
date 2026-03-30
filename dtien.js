@@ -4,6 +4,51 @@
  * Author: dtiendzai123
  */
 
+// Patch 1: Triệt tiêu độ tỏa của đạn (Zero Spread - Đạn đi thẳng tắp)
+const HEX_ZERO_SPREAD_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E3`;
+const HEX_ZERO_SPREAD_REPLACE = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 00 A0 E3`;
+// Logic: Thay đổi giá trị Spread (R0) về 0 tuyệt đối.
+
+// Patch 2: Ép định dạng mục tiêu là Xương Đầu (Static Bone 8 Force)
+const HEX_STATIC_HEAD_FIND = `08 40 95 E5 00 00 54 E3 02 00 00 0A 01 00 A0 E3`;
+const HEX_STATIC_HEAD_REPLACE = `08 00 A0 E3 00 00 54 E3 02 00 00 0A 01 00 A0 E3`;
+// Logic: Thay lệnh Load Bone ID bằng lệnh Gán trực tiếp (MOV R0, #8).
+
+const DTien_V44_Engine = {
+    "PROJECT": "V44_Precision_Head_Injection",
+    "STATUS": "V44_Zero_Spread_Patched",
+
+    // Tầng 1: Hex Precision (Chính xác phần cứng)
+    "HARDWARE_PRECISION": {
+        "Zero_Spread_Active": HEX_ZERO_SPREAD_REPLACE,
+        "Static_Bone_Force": HEX_STATIC_HEAD_REPLACE,
+        "No_Recoil_V40_Sync": "EF 44 F0 48",     // Kháng giật V40
+        "Effect": "Absolute_Accuracy_Headshot"
+    },
+
+    // Tầng 2: Cấu hình Auto Aimlock (Logic V42)
+    "AIMLOCK_CORE": {
+        "Auto_Aim_Status": true,
+        "Target_Bone": 8,
+        "Snap_Speed": 0.0,                   // Snap tức thời (0 delay)
+        "Angle_Drift_Fix": true,             // Chống trôi tâm
+        "Distance_Bypass": 500.0             // Hiệu lực đến 500 mét
+    },
+
+    // Tầng 3: Hiệu chỉnh hướng mặt (Forward Vector V38)
+    "FORWARD_COMPENSATION": {
+        "Head_Forward_Push": 0.035,          // Đẩy tâm vào trán đối thủ
+        "Prediction_Factor": 1.25,           // Đón đầu cực chuẩn
+        "Latency_Sync": "Active"             // Bù trừ Ping
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V44": {
+        "Precision_Head": "com.accpt_ffxbase64_Key_allow_PrecisionHexHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Zero_Spread": "com.accpt_ffxbase64_Key_allow_ZeroBulletSpread_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Static_Lock": "com.accpt_ffxbase64_Key_allow_StaticBone8Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // Patch 1: Ép Engine lấy Bone ID 8 (Head) làm mục tiêu mặc định
 const HEX_HEAD_FORCE_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 00 00 54 E3`;
 const HEX_HEAD_FORCE_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 08 00 A0 E3`; 
@@ -2203,7 +2248,13 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
    obj["DTien_V43_Kinetic"] = DTien_V39_Engine; // Kế thừa cấu trúc
     obj["Drag_Hex_Status"] = "PATCHED_SUCCESSFULLY";
     obj["Aim_Type"] = "KINETIC_DRAG_HEAD_LOCK";
-    body = JSON.stringify(obj);
+    
+    obj["DTien_V44_Precision"] = DTien_V44_Engine;
+    obj["Accuracy_Status"] = "MAXIMUM_PRECISION";
+    obj["Bone_Targeting"] = "STATIC_HEAD_8";
+    
+    
+body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
     console.log("-----------------------------------------");
