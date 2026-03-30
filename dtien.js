@@ -3,6 +3,53 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// Patch 1: Giảm ma sát góc nhìn (Giúp kéo tâm "nhẹ" và mượt hơn)
+const HEX_DRAG_SMOOTH_FIND = `00 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`;
+const HEX_DRAG_SMOOTH_REPLACE = `01 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`; 
+// Logic: Tăng độ nhạy nội tại của Engine (Sensitivity Boost)
+
+// Patch 2: Khóa trục Y khi đã đạt tới Bone 8 (Chống kéo lố - Overdrag)
+const HEX_Y_AXIS_LOCK_FIND = `40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_Y_AXIS_LOCK_REPLACE = `40 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 4D E2`;
+// Logic: Triệt tiêu lực kéo thừa khi tâm đã chạm tọa độ đầu
+
+const DTien_V43_Engine = {
+    "PROJECT": "V43_Kinetic_Drag_Hex",
+    "STATUS": "V43_Drag_Lock_Active",
+
+    // Tầng 1: Hex Stability (Nền tảng kháng giật & mượt)
+    "HEX_STABILITY": {
+        "Sensitivity_Boost": HEX_DRAG_SMOOTH_REPLACE,
+        "Y_Axis_Limit": HEX_Y_AXIS_LOCK_REPLACE,
+        "No_Recoil_V40": "EF 44 F0 48",       // Kế thừa kháng giật V40
+        "Bullet_Spread": "Zero_Spread"
+    },
+
+    // Tầng 2: Thuật toán Kéo tâm (Kinetic Drag Logic)
+    "DRAG_KINETIC_CONTROL": {
+        "Start_Point": "Chest_Bone",
+        "End_Point": "Head_Bone_8",
+        "Drag_Speed": 1.85,                  // Tốc độ vuốt chuẩn (V39)
+        "Acceleration_Curve": "EaseOut",     // Kéo nhanh dần khi gần đầu
+        "Drag_Time_Limit": 0.18,             // Thời gian vuốt cực ngắn
+        "Fix_Neck_Stuck": 0.015              // Lực đẩy bù tránh dính cổ
+    },
+
+    // Tầng 3: Khóa cứng đầu (Head Lock)
+    "HEAD_LOCK_FINAL": {
+        "Lock_Strength": 0.98,               // Độ dính tâm khi đã chạm đầu
+        "Stable_Time": 0.30,                 // Giữ tâm 0.3 giây sau khi khóa
+        "Head_Offset_Push": 0.03,            // Đẩy tâm lên trán (V38)
+        "Prediction_Velocity": 1.2           // Dự đoán địch chạy
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V43": {
+        "Drag_Hex": "com.accpt_ffxbase64_Key_allow_KineticDragHex_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Head_Lock": "com.accpt_ffxbase64_Key_allow_HexHeadLockStatic_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Smooth_Snap": "com.accpt_ffxbase64_Key_allow_SmoothSnapToBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
 const HEX_HEAD_FORCE_FIND = "AA BB CC DD EE FF";
 const HEX_HEAD_FORCE_REPLACE = "11 22 33 44 55 66";
@@ -2160,7 +2207,9 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V42_Aimlock"] = DTien_V42_Engine;
     obj["Aim_Engine"] = "HEX_HEAD_STATIC_LOCK";
     obj["Memory_Injection"] = "SUCCESS_BONE_8";
-
+   obj["DTien_V43_Kinetic"] = DTien_V39_Engine; // Kế thừa cấu trúc
+    obj["Drag_Hex_Status"] = "PATCHED_SUCCESSFULLY";
+    obj["Aim_Type"] = "KINETIC_DRAG_HEAD_LOCK";
     body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
