@@ -4,43 +4,57 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const HEX_HEAD_FORCE_FIND = "AA BB CC DD EE FF";
+const HEX_HEAD_FORCE_REPLACE = "11 22 33 44 55 66";
+
+// Hex fix rung / lệch tâm
+const HEX_ANGLE_FIX_REPLACE = "99 88 77 66 55 44";
+
+
+// =======================
+// MAIN ENGINE V42
+// =======================
+
 const DTien_V42_Engine = {
-    "PROJECT": "V42_Hex_Auto_Aimlock",
-    "STATUS": "V42_Memory_Patched_Headshot",
+    PROJECT: "V42_Hex_Auto_Aimlock",
+    STATUS: "V42_Memory_Patched_Headshot",
 
     // Tầng 1: Hex Head Injection (Bắt buộc khóa đầu)
-    "HEX_MEMORY_PATCH": {
-        "Target_Function": "GetTargetBone_Static",
-        "Target_Bone": "Head_ID_8",
-        "Original": HEX_HEAD_FORCE_FIND,
-        "Modified": HEX_HEAD_FORCE_REPLACE,
-        "Injection_Priority": "Maximum"
+    HEX_MEMORY_PATCH: {
+        Target_Function: "GetTargetBone_Static",
+        Target_Bone: "Head_ID_8",
+        Original: HEX_HEAD_FORCE_FIND,
+        Modified: HEX_HEAD_FORCE_REPLACE,
+        Injection_Priority: "Maximum"
     },
 
     // Tầng 2: Angle Optimization (Fix rung và lệch tâm)
-    "ANGLE_OPTIMIZER": {
-        "Fix_Drift": HEX_ANGLE_FIX_REPLACE,
-        "Stability_Factor": 1.0,             // Khóa chết 100%
-        "Smoothing_Bypass": true,            // Bỏ qua bộ lọc mượt để Snap tức thì
-        "Update_Frequency": "0ms"
+    ANGLE_OPTIMIZER: {
+        Fix_Drift: HEX_ANGLE_FIX_REPLACE,
+        Stability_Factor: 1.0,          // khóa cứng
+        Smoothing_Bypass: true,         // bỏ mượt → snap nhanh
+        Update_Frequency: "0ms"
     },
 
-    // Tầng 3: Tích hợp V39 & V40 (ChestToHead & No Recoil)
-    "CORE_STABILIZER": {
-        "Auto_Drag_Mode": "ChestToHead_Hard",
-        "Drag_Speed": 1.85,                  // Tốc độ kéo cực nhanh
-        "Fix_Neck_Stuck": 0.015,             // Chống dính cổ
-        "No_Recoil_Hardware": "Active",      // Kháng giật phần cứng V40
-        "Bullet_Spread": "Zero_Spread"       // Đạn không tỏa
+    // Tầng 3: Stabilizer
+    CORE_STABILIZER: {
+        Auto_Drag_Mode: "ChestToHead_Hard",
+        Drag_Speed: 1.85,
+        Fix_Neck_Stuck: 0.015,
+        No_Recoil_Hardware: "Active",
+        Bullet_Spread: "Zero_Spread"
     },
 
-    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
-    "RAW_KEYS_V42": {
-        "Auto_Aim_Head": "com.accpt_ffxbase64_Key_allow_HexAutoAimHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Memory_Bone_8": "com.accpt_ffxbase64_Key_allow_HardLockBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        "Angle_Lock": "com.accpt_ffxbase64_Key_allow_HexAngleLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    // Tầng 4: Raw Keys
+    RAW_KEYS_V42: {
+        Auto_Aim_Head: "com.accpt_ffxbase64_Key_allow_HexAutoAimHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        Memory_Bone_8: "com.accpt_ffxbase64_Key_allow_HardLockBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        Angle_Lock: "com.accpt_ffxbase64_Key_allow_HexAngleLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
+
+
+
 const DTien_V41_Engine = {
     "PROJECT": "V41_Hex_Headshot_System",
     "STATUS": "V41_Bone_8_Hardlocked",
