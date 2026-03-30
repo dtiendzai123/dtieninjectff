@@ -4,6 +4,59 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V37_Engine = {
+    "PROJECT": "V37_Dynamic_Bone_Scanner",
+    "STATUS": "V37_Forward_Vector_Active",
+
+    // Bước 1: Tự động nhận diện xương đầu (Auto Detect Head Bone)
+    "DYNAMIC_SCANNER": {
+        "Scan_Range": 20,                    // Quét 20 ID xương đầu tiên (for i < 20)
+        "Highest_Z_Detection": true,         // Tìm xương có tọa độ Z cao nhất (relativeZ)
+        "Model_ID_Database": "Dynamic_Map",  // Lưu Cache theo từng Model nhân vật
+        "Zero_Pos_Filter": true,             // Loại bỏ xương lỗi (IsZero)
+        "Bone_Matrix_RAM": "0x2e5a7b4"       // Truy xuất bộ nhớ xương
+    },
+
+    // Bước 2: Fix lệch cổ & đo Offset chuẩn (GetFixedHeadPosition)
+    "OFFSET_COMPENSATION": {
+        "Head_Offset_Z": "Dynamic_Assign",   // data.headOffsetZ = head.z - origin.z
+        "Base_Origin_Offset": "0x6bc248c",   // Tọa độ gốc của Entity
+        "Dynamic_Z_Fix": true,               // headPos.z = origin.z + offsetZ
+        "Precision_Level": "High"            // Khử sai số lệch cổ/ngực
+    },
+
+    // Bước 3: Tính toán hướng mặt (GetHeadForward)
+    "FORWARD_VECTOR_LOGIC": {
+        "Quaternion_Rotation": "0x8a88b1c",  // Lấy hướng xoay xương đầu (GetBoneRotation)
+        "Forward_Push_Value": 0.03,          // Đẩy tâm về trước mặt 0.03f (forward * 0.03)
+        "Face_Direction_Sync": true,         // Đồng bộ hướng nhìn của địch
+        "Vector_3D_Calc": "headPos + (forward * 0.03)"
+    },
+
+    // Bước 4: Dự đoán di chuyển nâng cao (Advanced Prediction)
+    "PREDICTION_KINETIC": {
+        "Velocity_Sync": "0x6bc248c",        // Lấy vận tốc (GetVelocity)
+        "Latency_Bypass": true,              // Lấy Ping thực tế (GetNetworkLatency)
+        "Prediction_Factor": 1.2,            // Hệ số dự đoán 1.2f
+        "Formula": "Pos + (Vel * Latency * 1.2)"
+    },
+
+    // Bước 5: Thực thi khóa cứng & Kháng giật (Hard Lock & No Recoil)
+    "HARD_LOCK_STABILITY": {
+        "Trigger_Condition": "0x2dd8f54",    // Khi tâm đỏ (IsCrosshairStateRed)
+        "ViewAngle_Injection": "0x8a88b1c",  // Ghi đè trực tiếp góc nhìn
+        "Freeze_Recoil": true,               // Kháng giật 100% (FreezeRecoilControl)
+        "Update_Frequency": "0ms",           // Phản hồi tức thì (Sleep 0)
+        "Input_Bypass": "Active"             // Chặn lực vuốt tay khi đã khóa
+    },
+
+    // Tầng 6: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V37": {
+        "Bone_Scanner": "com.accpt_ffxbase64_Key_allow_AutoDetectHeadBone_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Forward_Push": "com.accpt_ffxbase64_Key_allow_ForwardVectorPush_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Dynamic_Cache": "com.accpt_ffxbase64_Key_allow_BoneDatabaseCache_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V36_Engine = {
     "PROJECT": "V36_Full_Engine_Sync",
     "STATUS": "V36_Active_Headshot_Only",
@@ -1833,6 +1886,9 @@ obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
  obj["DTien_V36_FullEngine"] = DTien_V36_Engine;
     obj["Aim_Engine_Status"] = "V36_Comprehensive_Running";
     obj["Logic_Mode"] = "ViewAngle_Normalization_Active";
+obj["DTien_V37_Advanced"] = DTien_V37_Engine;
+    obj["Scanner_Status"] = "Dynamic_Bone_ID_Active";
+    obj["Aim_Logic"] = "FORWARD_VECTOR_PREDICTION";
 
     
 body = JSON.stringify(obj);
