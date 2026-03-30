@@ -4,6 +4,65 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V39_Engine = {
+    "PROJECT": "V39_Adaptive_Drag_System",
+    "STATUS": "V39_ChestToHead_Active",
+
+    // Tầng 1: Điều kiện kích hoạt (Trigger Logic)
+    "ACTIVATION_TRIGGER": {
+        "AutoAim_Enabled": true,
+        "Mode": "ChestToHead_Evolution",
+        "Fire_Only": "0x2dc3804",           // Chạy khi nhấn nút bắn (fireOnly)
+        "Crosshair_Red_Check": "0x2dd8f54", // Chỉ kéo khi tâm đỏ (crosshairRed)
+        "Enemy_Visible": true,               // Kiểm tra địch không bị vật cản
+        "Update_Frequency": "1ms"
+    },
+
+    // Tầng 2: Tọa độ Xương & Quỹ đạo (Bone & Path)
+    "DRAG_PATH_CONTROL": {
+        "Start_Bone": "Chest_0x3",           // Điểm bắt đầu: Ngực
+        "End_Bone": "Head_0x8",              // Điểm kết thúc: Đầu
+        "Drag_Speed": 1.85,                  // Tốc độ kéo chính (drag.speed)
+        "Drag_Time_Limit": "0.18s",          // Thời gian hoàn thành cú kéo (drag.time)
+        "Acceleration": 2.4,                 // Gia tốc cực mạnh (drag.acceleration)
+        "Curve_Type": "EaseOut_Quadratic"    // Kéo nhanh dần lên đầu (drag.curve)
+    },
+
+    // Tầng 3: Sửa lỗi dính cổ & Hụt đầu (Fix Logic)
+    "PRECISION_FIX_SYSTEM": {
+        "Anti_Neck_Stuck": true,             // Fix dính cổ (neckStuck)
+        "Anti_Overshoot": true,              // Chống kéo lố qua đầu (overshootHead)
+        "Micro_Adjust_Value": 0.015,         // Hiệu chỉnh siêu nhỏ (microAdjust)
+        "Distance_Scaling": {                // Chống lệch tâm theo khoảng cách
+            "Min_Scale": 0.9,
+            "Max_Scale": 1.3,
+            "Auto_Distance_Adapt": true
+        }
+    },
+
+    // Tầng 4: Khóa đầu & Giảm rung (HeadLock & Smoothing)
+    "STABILITY_ENGINE": {
+        "HeadLock_Strength": 0.95,           // Độ chặt khi chạm đầu (0.95)
+        "Stable_Time": "0.25s",              // Thời gian giữ tâm ổn định (stableTime)
+        "Smoothing_Factor": 0.12,            // Giảm rung tâm (smoothing.factor)
+        "Zero_Recoil_Sync": true             // Triệt tiêu độ nảy khi đang kéo
+    },
+
+    // Tầng 5: Dự đoán di chuyển (Kinetic Prediction)
+    "PREDICTION_KINETIC": {
+        "Velocity_Multiplier": 1.2,          // Hệ số vận tốc (velocity = 1.2)
+        "Head_Offset_Push": 0.03,            // Đẩy tâm đón đầu 0.03 (headOffset)
+        "Ping_Compensation": true,           // Bù trừ độ trễ mạng
+        "Vector_Forward": "Active"           // Hướng mặt địch
+    },
+
+    // Tầng 6: Chuỗi Key nguyên bản cho Loader (Raw Config)
+    "RAW_KEYS_V39": {
+        "ChestToHead": "com.accpt_ffxbase64_Key_allow_ChestToHeadDrag_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "EaseOut_Curve": "com.accpt_ffxbase64_Key_allow_DragCurveEaseOut_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Neck_Fix": "com.accpt_ffxbase64_Key_allow_FixNeckStuck0.015_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V38_Engine = {
     "PROJECT": "V38_Neural_Bone_Mapping",
     "STATUS": "V38_Quaternion_Forward_Active",
@@ -1951,7 +2010,9 @@ obj["DTien_V37_Advanced"] = DTien_V37_Engine;
 obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["Scanner_Engine"] = "NEURAL_BONE_SCANNER_V38";
     obj["Aim_Logic"] = "QUATERNION_FORWARD_PUSH";
-    
+    obj["DTien_V39_Adaptive"] = DTien_V39_Engine;
+    obj["Drag_Status"] = "CHEST_TO_HEAD_ACTIVE";
+    obj["Curve_Logic"] = "EASE_OUT_ACCELERATION";
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
