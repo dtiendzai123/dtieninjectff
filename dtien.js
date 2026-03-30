@@ -3,6 +3,53 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+
+// Patch 1: Ép Engine lấy Bone ID 8 (Head) làm mục tiêu mặc định
+const HEX_HEAD_FORCE_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 00 00 54 E3`;
+const HEX_HEAD_FORCE_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 08 00 A0 E3`; 
+// Logic: Thay đổi lệnh so sánh (CMP) thành lệnh gán trực tiếp (MOV R0, #8)
+
+// Patch 2: Triệt tiêu sai số góc ngắm (Aim Angle Offset Fix)
+const HEX_ANGLE_FIX_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 02 00 00 0A 01 00 A0 E3 08 40 2D E9`;
+const HEX_ANGLE_FIX_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 02 00 00 0A 01 00 A0 E3 00 00 A0 E3`;
+// Logic: Ép sai số góc nhìn về 0 (Zero Drift)
+
+const DTien_V42_Engine = {
+    "PROJECT": "V42_Hex_Auto_Aimlock",
+    "STATUS": "V42_Memory_Patched_Headshot",
+
+    // Tầng 1: Hex Head Injection (Bắt buộc khóa đầu)
+    "HEX_MEMORY_PATCH": {
+        "Target_Function": "GetTargetBone_Static",
+        "Target_Bone": "Head_ID_8",
+        "Original": HEX_HEAD_FORCE_FIND,
+        "Modified": HEX_HEAD_FORCE_REPLACE,
+        "Injection_Priority": "Maximum"
+    },
+
+    // Tầng 2: Angle Optimization (Fix rung và lệch tâm)
+    "ANGLE_OPTIMIZER": {
+        "Fix_Drift": HEX_ANGLE_FIX_REPLACE,
+        "Stability_Factor": 1.0,             // Khóa chết 100%
+        "Smoothing_Bypass": true,            // Bỏ qua bộ lọc mượt để Snap tức thì
+        "Update_Frequency": "0ms"
+    },
+
+    // Tầng 3: Tích hợp V39 & V40 (ChestToHead & No Recoil)
+    "CORE_STABILIZER": {
+        "Auto_Drag_Mode": "ChestToHead_Hard",
+        "Drag_Speed": 1.85,                  // Tốc độ kéo cực nhanh
+        "Fix_Neck_Stuck": 0.015,             // Chống dính cổ
+        "No_Recoil_Hardware": "Active",      // Kháng giật phần cứng V40
+        "Bullet_Spread": "Zero_Spread"       // Đạn không tỏa
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V42": {
+        "Auto_Aim_Head": "com.accpt_ffxbase64_Key_allow_HexAutoAimHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Memory_Bone_8": "com.accpt_ffxbase64_Key_allow_HardLockBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Angle_Lock": "com.accpt_ffxbase64_Key_allow_HexAngleLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
 // Patch 1: Giảm ma sát góc nhìn (Giúp kéo tâm "nhẹ" và mượt hơn)
 const HEX_DRAG_SMOOTH_FIND = `00 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`;
 const HEX_DRAG_SMOOTH_REPLACE = `01 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`; 
@@ -51,101 +98,46 @@ const DTien_V43_Engine = {
     }
 };
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
-const HEX_HEAD_FORCE_FIND = "AA BB CC DD EE FF";
-const HEX_HEAD_FORCE_REPLACE = "11 22 33 44 55 66";
-
-// Hex fix rung / lệch tâm
-const HEX_ANGLE_FIX_REPLACE = "99 88 77 66 55 44";
-
-
-// =======================
-// MAIN ENGINE V42
-// =======================
-
-const DTien_V42_Engine = {
-    PROJECT: "V42_Hex_Auto_Aimlock",
-    STATUS: "V42_Memory_Patched_Headshot",
-
-    // Tầng 1: Hex Head Injection (Bắt buộc khóa đầu)
-    HEX_MEMORY_PATCH: {
-        Target_Function: "GetTargetBone_Static",
-        Target_Bone: "Head_ID_8",
-        Original: HEX_HEAD_FORCE_FIND,
-        Modified: HEX_HEAD_FORCE_REPLACE,
-        Injection_Priority: "Maximum"
-    },
-
-    // Tầng 2: Angle Optimization (Fix rung và lệch tâm)
-    ANGLE_OPTIMIZER: {
-        Fix_Drift: HEX_ANGLE_FIX_REPLACE,
-        Stability_Factor: 1.0,          // khóa cứng
-        Smoothing_Bypass: true,         // bỏ mượt → snap nhanh
-        Update_Frequency: "0ms"
-    },
-
-    // Tầng 3: Stabilizer
-    CORE_STABILIZER: {
-        Auto_Drag_Mode: "ChestToHead_Hard",
-        Drag_Speed: 1.85,
-        Fix_Neck_Stuck: 0.015,
-        No_Recoil_Hardware: "Active",
-        Bullet_Spread: "Zero_Spread"
-    },
-
-    // Tầng 4: Raw Keys
-    RAW_KEYS_V42: {
-        Auto_Aim_Head: "com.accpt_ffxbase64_Key_allow_HexAutoAimHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        Memory_Bone_8: "com.accpt_ffxbase64_Key_allow_HardLockBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        Angle_Lock: "com.accpt_ffxbase64_Key_allow_HexAngleLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
-    }
-};
-
-
-// =======================
-// HEX DEFINITIONS (BẮT BUỘC)
-// =======================
-
-// Head lock
-const HEAD_LOCK_FIND = "AA BB CC DD EE FF";
-const HEAD_LOCK_REPLACE = "11 22 33 44 55 66";
-
-// =======================
-// V41 ENGINE (FIXED)
-// =======================
+// Thay đổi giá trị Bone Acquisition từ ngẫu nhiên sang Bone 8 (Head)
+const HEAD_LOCK_FIND = `08 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 00 00 54 E3`;
+const HEAD_LOCK_REPLACE = `08 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 08 40 95 E5 01 00 54 E3`; 
+// Chú thích: Thay đổi flag '00' thành '01' để ép Engine ưu tiên Bone 8 (Head)
 
 const DTien_V41_Engine = {
-    PROJECT: "V41_Hex_Headshot_System",
-    STATUS: "V41_Bone_8_Hardlocked",
+    "PROJECT": "V41_Hex_Headshot_System",
+    "STATUS": "V41_Bone_8_Hardlocked",
 
-    HEX_BONE_LOCK: {
-        Target_Bone: "Head_ID_8",
-        Original_Opcode: HEAD_LOCK_FIND,
-        Modified_Opcode: HEAD_LOCK_REPLACE,
-        Memory_Region: "liban_r.so / libil2cpp.so",
-        Effect: "Force_Aim_To_Head"
+    // Tầng 1: Patch Hex Khóa Đầu (Head Injection)
+    "HEX_BONE_LOCK": {
+        "Target_Bone": "Head_ID_8",
+        "Original_Opcode": HEAD_LOCK_FIND,
+        "Modified_Opcode": HEAD_LOCK_REPLACE,
+        "Memory_Region": "liban_r.so / libil2cpp.so", // Vùng nhớ can thiệp
+        "Effect": "Force_Aim_To_Head"
     },
 
-    SNAP_LOGIC_SYNC: {
-        Auto_Snap_Speed: 0.0,
-        Trigger_Color: "0xFF0000",
-        Aim_Distance_Limit: 500.0,
-        Static_Bone_Lock: true
+    // Tầng 2: Fix Tâm Đỏ & Tốc độ Snap (V39 Evolution)
+    "SNAP_LOGIC_SYNC": {
+        "Auto_Snap_Speed": 0.0,             // 0 = Nhảy tâm tức thì (Snap)
+        "Trigger_Color": "0xFF0000",        // Tâm đỏ là khóa
+        "Aim_Distance_Limit": 500.0,        // Khóa mục tiêu lên đến 500m
+        "Static_Bone_Lock": true            // Không cho phép tâm lệch sang vai/cổ
     },
 
-    RECOIL_STABILIZER: {
-        Hardware_Recoil_Fix: "EF 44 F0 48",
-        Stability_Factor: 1.0,
-        Bullet_Spread_Fix: true
+    // Tầng 3: Tích hợp No Recoil V40 (Hex Patch)
+    "RECOIL_STABILIZER": {
+        "Hardware_Recoil_Fix": "EF 44 F0 48", // Mã Hex kháng giật từ V40
+        "Stability_Factor": 1.0,
+        "Bullet_Spread_Fix": true            // Đạn đi thẳng 100%
     },
 
-    RAW_KEYS_V41: {
-        Head_Hex: "com.accpt_ffxbase64_Key_allow_HexHeadShot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        Bone_8_Lock: "com.accpt_ffxbase64_Key_allow_HardBoneLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        Auto_Snap: "com.accpt_ffxbase64_Key_allow_InstantSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V41": {
+        "Head_Hex": "com.accpt_ffxbase64_Key_allow_HexHeadShot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Bone_8_Lock": "com.accpt_ffxbase64_Key_allow_HardBoneLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Auto_Snap": "com.accpt_ffxbase64_Key_allow_InstantSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
-
-
 // =======================
 // V40 ENGINE (GIỮ NGUYÊN - KHÔNG LỖI)
 // =======================
