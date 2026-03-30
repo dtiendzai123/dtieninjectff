@@ -50,6 +50,7 @@ const DTien_V42_Engine = {
         "Memory_Bone_8": "com.accpt_ffxbase64_Key_allow_HardLockBone8_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
         "Angle_Lock": "com.accpt_ffxbase64_Key_allow_HexAngleLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
+};
 // Patch 1: Giảm ma sát góc nhìn (Giúp kéo tâm "nhẹ" và mượt hơn)
 const HEX_DRAG_SMOOTH_FIND = `00 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`;
 const HEX_DRAG_SMOOTH_REPLACE = `01 00 A0 E3 10 1A 08 EE 08 40 95 E5 00 00 54 E3`; 
