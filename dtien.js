@@ -54,80 +54,92 @@ const DTien_V42_Engine = {
 };
 
 
+// =======================
+// HEX DEFINITIONS (BẮT BUỘC)
+// =======================
+
+// Head lock
+const HEAD_LOCK_FIND = "AA BB CC DD EE FF";
+const HEAD_LOCK_REPLACE = "11 22 33 44 55 66";
+
+// =======================
+// V41 ENGINE (FIXED)
+// =======================
 
 const DTien_V41_Engine = {
-    "PROJECT": "V41_Hex_Headshot_System",
-    "STATUS": "V41_Bone_8_Hardlocked",
+    PROJECT: "V41_Hex_Headshot_System",
+    STATUS: "V41_Bone_8_Hardlocked",
 
-    // Tầng 1: Patch Hex Khóa Đầu (Head Injection)
-    "HEX_BONE_LOCK": {
-        "Target_Bone": "Head_ID_8",
-        "Original_Opcode": HEAD_LOCK_FIND,
-        "Modified_Opcode": HEAD_LOCK_REPLACE,
-        "Memory_Region": "liban_r.so / libil2cpp.so", // Vùng nhớ can thiệp
-        "Effect": "Force_Aim_To_Head"
+    HEX_BONE_LOCK: {
+        Target_Bone: "Head_ID_8",
+        Original_Opcode: HEAD_LOCK_FIND,
+        Modified_Opcode: HEAD_LOCK_REPLACE,
+        Memory_Region: "liban_r.so / libil2cpp.so",
+        Effect: "Force_Aim_To_Head"
     },
 
-    // Tầng 2: Fix Tâm Đỏ & Tốc độ Snap (V39 Evolution)
-    "SNAP_LOGIC_SYNC": {
-        "Auto_Snap_Speed": 0.0,             // 0 = Nhảy tâm tức thì (Snap)
-        "Trigger_Color": "0xFF0000",        // Tâm đỏ là khóa
-        "Aim_Distance_Limit": 500.0,        // Khóa mục tiêu lên đến 500m
-        "Static_Bone_Lock": true            // Không cho phép tâm lệch sang vai/cổ
+    SNAP_LOGIC_SYNC: {
+        Auto_Snap_Speed: 0.0,
+        Trigger_Color: "0xFF0000",
+        Aim_Distance_Limit: 500.0,
+        Static_Bone_Lock: true
     },
 
-    // Tầng 3: Tích hợp No Recoil V40 (Hex Patch)
-    "RECOIL_STABILIZER": {
-        "Hardware_Recoil_Fix": "EF 44 F0 48", // Mã Hex kháng giật từ V40
-        "Stability_Factor": 1.0,
-        "Bullet_Spread_Fix": true            // Đạn đi thẳng 100%
+    RECOIL_STABILIZER: {
+        Hardware_Recoil_Fix: "EF 44 F0 48",
+        Stability_Factor: 1.0,
+        Bullet_Spread_Fix: true
     },
 
-    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
-    "RAW_KEYS_V41": {
-        "Head_Hex": "com.accpt_ffxbase64_Key_allow_HexHeadShot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Bone_8_Lock": "com.accpt_ffxbase64_Key_allow_HardBoneLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        "Auto_Snap": "com.accpt_ffxbase64_Key_allow_InstantSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    RAW_KEYS_V41: {
+        Head_Hex: "com.accpt_ffxbase64_Key_allow_HexHeadShot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        Bone_8_Lock: "com.accpt_ffxbase64_Key_allow_HardBoneLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        Auto_Snap: "com.accpt_ffxbase64_Key_allow_InstantSnapToHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
+
+
+// =======================
+// V40 ENGINE (GIỮ NGUYÊN - KHÔNG LỖI)
+// =======================
+
 const DTien_V40_Engine = {
-    "PROJECT": "V40_Hex_Injection_System",
-    "STATUS": "V40_Opcode_Patched",
+    PROJECT: "V40_Hex_Injection_System",
+    STATUS: "V40_Opcode_Patched",
 
-    // Tầng 1: Can thiệp FOV (Vòng quét mục tiêu)
-    "HEX_AIM_FOV": {
-        "Address_Point": "0x2e8a1c4",        // Địa chỉ giả định cho FOV Engine
-        "Original_Hex": "70 42 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
-        "Modified_Hex": "FF FF 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
-        "Effect": "Maximize_Scan_Range"      // Mở rộng vùng quét Aimbot lên cực hạn
+    HEX_AIM_FOV: {
+        Address_Point: "0x2e8a1c4",
+        Original_Hex: "70 42 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
+        Modified_Hex: "FF FF 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
+        Effect: "Maximize_Scan_Range"
     },
 
-    // Tầng 2: Can thiệp No Recoil (Kháng giật phần cứng)
-    "HEX_NO_RECOIL": {
-        "Address_Point": "0x3bc14d8",        // Địa chỉ giả định cho Recoil Core
-        "Original_Hex": "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 7A 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
-        "Modified_Hex": "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 EF 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
-        "Effect": "Hardware_Recoil_Freeze"   // Đóng băng độ giật ở cấp độ tập lệnh
+    HEX_NO_RECOIL: {
+        Address_Point: "0x3bc14d8",
+        Original_Hex: "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 7A 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
+        Modified_Hex: "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 EF 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
+        Effect: "Hardware_Recoil_Freeze"
     },
 
-    // Tầng 3: Đồng bộ Logic V39 (ChestToHead & Prediction)
-    "CORE_SYNC_V39": {
-        "AutoAim_Mode": "ChestToHead",
-        "Drag_Speed": 1.85,
-        "Drag_Time": "0.18s",
-        "Curve": "EaseOut",
-        "Neck_Fix": "Active_0.015",
-        "Prediction_Velocity": 1.2,
-        "Forward_Push": 0.03
+    CORE_SYNC_V39: {
+        AutoAim_Mode: "ChestToHead",
+        Drag_Speed: 1.85,
+        Drag_Time: "0.18s",
+        Curve: "EaseOut",
+        Neck_Fix: "Active_0.015",
+        Prediction_Velocity: 1.2,
+        Forward_Push: 0.03
     },
 
-    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
-    "RAW_KEYS_V40": {
-        "FOV_Patch": "com.accpt_ffxbase64_Key_allow_HexFovPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Recoil_Patch": "com.accpt_ffxbase64_Key_allow_HexRecoilPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        "Memory_Write": "com.accpt_ffxbase64_Key_allow_DirectMemoryWrite_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    RAW_KEYS_V40: {
+        FOV_Patch: "com.accpt_ffxbase64_Key_allow_HexFovPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        Recoil_Patch: "com.accpt_ffxbase64_Key_allow_HexRecoilPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        Memory_Write: "com.accpt_ffxbase64_Key_allow_DirectMemoryWrite_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
+
+
+
 const DTien_V39_Engine = {
     "PROJECT": "V39_Adaptive_Drag_System",
     "STATUS": "V39_ChestToHead_Active",
