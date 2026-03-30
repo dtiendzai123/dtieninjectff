@@ -4,6 +4,59 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V35_Engine = {
+    "PROJECT": "V35_Precision_Clamp_System",
+    "STATUS": "V35_Sensitivity_Nullified",
+
+    // Bước 1 & 2: Color Trigger & Bone Matrix (TargetBone = 8)
+    "TARGET_VALIDATION": {
+        "IsCrosshairRed_Check": "0x2dd8f54", // Kiểm tra tâm đỏ (Trigger)
+        "Target_Bone_ID": 8,                 // Xương đầu (targetBone = 8)
+        "Bone_Matrix_Offset": "0x2e5a7b4",   // Truy xuất ma trận xương
+        "Get_Velocity_Predict": "0x6bc248c", // Dự đoán vận tốc (GetVelocity)
+        "Delta_Time_Sync": true              // Đồng bộ thời gian thực (GetDeltaTime)
+    },
+
+    // Bước 3 & 4: WorldToScreen & Anti-Overaim Algorithm (Clamp Logic)
+    "ANTI_OVERAIM_CLAMP": {
+        "W2S_Matrix_Sync": "0x320",          // Chuyển đổi 3D -> 2D
+        "Precision_Limit": 0.5,              // Sai số cực thấp (precisionLimit = 0.5f)
+        "Clamp_Logic_X": "Clamp(currentX, headX - 0.5, headX + 0.5)",
+        "Clamp_Logic_Y": "Clamp(currentY, headY - 0.5, headY + 0.5)",
+        "Hard_Boundary_Lock": true           // Khóa ranh giới cứng (Kẹp tâm)
+    },
+
+    // Bước 5: Ghi đè góc nhìn tuyệt đối (UpdateViewAngle)
+    "VIEW_ANGLE_OVERRIDE": {
+        "Update_View_Angle": "0x8a88b1c",    // Ép Camera nhìn vào tọa độ Clamp
+        "Instant_SetPos": "0x6bc252c",       // Ghi đè tọa độ tâm (UpdateViewAngle)
+        "Update_Frequency": "0ms",           // Phản hồi tức thì (Sleep 0)
+        "Smoothing_Factor": 0.0              // Không độ trễ (Snap tuyệt đối)
+    },
+
+    // Bước 6: Vô hiệu hóa độ nhạy Game (Sensitivity Nullification)
+    "INPUT_NULLIFICATION": {
+        "Ignore_Manual_Input_On_Red": true,  // Bỏ qua vuốt tay khi tâm đỏ
+        "Sensitivity_Multiplier": 0.0,       // Ép độ nhạy về 0 (Nullification)
+        "Bypass_Manual_Y_X": "High_Priority",// Script chiếm quyền 100%
+        "Input_Restore_On_Green": true       // Trả lại tay khi tâm hết đỏ
+    },
+
+    // Tầng 6: Thực thi đạn (Bullet Engine V35)
+    "BULLET_ENGINE_V35": {
+        "Bullet_Tracer_Always_Head": true,   // Đạn tự tìm đầu
+        "Zero_Recoil_Compensate": true,      // Kháng giật tuyệt đối
+        "No_Spread_Sync": true,              // Đạn không tỏa (FixBulletSpread)
+        "Priority_Headshot_100": true        // Ưu tiên sát thương đầu
+    },
+
+    // Tầng 7: Chuỗi Key nguyên bản (Raw Config)
+    "RAW_KEYS_V35": {
+        "Precision_Clamp": "com.accpt_ffxbase64_Key_allow_PrecisionClampLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Input_Nullify": "com.accpt_ffxbase64_Key_allow_IgnoreManualInputOnRed_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Bone_8_Fix": "com.accpt_ffxbase64_Key_allow_HardBone8Lock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V34_Engine = {
     "PROJECT": "V34_Ultimate_HeadLock_System",
     "STATUS": "V34_ViewAngle_Injection_Active",
@@ -1707,7 +1760,9 @@ obj["DTien_V31_Hyper"] = DTien_V31_Engine;
 obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
     obj["Aim_Logic"] = "TRIGO_VIEWANGLE_HARDLOCK";
     obj["Input_Status"] = "MouseMultiplier_Dynamic";
-
+    obj["DTien_V35_Clamp"] = DTien_V35_Engine;
+    obj["Aim_Engine"] = "PRECISION_CLAMP_NULLIFICATION";
+    obj["Clamp_Status"] = "0.5f_Active";
     
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
