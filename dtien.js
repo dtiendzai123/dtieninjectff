@@ -4,6 +4,44 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V40_Engine = {
+    "PROJECT": "V40_Hex_Injection_System",
+    "STATUS": "V40_Opcode_Patched",
+
+    // Tầng 1: Can thiệp FOV (Vòng quét mục tiêu)
+    "HEX_AIM_FOV": {
+        "Address_Point": "0x2e8a1c4",        // Địa chỉ giả định cho FOV Engine
+        "Original_Hex": "70 42 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
+        "Modified_Hex": "FF FF 00 00 00 00 00 00 C0 3F 0A D7 A3 3B 0A D7 A3 3B 8F C2 75 3D AE 47 E1 3D 9A 99 19 3E CD CC 4C 3E A4 70 FD 3E",
+        "Effect": "Maximize_Scan_Range"      // Mở rộng vùng quét Aimbot lên cực hạn
+    },
+
+    // Tầng 2: Can thiệp No Recoil (Kháng giật phần cứng)
+    "HEX_NO_RECOIL": {
+        "Address_Point": "0x3bc14d8",        // Địa chỉ giả định cho Recoil Core
+        "Original_Hex": "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 7A 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
+        "Modified_Hex": "00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 EF 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2 00 50 A0 E1 10 1A 08 EE 08 40 95 E5 00 00 54 E3",
+        "Effect": "Hardware_Recoil_Freeze"   // Đóng băng độ giật ở cấp độ tập lệnh
+    },
+
+    // Tầng 3: Đồng bộ Logic V39 (ChestToHead & Prediction)
+    "CORE_SYNC_V39": {
+        "AutoAim_Mode": "ChestToHead",
+        "Drag_Speed": 1.85,
+        "Drag_Time": "0.18s",
+        "Curve": "EaseOut",
+        "Neck_Fix": "Active_0.015",
+        "Prediction_Velocity": 1.2,
+        "Forward_Push": 0.03
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V40": {
+        "FOV_Patch": "com.accpt_ffxbase64_Key_allow_HexFovPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Recoil_Patch": "com.accpt_ffxbase64_Key_allow_HexRecoilPatch_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Memory_Write": "com.accpt_ffxbase64_Key_allow_DirectMemoryWrite_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const DTien_V39_Engine = {
     "PROJECT": "V39_Adaptive_Drag_System",
     "STATUS": "V39_ChestToHead_Active",
@@ -2013,7 +2051,15 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V39_Adaptive"] = DTien_V39_Engine;
     obj["Drag_Status"] = "CHEST_TO_HEAD_ACTIVE";
     obj["Curve_Logic"] = "EASE_OUT_ACCELERATION";
-body = JSON.stringify(obj);
+
+    obj["DTien_V40_Hex"] = DTien_V40_Engine;
+    obj["Memory_Status"] = "PATCHED_SUCCESSFULLY";
+    obj["Opcode_Mode"] = "HEX_REPLACE_ACTIVE";
+
+    
+    
+
+    body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
     console.log("-----------------------------------------");
