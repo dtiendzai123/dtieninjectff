@@ -4,6 +4,73 @@
  * Author: dtiendzai123
  */
 // --- 1. CẤU HÌNH HỆ THỐNG KHÓA MỤC TIÊU (CONST) ---
+const DTien_V36_Engine = {
+    "PROJECT": "V36_Full_Engine_Sync",
+    "STATUS": "V36_Active_Headshot_Only",
+
+    "AIM_SETTINGS": {
+        "Head_Bone": 0x2e5a7b4,                      // ID xương đầu (g_Settings.headBone)
+        "Drag_Speed": 0.0,                   // 0 = Snap tức thì (dragSpeed)
+        "Prediction_Factor": 1.0,            // Hệ số dự đoán di chuyển
+        "Max_Lock_Distance": 9999.0,          // Giới hạn khoảng cách lock
+        "Prioritize_Head": true,             // Ưu tiên Headshot 100%
+        "Enable_Prediction": true,           // Bật dự đoán theo Velocity + Ping
+        "Enable_Recoil_Control": true,       // Bật kháng giật (FreezeRecoil)
+        "Enable_Hard_Lock": true             // Bật khóa cứng khi angleDiff < 1.0
+    },
+
+    // --- 2. HÀM HỖ TRỢ & CHUẨN HÓA (HELPER FUNCTIONS) ---
+    "ANGLE_MATHEMATICS": {
+        "Normalize_Logic": {
+            "Pitch_Limit": 89.0,             // Tránh bug quay quá 180 độ (NormalizeAngle)
+            "Yaw_Limit": 360.0,              // Chuẩn hóa trục Yaw
+            "Z_Axis_Fix": 0.0                // Reset trục Z
+        },
+        "Smoothing_Logic": {
+            "Mode": "Direct_Target",         // Nếu Drag_Speed = 0 (SmoothAngle logic)
+            "Delta_Normalize": true,         // Chuẩn hóa Delta trước khi nội suy
+            "Interpolation_Frequency": "0ms" // Tốc độ phản hồi Sleep(0)
+        }
+    },
+
+    // --- 3. QUY TRÌNH THỰC THI (EXECUTION FLOW) ---
+    "EXECUTION_PIPELINE": {
+        // Bước 1: Check Trigger (IsCrosshairStateRed)
+        "Trigger_Condition": "0x2dd8f54",    
+        
+        // Bước 4 & 5 & 6: Lấy Pos + Prediction + Fix Lệch
+        "COORDINATE_TRANSFORM": {
+            "Bone_Matrix": "0x2e5a7b4",      // Lấy tọa độ xương đầu
+            "Velocity_Sync": "0x6bc248c",    // velocity * latency * factor
+            "Network_Latency_Bypass": true,  // Bù trừ Ping thực tế
+            "Height_Offset_Push": 0.02,      // headPos.z += 0.02f (Tránh dính cổ)
+            "Camera_Pos_Sync": "0x6bc248c"   // LocalPlayer->GetCameraPos
+        },
+
+        // Bước 7 & 8 & 9: Tính Góc & Apply Aim
+        "VIEW_ANGLE_INJECTION": {
+            "Calculate_Angle_Logic": "W2S_Matrix_0x320",
+            "Set_View_Angles": "0x8a88b1c",  // Ghi đè trực tiếp góc nhìn
+            "Hard_Lock_Threshold": 1.0,      // Nếu angleDiff < 1.0 => Set tuyệt đối
+            "Input_Bypass_Active": true      // Khóa cứng khi đã đạt mục tiêu
+        },
+
+        // Bước 11: No Recoil (FreezeRecoilControl)
+        "STABILITY_CONTROL": {
+            "Freeze_Recoil": true,           // Đóng băng độ giật
+            "Zero_Drift_Active": true,       // Chống trôi tâm tuyệt đối
+            "Stability_W_Lock": 0.999266     // Khóa trục xoay Camera
+        }
+    },
+
+    // --- 4. CHUỖI KEY NGUYÊN BẢN (RAW CONFIG) ---
+    "RAW_KEYS_V36": {
+        "Full_Engine": "com.accpt_ffxbase64_Key_allow_V36FullEngine_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Hard_Lock": "com.accpt_ffxbase64_Key_allow_HardLockThreshold1.0_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Normalize_Angle": "com.accpt_ffxbase64_Key_allow_NormalizeViewAngles_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+
 const DTien_V35_Engine = {
     "PROJECT": "V35_Precision_Clamp_System",
     "STATUS": "V35_Sensitivity_Nullified",
@@ -1763,6 +1830,10 @@ obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
     obj["DTien_V35_Clamp"] = DTien_V35_Engine;
     obj["Aim_Engine"] = "PRECISION_CLAMP_NULLIFICATION";
     obj["Clamp_Status"] = "0.5f_Active";
+ obj["DTien_V36_FullEngine"] = DTien_V36_Engine;
+    obj["Aim_Engine_Status"] = "V36_Comprehensive_Running";
+    obj["Logic_Mode"] = "ViewAngle_Normalization_Active";
+
     
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
