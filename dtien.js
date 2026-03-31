@@ -37,9 +37,9 @@ const DTien_V53_Engine = {
         "Radius_Snap": 360.0,
         "Radius_Hard": 360.0,
         "Smooth_Factor": 0.18,
-        "Hard_Factor": 0.05,
+        "Hard_Factor": 1.0,
         "Anti_Shake": "Active_0.4",
-        "Max_Speed": 70.0
+        "Max_Speed": 10.0
     },
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
