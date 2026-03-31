@@ -3,7 +3,54 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// Patch 1: Instant Snap (Nhảy tâm ngay lập tức khi nhấn bắn)
+// Can thiệp vào hàm CalcAimAngle để bỏ qua Smoothing (Làm mượt)
+const HEX_INSTANT_SNAP_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 01 00 A0 E3`;
+const HEX_INSTANT_SNAP_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 A0 E3`; 
+// Logic: Ép thời gian nội suy (Interpolation Time) về 0. Tâm sẽ nhảy tới đầu trong 1 khung hình.
 
+// Patch 2: Sticky Aim (Giữ chặt đầu theo mọi chuyển động)
+// Can thiệp vào hàm Transform_INTERNAL_SetPosition để khóa tọa độ liên tục
+const HEX_STICKY_HEAD_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_STICKY_HEAD_REPLACE = `00 00 A0 E3 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+// Logic: Vô hiệu hóa mọi lực cản (Friction) của Camera khi đang khóa mục tiêu.
+
+const DTien_V47_Engine = {
+    "PROJECT": "V47_Instant_Sticky_System",
+    "STATUS": "V47_Frame_Sync_Active",
+
+    // Tầng 1: Snap & Lock (Nhảy và Khóa)
+    "HARDWARE_SNAP": {
+        "Instant_Jump": HEX_INSTANT_SNAP_REPLACE,
+        "Sticky_Lock": HEX_STICKY_HEAD_REPLACE,
+        "Trigger_Fire": "0x2dc3804",         // get_IsFiring (Done)
+        "Target_Bone_8": "0x2e5a7b4",        // HeadTF (Done)
+        "Effect": "Instant_Headshot_Zero_Delay"
+    },
+
+    // Tầng 2: Truy vết mục tiêu (Target Tracking)
+    "TRACKING_ENGINE": {
+        "Is_Visible_Check": "0x2dd8f54",     // get_isVisible (Done)
+        "Internal_SetPos": "0x6bc252c",      // Ghi đè tọa độ (SetPosition)
+        "Internal_GetPos": "0x6bc248c",      // Lấy tọa độ mục tiêu di chuyển
+        "Refresh_Rate": "0ms",               // Cập nhật tọa độ mỗi Frame
+        "Sticky_Strength": 1.0               // Độ bám 100%
+    },
+
+    // Tầng 3: Tối ưu hóa No Recoil (Từ V40 & V44)
+    "STABILITY_SYNC": {
+        "Zero_Recoil": "EF 44 F0 48",        // Kháng giật phần cứng
+        "Zero_Spread": "00 00 A0 E3",        // Đạn không tỏa (V44)
+        "Anti_Drift": true                   // Chống trôi tâm
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V47": {
+        "Instant_Snap": "com.accpt_ffxbase64_Key_allow_InstantSnapHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Sticky_Aim": "com.accpt_ffxbase64_Key_allow_StickyAimLock_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Frame_Sync": "com.accpt_ffxbase64_Key_allow_FrameSyncTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // Patch 1: Boost độ nhạy trục Y (Nhích nhẹ nút bắn là tâm tự vẩy lên)
 // Tác động vào hàm nội suy chuyển động (Input Interpolation)
 const HEX_MICRO_DRAG_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 A0 E3`;
@@ -2366,6 +2413,17 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V46_MicroSnap"] = DTien_V46_Engine;
     obj["Aim_Sensitivity"] = "HIGH_PRECISION_BOOST";
     obj["Fix_Mode"] = "ANTI_OVERSHOOT_ACTIVE";
+ obj["DTien_V47_Snap"] = DTien_V47_Engine;
+    obj["Aim_Mode"] = "INSTANT_STICKY_HEAD";
+    obj["Tracking_Status"] = "FRAME_BY_FRAME_LOCKED";
+
+
+    
+
+
+    
+
+
 
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
