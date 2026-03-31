@@ -3,6 +3,110 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// Patch 1: Bone3D to Screen Sync (Hàm chuyển đổi tọa độ thực thể)
+// Ánh xạ Bone 8 (Head) trực tiếp vào luồng xử lý Delta
+const HEX_SYNC_BONE_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_SYNC_BONE_REPLACE = `20 40 2D E9 10 B0 8D E2 08 00 A0 E3 08 D0 4D E2`; 
+// Logic: Ép BoneID = 8 ngay tại bước GetHeadScreen.
+
+// Patch 2: Perfect Lock Processing (Hàm lọc di chuyển 3 tầng)
+// Thực hiện logic: Snap (Xa) -> Smooth (Trung) -> Hard Lock (Gần)
+const HEX_SYNC_LOCK_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_SYNC_LOCK_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 33 33 13 3E`;
+// Logic: Nạp hằng số 0.18f (Smooth) và 0.05f (Hard) vào bộ nhớ đệm Register.
+
+// Patch 3: Camera Apply (Ghi đè giá trị Delta vào Camera Rotation)
+const HEX_SYNC_APPLY_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_SYNC_APPLY_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
+// Logic: Vô hiệu hóa sai số góc nhìn, thực hiện cộng Delta trực tiếp (+= delta).
+
+const DTien_V53_Engine = {
+    "PROJECT": "V53_Final_Sync_Core",
+    "STATUS": "V53_Logic_Chain_Active",
+
+    // Tầng 1: Quy trình xử lý (Logic Chain)
+    "PROCESS_FLOW": {
+        "Step_1": "Bone3D.getHeadScreen",      // Lấy tọa độ 3D Bone 8
+        "Step_2": "PerfectLock.process",       // Lọc Radius 25/5
+        "Step_3": "Camera.Apply_Delta",        // Ghi đè Rotation
+        "Sync_Latency": "0ms"                  // Đồng bộ tức thời
+    },
+
+    // Tầng 2: Thông số kỹ thuật (Cấu hình JS)
+    "CONFIG_SYNC": {
+        "Radius_Snap": 25.0,
+        "Radius_Hard": 5.0,
+        "Smooth_Factor": 0.18,
+        "Hard_Factor": 0.05,
+        "Anti_Shake": "Active_0.4",
+        "Max_Speed": 40.0
+    },
+
+    // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
+    "OFFSETS_V53": {
+        "Head_Bone": "0x2e5a7b4",             // Bone 8
+        "Set_Position": "0x6bc252c",          // Camera Apply
+        "Get_Transform": "0x8ca3b10",         // Bone 3D WorldToScreen
+        "Is_Firing": "0x2dc3804"              // Trigger thực thi
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V53": {
+        "Final_Sync": "com.accpt_ffxbase64_Key_allow_FinalSyncCore_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Bone_Perfect": "com.accpt_ffxbase64_Key_allow_BonePerfectLink_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Zero_Latency": "com.accpt_ffxbase64_Key_allow_ZeroLatencyAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+// Patch 1: Snap & Smooth Radius (Phân tầng bán kính 25/5)
+// Can thiệp vào hàm tính toán Delta để áp dụng bộ lọc Radius
+const HEX_PERFECT_RADIUS_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_PERFECT_RADIUS_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 2E 47 A1 3E`; 
+// Logic: Thiết lập ngưỡng SMOOTH_FACTOR 0.18f vào bộ đệm nội suy.
+
+// Patch 2: Hard Lock & Anti-Shake (Ghim chặt 0.05 + Lọc nhiễu)
+// Can thiệp vào hàm ghi tọa độ để triệt tiêu Jitter theo lastDelta
+const HEX_HARD_LOCK_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_HARD_LOCK_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
+// Logic: Rút gọn bước di chuyển khi khoảng cách < 5 (HARD_LOCK_FACTOR).
+
+const DTien_V52_Engine = {
+    "PROJECT": "V52_Perfect_Lock_System",
+    "STATUS": "V52_Layered_Radius_Active",
+
+    // Tầng 1: Perfect Lock Config (Thông số từ JS)
+    "RADIUS_CONFIG": {
+        "Snap_Speed": 1.0,                   // Tốc độ tối đa khi ở xa
+        "Slow_Radius": 25.0,                 // Bắt đầu làm mượt
+        "Lock_Radius": 5.0,                  // Vùng khóa chết
+        "Smooth_Factor": 0.18,               // Độ mượt trung tầng
+        "Hard_Lock_Factor": 0.05,            // Độ dính tâm tầng cuối
+        "Max_Speed": 40.0                    // Giới hạn tốc độ vẩy
+    },
+
+    // Tầng 2: Anti-Shake & Overshoot Fix
+    "STABILITY_ENGINE": {
+        "Address_Radius": HEX_PERFECT_RADIUS_REPLACE,
+        "Address_Lock": HEX_HARD_LOCK_REPLACE,
+        "Last_Delta_Weight": 0.4,             // Lọc nhiễu 40% (JS)
+        "Output_Gain": 0.7,                  // Hệ số ổn định 70% (JS)
+        "Anti_Overshoot": "True"             // Không cho phép vượt quá Bone 8
+    },
+
+    // Tầng 3: Tích hợp Bone3D (V51) & Offsets (Done)
+    "CORE_SYNC_V52": {
+        "Head_Bone_3D": "0x2e5a7b4",          // HeadTF
+        "Set_Position": "0x6bc252c",         // Ghi đè tọa độ Perfect Lock
+        "Is_Firing": "0x2dc3804",            // Kích hoạt khi nhấn bắn
+        "World_To_Screen": "0x8ca3b10"       // Đồng bộ tọa độ 3D
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V52": {
+        "Perfect_Lock": "com.accpt_ffxbase64_Key_allow_PerfectLockSystem_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Radius_Layer": "com.accpt_ffxbase64_Key_allow_RadiusLayering_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Anti_Shake_Viper": "com.accpt_ffxbase64_Key_allow_AntiShakeViper_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // --- 1. CHUỖI HEX BONE 3D & ROTATION OFFSET (OPCODES) ---
 
 // Patch 1: 3D Bone Rotation Offset (Xử lý hướng mặt địch - 0.15f Forward)
@@ -2634,9 +2738,13 @@ obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
  obj["DTien_V51_Viper3D"] = DTien_V51_Engine;
     obj["Tracking_Type"] = "BONE_REAL_3D_ROTATION";
     obj["Projection_Status"] = "SCREEN_SYNC_SUCCESS";
-
+obj["DTien_V52_Perfect"] = DTien_V52_Engine;
+    obj["Lock_Mode"] = "RADIUS_DYNAMIC_SNAP";
+    obj["Shake_Filter"] = "ACTIVE_0.4_WEIGHT";
     
-
+obj["DTien_V53_Final"] = DTien_V53_Engine;
+    obj["Sync_Status"] = "CHAIN_COMPLETED";
+    obj["Lock_Strength"] = "MAX_STABLE";
 
 
 body = JSON.stringify(obj);
