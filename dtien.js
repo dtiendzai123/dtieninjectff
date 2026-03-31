@@ -34,12 +34,12 @@ const DTien_V53_Engine = {
 
     // Tầng 2: Thông số kỹ thuật (Cấu hình JS)
     "CONFIG_SYNC": {
-        "Radius_Snap": 25.0,
-        "Radius_Hard": 5.0,
+        "Radius_Snap": 360.0,
+        "Radius_Hard": 360.0,
         "Smooth_Factor": 0.18,
         "Hard_Factor": 0.05,
         "Anti_Shake": "Active_0.4",
-        "Max_Speed": 40.0
+        "Max_Speed": 100.0
     },
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
@@ -80,15 +80,15 @@ const DTien_V52_Engine = {
         "Lock_Radius": 5.0,                  // Vùng khóa chết
         "Smooth_Factor": 0.18,               // Độ mượt trung tầng
         "Hard_Lock_Factor": 0.05,            // Độ dính tâm tầng cuối
-        "Max_Speed": 40.0                    // Giới hạn tốc độ vẩy
+        "Max_Speed": 100.0                    // Giới hạn tốc độ vẩy
     },
 
     // Tầng 2: Anti-Shake & Overshoot Fix
     "STABILITY_ENGINE": {
         "Address_Radius": HEX_PERFECT_RADIUS_REPLACE,
         "Address_Lock": HEX_HARD_LOCK_REPLACE,
-        "Last_Delta_Weight": 0.4,             // Lọc nhiễu 40% (JS)
-        "Output_Gain": 0.7,                  // Hệ số ổn định 70% (JS)
+        "Last_Delta_Weight": 1.0,             // Lọc nhiễu 40% (JS)
+        "Output_Gain": 1.0,                  // Hệ số ổn định 70% (JS)
         "Anti_Overshoot": "True"             // Không cho phép vượt quá Bone 8
     },
 
@@ -244,7 +244,7 @@ const DTien_V49_Engine = {
     "QUANTUM_LOGIC": {
         "Address_Boost": HEX_VIPER_BOOST_REPLACE,
         "Address_Dampen": HEX_VIPER_LOCK_REPLACE,
-        "Max_Delta_Clamp": 50.0,             // Giới hạn văng tâm
+        "Max_Delta_Clamp": 360.0,             // Giới hạn văng tâm
         "Stability_Factor": 0.3              // Head Stabilizer
     },
 
@@ -291,7 +291,7 @@ const DTien_V48_Engine = {
 
     // Tầng 2: Hiệu chỉnh quỹ đạo kéo (Drag Path Sync)
     "DRAG_PATH_FIX": {
-        "Drag_Speed": 1.85,                  // Tốc độ kéo (Done)
+        "Drag_Speed": 3.85,                  // Tốc độ kéo (Done)
         "Acceleration": 2.4,                 // Gia tốc mượt
         "Curve_Logic": "EaseOut",            // Kéo mượt dần
         "Micro_Adjust": 0.015,               // Hiệu chỉnh siêu nhỏ (Done)
@@ -344,7 +344,7 @@ const DTien_V47_Engine = {
         "Internal_SetPos": "0x6bc252c",      // Ghi đè tọa độ (SetPosition)
         "Internal_GetPos": "0x6bc248c",      // Lấy tọa độ mục tiêu di chuyển
         "Refresh_Rate": "0ms",               // Cập nhật tọa độ mỗi Frame
-        "Sticky_Strength": 1.0               // Độ bám 100%
+        "Sticky_Strength": 10.0               // Độ bám 100%
     },
 
     // Tầng 3: Tối ưu hóa No Recoil (Từ V40 & V44)
