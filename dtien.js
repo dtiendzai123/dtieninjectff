@@ -234,7 +234,7 @@ const DTien_V49_Engine = {
     "VIPER_CONFIG_SYNC": {
         "Sensitivity": 950.0,                // Siêu nhạy
         "Friction": 0.0,                     // Không ma sát
-        "Acceleration": 20.5,                // Gia tốc cực cao
+        "Acceleration": 15.5,                // Gia tốc cực cao
         "Micro_Boost": 3.5,                  // Phá dính ngực
         "Lock_Dampen": 1.0,                 // Ghim chặt đầu
         "Quantum_Steps": 5                   // Chia nhỏ 5 bước phản hồi
@@ -291,7 +291,7 @@ const DTien_V48_Engine = {
 
     // Tầng 2: Hiệu chỉnh quỹ đạo kéo (Drag Path Sync)
     "DRAG_PATH_FIX": {
-        "Drag_Speed": 3.0,                  // Tốc độ kéo (Done)
+        "Drag_Speed": 1.0,                  // Tốc độ kéo (Done)
         "Acceleration": 2.4,                 // Gia tốc mượt
         "Curve_Logic": "EaseOut",            // Kéo mượt dần
         "Micro_Adjust": 0.015,               // Hiệu chỉnh siêu nhỏ (Done)
