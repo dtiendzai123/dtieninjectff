@@ -3,6 +3,58 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CHUỖI HEX BONE 3D & ROTATION OFFSET (OPCODES) ---
+
+// Patch 1: 3D Bone Rotation Offset (Xử lý hướng mặt địch - 0.15f Forward)
+// Can thiệp vào hàm GetForwardVector của Bone 0 để đẩy tâm ra trước mặt
+const HEX_3D_ROTATION_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 33 33 13 3E`;
+const HEX_3D_ROTATION_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 9A 99 19 3E`; 
+// Logic: Thay đổi Offset từ 0.15f lên mức tối ưu cho Hitbox 3D.
+
+// Patch 2: WorldToScreen 3D Projection Fix (Khử sai số DZ)
+// Can thiệp vào phép chia Projection để tâm không bị "văng" khi địch ở quá gần
+const HEX_PROJECTION_FIX_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_PROJECTION_FIX_REPLACE = `00 48 2D E9 10 B0 8D E2 00 00 80 3F 08 D0 4D E2`;
+// Logic: Ép trị số Dz tối thiểu, giúp quỹ đạo kéo tâm mượt như JS Bone3D.
+
+const DTien_V51_Engine = {
+    "PROJECT": "V51_ViperX_3D_Bone",
+    "STATUS": "V51_Real_Tracking_Active",
+
+    // Tầng 1: Bone 3D Tracking (Logic mới ghép thêm)
+    "BONE_3D_SYSTEM": {
+        "Address_Rotation": HEX_3D_ROTATION_REPLACE,
+        "Forward_Offset": 0.15,               // Bù trừ hướng mặt
+        "Prediction_3_Frame": true,           // Dự đoán 3 khung hình
+        "WorldToScreen_Optimized": HEX_PROJECTION_FIX_REPLACE
+    },
+
+    // Tầng 2: Kế thừa ViperX Ultimate (V50)
+    "VIPER_X_CORE": {
+        "Ghost_Track_4D": 4.0,                // Dự đoán bóng ma 4.0x
+        "Magic_Bullet_Hitbox": 2.5,           // Mở rộng Hitbox
+        "Weapon_Lift_Force": "Active",        // Tự động nhấc tâm
+        "Silent_Aim_Sync": true               // Silent Aim ảo hóa
+    },
+
+    // Tầng 3: Đồng bộ Offsets thực tế (Done List)
+    "MEMORY_MAPPING_V51": {
+        "Head_Bone_0": "0x2e5a7b4",           // HeadTF (Xương 0)
+        "Component_GetTransform": "0x8ca3b10",
+        "Internal_SetPosition": "0x6bc252c",  // Ghi đè 3D Pos
+        "Get_Forward_Vector": "0x8a88b1c"      // Lấy hướng nhìn (Rotation)
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V51": {
+        "Bone_3D_Track": "com.accpt_ffxbase64_Key_allow_Bone3DTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Rotation_Offset": "com.accpt_ffxbase64_Key_allow_RotationOffset_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Quantum_ViperX": "com.accpt_ffxbase64_Key_allow_QuantumViperX_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+
+
+
 // --- 1. CHUỖI HEX VIPER-X (MULTI-ENGINE OPCODES) ---
 
 // Patch 1: Ghost Track & 4D Prediction (Dự đoán 4.0x)
@@ -2579,7 +2631,9 @@ obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
     obj["DTien_V50_ViperX"] = DTien_V50_Engine;
     obj["Ghost_Status"] = "TRACKING_4D";
     obj["Magic_Status"] = "HITBOX_EXPANDED_2.5X";
-
+ obj["DTien_V51_Viper3D"] = DTien_V51_Engine;
+    obj["Tracking_Type"] = "BONE_REAL_3D_ROTATION";
+    obj["Projection_Status"] = "SCREEN_SYNC_SUCCESS";
 
     
 
