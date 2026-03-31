@@ -3,6 +3,56 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+
+// Patch 1: Khử rung tâm (Anti-Jitter/Shake)
+// Can thiệp vào hàm Damping (Giảm chấn) của Camera để triệt tiêu dao động nhỏ
+const HEX_ANTI_JITTER_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_ANTI_JITTER_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 00 00`; 
+// Logic: Ép giá trị dao động (Shake Value) về 0. Tâm sẽ không bị "rùng mình" khi bắn.
+
+// Patch 2: Khử giật ngược khi kéo (Recoil-Axis Stabilization)
+// Fix lỗi tâm bị nhảy ngược xuống hoặc sang hai bên khi đang vuốt lên
+const HEX_STABLE_DRAG_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_STABLE_DRAG_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 4D E2`;
+// Logic: Triệt tiêu lực phản hồi (Feedback Force) của súng lên trục tọa độ Camera.
+
+const DTien_V48_Engine = {
+    "PROJECT": "V48_Anti_Jitter_System",
+    "STATUS": "V48_Damping_Fixed",
+
+    // Tầng 1: Khử rung phần cứng (Hardware Stabilization)
+    "STABILIZER_PATCH": {
+        "Anti_Jitter": HEX_ANTI_JITTER_REPLACE,
+        "Stable_Drag": HEX_STABLE_DRAG_REPLACE,
+        "No_Recoil_V40": "EF 44 F0 48",       // Kế thừa kháng giật V40
+        "Zero_Spread_V44": "00 00 A0 E3",    // Kế thừa đạn thẳng V44
+        "Effect": "Absolute_Smooth_Aim"
+    },
+
+    // Tầng 2: Hiệu chỉnh quỹ đạo kéo (Drag Path Sync)
+    "DRAG_PATH_FIX": {
+        "Drag_Speed": 1.85,                  // Tốc độ kéo (Done)
+        "Acceleration": 2.4,                 // Gia tốc mượt
+        "Curve_Logic": "EaseOut",            // Kéo mượt dần
+        "Micro_Adjust": 0.015,               // Hiệu chỉnh siêu nhỏ (Done)
+        "Neck_Stuck_Fix": true               // Chống dính cổ
+    },
+
+    // Tầng 3: Đồng bộ Offsets V45 (Done List)
+    "MEMORY_CORE_V48": {
+        "Head_Bone": "0x2e5a7b4",            // HeadTF
+        "Set_Position": "0x6bc252c",         // Ghi đè tọa độ
+        "Is_Firing": "0x2dc3804",            // Kích hoạt khi bắn
+        "Is_Visible": "0x2dd8f54"            // Lọc mục tiêu lộ diện
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V48": {
+        "Anti_Jitter": "com.accpt_ffxbase64_Key_allow_AntiJitterAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Smooth_Drag": "com.accpt_ffxbase64_Key_allow_SmoothDragFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Damping_Fix": "com.accpt_ffxbase64_Key_allow_DampingStabilizer_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // Patch 1: Instant Snap (Nhảy tâm ngay lập tức khi nhấn bắn)
 // Can thiệp vào hàm CalcAimAngle để bỏ qua Smoothing (Làm mượt)
 const HEX_INSTANT_SNAP_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 01 00 A0 E3`;
@@ -2416,7 +2466,9 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
  obj["DTien_V47_Snap"] = DTien_V47_Engine;
     obj["Aim_Mode"] = "INSTANT_STICKY_HEAD";
     obj["Tracking_Status"] = "FRAME_BY_FRAME_LOCKED";
-
+obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
+    obj["Stability_Status"] = "SMOOTH_DAMPING_ACTIVE";
+    obj["Aim_Quality"] = "NO_SHAKE_NO_RECOIL";
 
     
 
