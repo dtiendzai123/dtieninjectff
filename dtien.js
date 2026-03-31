@@ -39,7 +39,7 @@ const DTien_V53_Engine = {
         "Smooth_Factor": 0.18,
         "Hard_Factor": 1.0,
         "Anti_Shake": "Active_0.4",
-        "Max_Speed": 10.0
+        "Max_Speed": 20.0
     },
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
@@ -80,7 +80,7 @@ const DTien_V52_Engine = {
         "Lock_Radius": 360.0,                  // Vùng khóa chết
         "Smooth_Factor": 0.18,               // Độ mượt trung tầng
         "Hard_Lock_Factor": 0.05,            // Độ dính tâm tầng cuối
-        "Max_Speed": 70.0                    // Giới hạn tốc độ vẩy
+        "Max_Speed": 100.0                    // Giới hạn tốc độ vẩy
     },
 
     // Tầng 2: Anti-Shake & Overshoot Fix
@@ -186,7 +186,7 @@ const DTien_V50_Engine = {
     // Tầng 1: Ghost Prediction (Dự đoán bóng ma)
     "GHOST_ENGINE": {
         "Prediction_Factor": 4.0,           // Dự đoán 4D
-        "ZigZag_Fix_Limit": 20,              // Khử chuyển động dị dạng
+        "ZigZag_Fix_Limit": 999,              // Khử chuyển động dị dạng
         "Ghost_Address": HEX_GHOST_TRACK_REPLACE
     },
 
