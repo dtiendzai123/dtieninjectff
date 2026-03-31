@@ -79,7 +79,7 @@ const DTien_V52_Engine = {
         "Slow_Radius": 25.0,                 // Bắt đầu làm mượt
         "Lock_Radius": 360.0,                  // Vùng khóa chết
         "Smooth_Factor": 0.18,               // Độ mượt trung tầng
-        "Hard_Lock_Factor": 0.05,            // Độ dính tâm tầng cuối
+        "Hard_Lock_Factor": 1.0,            // Độ dính tâm tầng cuối
         "Max_Speed": 100.0                    // Giới hạn tốc độ vẩy
     },
 
@@ -234,7 +234,7 @@ const DTien_V49_Engine = {
     "VIPER_CONFIG_SYNC": {
         "Sensitivity": 950.0,                // Siêu nhạy
         "Friction": 0.0,                     // Không ma sát
-        "Acceleration": 15.5,                // Gia tốc cực cao
+        "Acceleration": 20.0,                // Gia tốc cực cao
         "Micro_Boost": 10.5,                  // Phá dính ngực
         "Lock_Dampen": 1.0,                 // Ghim chặt đầu
         "Quantum_Steps": 5                   // Chia nhỏ 5 bước phản hồi
