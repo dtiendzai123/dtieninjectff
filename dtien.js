@@ -291,7 +291,7 @@ const DTien_V48_Engine = {
 
     // Tầng 2: Hiệu chỉnh quỹ đạo kéo (Drag Path Sync)
     "DRAG_PATH_FIX": {
-        "Drag_Speed": 3.85,                  // Tốc độ kéo (Done)
+        "Drag_Speed": 3.0,                  // Tốc độ kéo (Done)
         "Acceleration": 2.4,                 // Gia tốc mượt
         "Curve_Logic": "EaseOut",            // Kéo mượt dần
         "Micro_Adjust": 0.015,               // Hiệu chỉnh siêu nhỏ (Done)
