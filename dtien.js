@@ -4,6 +4,56 @@
  * Author: dtiendzai123
  */
 
+// Patch 1: Micro-Boost & Zero Friction (Phá dính ngực)
+// Can thiệp vào hàm nội suy Delta để áp dụng MICRO_BOOST 3.5x
+const HEX_VIPER_BOOST_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_VIPER_BOOST_REPLACE = `00 48 2D E9 10 B0 8D E2 07 00 A0 E3 08 D0 4D E2`; 
+// Logic: Thay đổi hệ số Threshold. R7 gán giá trị 3.5 (Micro Boost)
+
+// Patch 2: Head Stabilizer & Lock Dampen (Ghim đầu 0.15)
+// Can thiệp vào hàm SetPosition để áp dụng LOCK_DAMPEN khi NearHead = true
+const HEX_VIPER_LOCK_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_VIPER_LOCK_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 33 33 13 3E`;
+// Logic: Ghi đè giá trị Float 0.15f (Lock Dampen) vào thanh ghi mục tiêu.
+
+const DTien_V49_Engine = {
+    "PROJECT": "V49_Viper_Core_Quantum",
+    "STATUS": "V49_Quantum_Steps_Active",
+
+    // Tầng 1: Viper Core Config (Thông số từ JS của bạn)
+    "VIPER_CONFIG_SYNC": {
+        "Sensitivity": 950.0,                // Siêu nhạy
+        "Friction": 0.0,                     // Không ma sát
+        "Acceleration": 12.5,                // Gia tốc cực cao
+        "Micro_Boost": 3.5,                  // Phá dính ngực
+        "Lock_Dampen": 0.15,                 // Ghim chặt đầu
+        "Quantum_Steps": 5                   // Chia nhỏ 5 bước phản hồi
+    },
+
+    // Tầng 2: Quantum Response Execution
+    "QUANTUM_LOGIC": {
+        "Address_Boost": HEX_VIPER_BOOST_REPLACE,
+        "Address_Dampen": HEX_VIPER_LOCK_REPLACE,
+        "Max_Delta_Clamp": 50.0,             // Giới hạn văng tâm
+        "Stability_Factor": 0.3              // Head Stabilizer
+    },
+
+    // Tầng 3: Đồng bộ Offsets V45 (Done List)
+    "MEMORY_CORE_V49": {
+        "Head_Bone": "0x2e5a7b4",            // HeadTF (Done)
+        "Is_Firing": "0x2dc3804",            // Bắn là kích hoạt Viper Core
+        "Is_Visible": "0x2dd8f54",           // Quét địch lộ diện
+        "Internal_SetPos": "0x6bc252c"       // Ghi đè tọa độ Quantum
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V49": {
+        "Viper_Core": "com.accpt_ffxbase64_Key_allow_ViperCoreEngine_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Quantum_Response": "com.accpt_ffxbase64_Key_allow_QuantumSteps_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Micro_Boost": "com.accpt_ffxbase64_Key_allow_MicroBoost3.5_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
+
 // Patch 1: Khử rung tâm (Anti-Jitter/Shake)
 // Can thiệp vào hàm Damping (Giảm chấn) của Camera để triệt tiêu dao động nhỏ
 const HEX_ANTI_JITTER_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
@@ -2469,7 +2519,9 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
 obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
     obj["Stability_Status"] = "SMOOTH_DAMPING_ACTIVE";
     obj["Aim_Quality"] = "NO_SHAKE_NO_RECOIL";
-
+  obj["DTien_V49_Viper"] = DTien_V49_Engine;
+    obj["Engine_Type"] = "QUANTUM_VIPER_CORE";
+    obj["Response_Status"] = "ULTRA_SENSITIVITY_0_FRICTION";
     
 
 
