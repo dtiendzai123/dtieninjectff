@@ -39,7 +39,7 @@ const DTien_V53_Engine = {
         "Smooth_Factor": 0.18,
         "Hard_Factor": 1.0,
         "Anti_Shake": "Active_0.4",
-        "Max_Speed": 100.0
+        "Max_Speed": 40.0
     },
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
@@ -80,7 +80,7 @@ const DTien_V52_Engine = {
         "Lock_Radius": 360.0,                  // Vùng khóa chết
         "Smooth_Factor": 0.18,               // Độ mượt trung tầng
         "Hard_Lock_Factor": 1.0,            // Độ dính tâm tầng cuối
-        "Max_Speed": 100.0                    // Giới hạn tốc độ vẩy
+        "Max_Speed": 40.0                    // Giới hạn tốc độ vẩy
     },
 
     // Tầng 2: Anti-Shake & Overshoot Fix
