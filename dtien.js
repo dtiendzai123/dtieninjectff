@@ -234,9 +234,9 @@ const DTien_V49_Engine = {
     "VIPER_CONFIG_SYNC": {
         "Sensitivity": 950.0,                // Siêu nhạy
         "Friction": 0.0,                     // Không ma sát
-        "Acceleration": 12.5,                // Gia tốc cực cao
+        "Acceleration": 20.5,                // Gia tốc cực cao
         "Micro_Boost": 3.5,                  // Phá dính ngực
-        "Lock_Dampen": 0.15,                 // Ghim chặt đầu
+        "Lock_Dampen": 1.0,                 // Ghim chặt đầu
         "Quantum_Steps": 5                   // Chia nhỏ 5 bước phản hồi
     },
 
