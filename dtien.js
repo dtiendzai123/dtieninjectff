@@ -3,7 +3,61 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+// --- 1. CHUỖI HEX VIPER-X (MULTI-ENGINE OPCODES) ---
 
+// Patch 1: Ghost Track & 4D Prediction (Dự đoán 4.0x)
+// Can thiệp vào hàm dự đoán tọa độ (Prediction Velocity)
+const HEX_GHOST_TRACK_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_GHOST_TRACK_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 80 40`; 
+// Logic: Ghi đè hệ số Float 4.0f vào thanh ghi dự đoán. Fix ZigZag 20ms.
+
+// Patch 2: Magic Bullet & Hitbox Expand (Hitbox 2.5x)
+// Can thiệp vào hàm kiểm tra va chạm (CheckHitboxRadius)
+const HEX_MAGIC_HITBOX_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_MAGIC_HITBOX_REPLACE = `20 40 2D E9 10 B0 8D E2 00 00 20 40 08 D0 4D E2`;
+// Logic: Mở rộng bán kính Hitbox lên 2.5 lần (Magic Bullet Active).
+
+// Patch 3: Weapon Force (Vertical Lift - Kéo tâm theo loại súng)
+// Can thiệp vào hàm Recoil/Lift để ép tâm bay lên đầu (Vertical 45-75)
+const HEX_WEAPON_FORCE_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 4D E2`;
+const HEX_WEAPON_FORCE_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 4B D0 4D E2`;
+// Logic: Thay đổi Delta Y Offset. Tự động đẩy tâm lên trục dọc ngay khi bắn.
+
+const DTien_V50_Engine = {
+    "PROJECT": "V50_ViperX_Ultimate",
+    "STATUS": "V50_All_Engines_Running",
+
+    // Tầng 1: Ghost Prediction (Dự đoán bóng ma)
+    "GHOST_ENGINE": {
+        "Prediction_Factor": 4.0,           // Dự đoán 4D
+        "ZigZag_Fix_Limit": 20,              // Khử chuyển động dị dạng
+        "Ghost_Address": HEX_GHOST_TRACK_REPLACE
+    },
+
+    // Tầng 2: Magic & Hitbox (Đạn ma thuật)
+    "MAGIC_ENGINE": {
+        "Magic_Bullet": true,
+        "Silent_Aim": true,
+        "Hitbox_Scale": 2.5,                 // Mở rộng vùng trúng đạn
+        "Magic_Address": HEX_MAGIC_HITBOX_REPLACE
+    },
+
+    // Tầng 3: Weapon Force (Lực súng tối ưu)
+    "WEAPON_ENGINE": {
+        "Snap_Force": "Max",
+        "Vertical_Lift": "75_High",          // Chuyên Shotgun/SMG
+        "Anti_Heavy": "Active_Shot2",        // Reset ma sát sau viên thứ 2
+        "Weapon_Address": HEX_WEAPON_FORCE_REPLACE
+    },
+
+    // Tầng 4: Đồng bộ Offsets V45 (Done List)
+    "CORE_MEMORY_V50": {
+        "Head_Bone": "0x2e5a7b4",            // HeadTF
+        "Is_Firing": "0x2dc3804",            // Kích hoạt khi bắn
+        "Set_Position": "0x6bc252c",         // Ghi đè tọa độ
+        "Is_Visible": "0x2dd8f54"            // Lọc địch lộ diện
+    }
+};
 // Patch 1: Micro-Boost & Zero Friction (Phá dính ngực)
 // Can thiệp vào hàm nội suy Delta để áp dụng MICRO_BOOST 3.5x
 const HEX_VIPER_BOOST_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
@@ -2522,7 +2576,9 @@ obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
   obj["DTien_V49_Viper"] = DTien_V49_Engine;
     obj["Engine_Type"] = "QUANTUM_VIPER_CORE";
     obj["Response_Status"] = "ULTRA_SENSITIVITY_0_FRICTION";
-    
+    obj["DTien_V50_ViperX"] = DTien_V50_Engine;
+    obj["Ghost_Status"] = "TRACKING_4D";
+    obj["Magic_Status"] = "HITBOX_EXPANDED_2.5X";
 
 
     
