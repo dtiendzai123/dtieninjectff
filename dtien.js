@@ -3,6 +3,54 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+
+// Patch 1: Boost độ nhạy trục Y (Nhích nhẹ nút bắn là tâm tự vẩy lên)
+// Tác động vào hàm nội suy chuyển động (Input Interpolation)
+const HEX_MICRO_DRAG_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 A0 E3`;
+const HEX_MICRO_DRAG_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 02 00 A0 E3`; 
+// Logic: Tăng hệ số nhân lực vuốt (Multiplier) từ 0 lên 2.0 tại thời điểm nhấn nút bắn.
+
+// Patch 2: Fix lố/Lệch tâm (Anti-Overshoot Head Lock)
+// Tác động vào hàm giới hạn tọa độ (ViewAngle Clamp)
+const HEX_FIX_OVERSHOOT_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_FIX_OVERSHOOT_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 4D E2`;
+// Logic: Triệt tiêu lực quán tính (Momentum) ngay khi tâm chạm Bone 8 (HeadTF).
+
+const DTien_V46_Engine = {
+    "PROJECT": "V46_Micro_Snap_System",
+    "STATUS": "V46_Sensitivity_Overclocked",
+
+    // Tầng 1: Độ nhạy siêu cấp (Micro-Drag Sensitivity)
+    "SENSITIVITY_PATCH": {
+        "Address_Input": "0x8ca3b10",        // Component_GetTransform sync
+        "Drag_Boost": HEX_MICRO_DRAG_REPLACE,
+        "Response_Time": "Instant",          // Không độ trễ
+        "Effect": "Light_Touch_Headshot"     // Nhích nhẹ nút bắn là lên đầu
+    },
+
+    // Tầng 2: Chống lệch & Lố tâm (Anti-Drift Fix)
+    "STABILITY_PATCH": {
+        "Address_Clamp": "0x6bc252c",        // Transform_SetPosition sync
+        "Anti_Overshoot": HEX_FIX_OVERSHOOT_REPLACE,
+        "Zero_Drift": true,                  // Chống trôi tâm khi địch chạy
+        "Fix_Neck_Stuck": "Active_0.015"     // Đẩy tâm vượt qua vùng cổ
+    },
+
+    // Tầng 3: Tích hợp Offsets V45 (Done List)
+    "OFFSET_MAPPING_V46": {
+        "Head_Bone": "0x2e5a7b4",            // HeadTF
+        "Is_Firing": "0x2dc3804",            // Chỉ kích hoạt khi bắn
+        "Is_Visible": "0x2dd8f54",           // Chỉ khóa khi địch lộ diện
+        "Internal_SetPos": "0x6bc252c"       // Ghi đè tọa độ tuyệt đối
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V46": {
+        "Micro_Drag": "com.accpt_ffxbase64_Key_allow_MicroDragHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Fix_Overshoot": "com.accpt_ffxbase64_Key_allow_FixOvershootHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "Anti_Drift": "com.accpt_ffxbase64_Key_allow_AntiDriftAim_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 const FF_OFFSETS_V45 = {
     // Tọa độ thực thể (Bones)
     "Head_Transform": "0x2e5a7b4",          // Xương đầu (HeadTF)
@@ -2315,7 +2363,10 @@ obj["DTien_V38_Neural"] = DTien_V38_Engine;
     obj["DTien_V45_Mapping"] = DTien_V45_Engine;
     obj["Offset_Status"] = "ALL_OFFSETS_DONE";
     obj["Core_Engine"] = "IL2CPP_INTERNAL_PATCH";
-    
+    obj["DTien_V46_MicroSnap"] = DTien_V46_Engine;
+    obj["Aim_Sensitivity"] = "HIGH_PRECISION_BOOST";
+    obj["Fix_Mode"] = "ANTI_OVERSHOOT_ACTIVE";
+
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
