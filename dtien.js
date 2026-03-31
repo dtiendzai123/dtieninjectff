@@ -39,7 +39,7 @@ const DTien_V53_Engine = {
         "Smooth_Factor": 0.18,
         "Hard_Factor": 1.0,
         "Anti_Shake": "Active_0.4",
-        "Max_Speed": 20.0
+        "Max_Speed": 100.0
     },
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
@@ -235,7 +235,7 @@ const DTien_V49_Engine = {
         "Sensitivity": 950.0,                // Siêu nhạy
         "Friction": 0.0,                     // Không ma sát
         "Acceleration": 15.5,                // Gia tốc cực cao
-        "Micro_Boost": 3.5,                  // Phá dính ngực
+        "Micro_Boost": 10.5,                  // Phá dính ngực
         "Lock_Dampen": 1.0,                 // Ghim chặt đầu
         "Quantum_Steps": 5                   // Chia nhỏ 5 bước phản hồi
     },
@@ -494,7 +494,7 @@ const DTien_V44_Engine = {
     // Tầng 2: Cấu hình Auto Aimlock (Logic V42)
     "AIMLOCK_CORE": {
         "Auto_Aim_Status": true,
-        "Target_Bone": 8,
+        "Target_Bone": 999,
         "Snap_Speed": 0.0,                   // Snap tức thời (0 delay)
         "Angle_Drift_Fix": true,             // Chống trôi tâm
         "Distance_Bypass": 500.0             // Hiệu lực đến 500 mét
@@ -548,7 +548,7 @@ const DTien_V42_Engine = {
     // Tầng 3: Tích hợp V39 & V40 (ChestToHead & No Recoil)
     "CORE_STABILIZER": {
         "Auto_Drag_Mode": "ChestToHead_Hard",
-        "Drag_Speed": 2.85,                  // Tốc độ kéo cực nhanh
+        "Drag_Speed": 10.0,                  // Tốc độ kéo cực nhanh
         "Fix_Neck_Stuck": 0.015,             // Chống dính cổ
         "No_Recoil_Hardware": "Active",      // Kháng giật phần cứng V40
         "Bullet_Spread": "Zero_Spread"       // Đạn không tỏa
@@ -587,7 +587,7 @@ const DTien_V43_Engine = {
     "DRAG_KINETIC_CONTROL": {
         "Start_Point": "Chest_Bone",
         "End_Point": "Head_Bone_8",
-        "Drag_Speed": 1.85,                  // Tốc độ vuốt chuẩn (V39)
+        "Drag_Speed": 10.0,                  // Tốc độ vuốt chuẩn (V39)
         "Acceleration_Curve": "EaseOut",     // Kéo nhanh dần khi gần đầu
         "Drag_Time_Limit": 0.18,             // Thời gian vuốt cực ngắn
         "Fix_Neck_Stuck": 0.015              // Lực đẩy bù tránh dính cổ
@@ -673,8 +673,8 @@ const DTien_V40_Engine = {
 
     CORE_SYNC_V39: {
         AutoAim_Mode: "ChestToHead",
-        Drag_Speed: 1.85,
-        Drag_Time: "0.18s",
+        Drag_Speed: 10.0,
+        Drag_Time: "0.01s",
         Curve: "EaseOut",
         Neck_Fix: "Active_0.015",
         Prediction_Velocity: 1.2,
@@ -701,16 +701,16 @@ const DTien_V39_Engine = {
         "Fire_Only": "0x2dc3804",           // Chạy khi nhấn nút bắn (fireOnly)
         "Crosshair_Red_Check": "0x2dd8f54", // Chỉ kéo khi tâm đỏ (crosshairRed)
         "Enemy_Visible": true,               // Kiểm tra địch không bị vật cản
-        "Update_Frequency": "1ms"
+        "Update_Frequency": "0ms"
     },
 
     // Tầng 2: Tọa độ Xương & Quỹ đạo (Bone & Path)
     "DRAG_PATH_CONTROL": {
         "Start_Bone": "Chest_0x3",           // Điểm bắt đầu: Ngực
         "End_Bone": "Head_0x8",              // Điểm kết thúc: Đầu
-        "Drag_Speed": 1.85,                  // Tốc độ kéo chính (drag.speed)
+        "Drag_Speed": 10.0,                  // Tốc độ kéo chính (drag.speed)
         "Drag_Time_Limit": "0.18s",          // Thời gian hoàn thành cú kéo (drag.time)
-        "Acceleration": 2.4,                 // Gia tốc cực mạnh (drag.acceleration)
+        "Acceleration": 15.5,                 // Gia tốc cực mạnh (drag.acceleration)
         "Curve_Type": "EaseOut_Quadratic"    // Kéo nhanh dần lên đầu (drag.curve)
     },
 
@@ -729,14 +729,14 @@ const DTien_V39_Engine = {
     // Tầng 4: Khóa đầu & Giảm rung (HeadLock & Smoothing)
     "STABILITY_ENGINE": {
         "HeadLock_Strength": 0.95,           // Độ chặt khi chạm đầu (0.95)
-        "Stable_Time": "0.25s",              // Thời gian giữ tâm ổn định (stableTime)
+        "Stable_Time": "1.5s",              // Thời gian giữ tâm ổn định (stableTime)
         "Smoothing_Factor": 0.12,            // Giảm rung tâm (smoothing.factor)
         "Zero_Recoil_Sync": true             // Triệt tiêu độ nảy khi đang kéo
     },
 
     // Tầng 5: Dự đoán di chuyển (Kinetic Prediction)
     "PREDICTION_KINETIC": {
-        "Velocity_Multiplier": 1.2,          // Hệ số vận tốc (velocity = 1.2)
+        "Velocity_Multiplier": 1.9,          // Hệ số vận tốc (velocity = 1.2)
         "Head_Offset_Push": 0.03,            // Đẩy tâm đón đầu 0.03 (headOffset)
         "Ping_Compensation": true,           // Bù trừ độ trễ mạng
         "Vector_Forward": "Active"           // Hướng mặt địch
@@ -756,7 +756,7 @@ const DTien_V38_Engine = {
     // Bước 1: Thuật toán nhận diện xương thông minh (Neural Detect)
     "SKELETON_SCANNER": {
         "Scan_Method": "Highest_Z_Vertex",   // Tìm đỉnh cao nhất trục Z
-        "Bone_Limit": 20,                    // Quét 20 ID xương (for i < 20)
+        "Bone_Limit": 999,                    // Quét 20 ID xương (for i < 20)
         "Filter_Zero_Vectors": true,         // Loại bỏ xương lỗi (IsZero)
         "Model_Cache_System": {
             "Enable": true,                  // Lưu Cache theo ModelID
