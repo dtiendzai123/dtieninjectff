@@ -33,7 +33,7 @@ const DTien_V54_Engine = {
     "Stick_Force": 1.25,        // Lực giữ cực mạnh
     "Release_Delay": 0.12,      // Giữ thêm sau khi lệch nhẹ
     "Max_Stick_Time": 5.0       // Tránh lock quá lâu gây lộ
-}
+},
     // Tầng 2: Cơ chế kẹp tâm (Magnetic Clamping)
     "MAGNETIC_CORE": {
         "Target_Bone": "0x2e5a7b4",          // HeadTF (Done)
