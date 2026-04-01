@@ -12,7 +12,116 @@ const HEX_SENS_STABLE_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 00 3F
 const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
+const ULTRA_HEAD_LOCK = {
 
+    CONFIG: {
+        Enabled: true,
+
+        // 🎯 khoảng cách
+        Min_Distance: 1,
+        Max_Distance: 9999.0,
+
+        // 🎯 lực lock
+        Base_Stick: 5.0,
+        Max_Stick: 10.0,
+
+        // 🎯 smoothing động
+        Smooth_Near: 0.08,
+        Smooth_Far: 0.22,
+
+        // 🎯 predict
+        Predict_Base: 0.03,
+        Predict_Moving: 0.08,
+
+        // 🎯 vùng head
+        Head_Radius_Near: 360.0,
+        Head_Radius_Far: 360.0
+    },
+
+    state: {
+        isLocked: false
+    },
+
+    // =========================
+    // 📏 DISTANCE
+    // =========================
+    getDistance(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dz = (a.z || 0) - (b.z || 0);
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    },
+
+    // =========================
+    // 🎯 DYNAMIC CONFIG
+    // =========================
+    getDynamicConfig(dist, speed) {
+        const t = Math.min(dist / this.CONFIG.Max_Distance, 1);
+
+        return {
+            smooth: this.lerp(this.CONFIG.Smooth_Near, this.CONFIG.Smooth_Far, t),
+            stick: this.lerp(this.CONFIG.Max_Stick, this.CONFIG.Base_Stick, t),
+            predict: speed > 0.1 ? this.CONFIG.Predict_Moving : this.CONFIG.Predict_Base,
+            radius: this.lerp(this.CONFIG.Head_Radius_Near, this.CONFIG.Head_Radius_Far, t)
+        };
+    },
+
+    lerp(a, b, t) {
+        return a + (b - a) * t;
+    },
+
+    // =========================
+    // 🎯 CHECK HEAD
+    // =========================
+    isOnHead(target, crosshair, radius) {
+        const head = worldToScreen(target.headWorldPos);
+        if (!head) return false;
+
+        const dx = crosshair.x - head.x;
+        const dy = crosshair.y - head.y;
+
+        return Math.sqrt(dx*dx + dy*dy) <= radius;
+    },
+
+    // =========================
+    // 💥 MAIN LOCK
+    // =========================
+    lock(target, crosshair) {
+        if (!this.CONFIG.Enabled || !target) return;
+
+        const playerPos = getPlayerPosition();
+        const dist = this.getDistance(playerPos, target.headWorldPos);
+
+        const speed = Math.sqrt(
+            (target.velocity?.x || 0) ** 2 +
+            (target.velocity?.y || 0) ** 2 +
+            (target.velocity?.z || 0) ** 2
+        );
+
+        const dyn = this.getDynamicConfig(dist, speed);
+
+        const onHead = this.isOnHead(target, crosshair, dyn.radius);
+
+        // 🔥 predict head
+        const predicted = predictHead(
+            target.headWorldPos,
+            target.velocity || {x:0,y:0,z:0},
+            dyn.predict
+        );
+
+        // 🔥 force lock
+        camera.lookAt(predicted);
+
+        // 🔥 tăng lực nếu đã chạm head
+        if (onHead) {
+            camera.smooth = 0.03;
+            camera.force = dyn.stick;
+        } else {
+            camera.smooth = dyn.smooth;
+            camera.force = 1.0;
+        }
+    }
+};
 // =======================
 // ENGINE CONFIG
 // =======================
@@ -160,7 +269,8 @@ const DTien_V54_Engine = {
         Stick_Force: 1.25,
         Release_Delay: 0.12,
         Max_Stick_Time: 5.0,
-   Head_Lock: HEAD_SYSTEM
+   Head_Lock: HEAD_SYSTEM,
+ Stick_Head: ULTRA_HEAD_LOCK
     },
 
     CONFIG: {
