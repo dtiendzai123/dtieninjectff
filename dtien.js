@@ -163,7 +163,7 @@ const ULTRA_HEAD_LOCK = {
                 // tránh crash script
             }
 
-            setTimeout(loop, 16); // ~60 FPS
+            setTimeout(loop, 8); // ~60 FPS
         };
 
         loop();
@@ -293,7 +293,7 @@ const HEAD_SYSTEM = {
                 // console.log("HEAD_SYSTEM ERROR:", e);
             }
 
-            setTimeout(loop, 16);
+            setTimeout(loop, 8);
         };
 
         loop();
