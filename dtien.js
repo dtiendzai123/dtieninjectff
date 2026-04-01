@@ -3,107 +3,62 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
-
-// Patch 1: High-Sens Stability (Giữ ổn định khi độ nhạy cao)
-// Can thiệp vào hàm Delta Smoothing để loại bỏ hiện tượng "trôi" tâm
+// =======================
+// HEX PATCH
+// =======================
 const HEX_SENS_STABLE_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
-const HEX_SENS_STABLE_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 00 3F`; 
-// Logic: Ép hệ số nội suy về 1.0 (Phản xạ tức thì, không có độ trễ quán tính).
+const HEX_SENS_STABLE_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 00 3F`;
 
-// Patch 2: Bone-Edge Clamping (Kẹp biên xương đầu)
-// Can thiệp vào hàm Transform_INTERNAL_SetPosition để không cho tâm lệch khỏi Bone 8
 const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
-// Logic: Khi Vector Delta tiệm cận Bone 8, triệt tiêu mọi lực kéo dư thừa (Zero Drift).
 
+
+// =======================
+// ENGINE CONFIG
+// =======================
 const DTien_V54_Engine = {
-    "PROJECT": "V54_Magnetic_Lock_System",
-    "STATUS": "V54_Zero_Overshoot_Active",
+    PROJECT: "V54_Magnetic_Lock_System",
+    STATUS: "V54_Zero_Overshoot_Active",
 
-    // Tầng 1: Điều khiển độ nhạy (Sensitivity Control)
-    "SENS_MANAGEMENT": {
-        "Input_Scale": "Ultra_High",         // Cho phép kéo cực nhẹ
-        "Stabilization": HEX_SENS_STABLE_REPLACE,
-        "Jitter_Reduction": "Active_1.0",   // Giảm rung 85%
-        "Effect": "Fast_Move_Solid_Lock"     // Di chuyển nhanh nhưng khóa cứng
+    SENS_MANAGEMENT: {
+        Input_Scale: "Ultra_High",
+        Stabilization: HEX_SENS_STABLE_REPLACE,
+        Jitter_Reduction: "Active_1.0",
+        Effect: "Fast_Move_Solid_Lock"
+    }, // ✅ PHẢI CÓ ,
+
+    HEAD_LOCK_SYSTEM: {
+        Enabled: true,
+        Head_Radius: 360.0,
+        Stick_Force: 1.25,
+        Release_Delay: 0.12,
+        Max_Stick_Time: 5.0
     },
-"HEAD_LOCK_SYSTEM": {
-    "Enabled": true,
-    "Head_Radius": 360.0,        // Vùng nhận diện đầu (pixel hoặc world scale)
-    "Stick_Force": 1.25,        // Lực giữ cực mạnh
-    "Release_Delay": 0.12,      // Giữ thêm sau khi lệch nhẹ
-    "Max_Stick_Time": 5.0       // Tránh lock quá lâu gây lộ
-},
- CONFIG: {
+
+    CONFIG: {
         Enabled: true,
         Head_Radius: 35,
         Stick_Force: 1.25,
         Max_Stick_Time: 1.2
     },
 
-    state: {
-        isLocked: false,
-        timer: 0
+    MAGNETIC_CORE: {
+        Target_Bone: "0x2e5a7b4",
+        Clamp_Address: HEX_EDGE_CLAMP_REPLACE,
+        Sticky_Strength: 1.0,
+        Bypass_Friction: true
     },
 
-    isOnHead(target, crosshair) {
-        const head = worldToScreen(target.headWorldPos);
-
-        const dx = crosshair.x - head.x;
-        const dy = crosshair.y - head.y;
-
-        return Math.sqrt(dx*dx + dy*dy) <= this.CONFIG.Head_Radius;
+    RADIUS_SYNC_V54: {
+        Lock_Radius: 360.0,
+        Hard_Lock_Factor: 1.0,
+        Anti_Overshoot: "Forced"
     },
 
-    update(target, crosshair, dt) {
-        if (!this.CONFIG.Enabled) return;
-
-        if (this.isOnHead(target, crosshair)) {
-            this.state.isLocked = true;
-            this.state.timer = this.CONFIG.Max_Stick_Time;
-        }
-
-        if (this.state.isLocked) {
-            this.state.timer -= dt;
-
-            this.lockHead(target);
-
-            if (this.state.timer <= 0) {
-                this.state.isLocked = false;
-            }
-        }
-    },
-
-    lockHead(target) {
-        const predicted = predictHead(
-            target.headWorldPos,
-            target.velocity,
-            0.05
-        );
-
-        camera.lookAt(predicted);
-    }
-};
-    // Tầng 2: Cơ chế kẹp tâm (Magnetic Clamping)
-    "MAGNETIC_CORE": {
-        "Target_Bone": "0x2e5a7b4",          // HeadTF (Done)
-        "Clamp_Address": HEX_EDGE_CLAMP_REPLACE,
-        "Sticky_Strength": 1.0,            // Độ dính 99.9%
-        "Bypass_Friction": true              // Bỏ qua ma sát môi trường
-    },
-
-    // Tầng 3: Tích hợp Logic PerfectLock (V52)
-    "RADIUS_SYNC_V54": {
-        "Lock_Radius": 360.0,                  // Vùng khóa an toàn
-        "Hard_Lock_Factor": 1.0,            // Hệ số ghim cứng
-        "Anti_Overshoot": "Forced"           // Cưỡng bức không lệch đầu
-    },
-
-    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
-    "RAW_KEYS_V54": {
-        "Magnetic_Lock": "com.accpt_ffxbase64_Key_allow_MagneticLockHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "Zero_Overshoot": "com.accpt_ffxbase64_Key_allow_ZeroOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
-        "High_Sens_Fix": "com.accpt_ffxbase64_Key_allow_HighSensFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    RAW_KEYS_V54: {
+        Magnetic_Lock: "com.accpt_ffxbase64_Key_allow_MagneticLockHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        Zero_Overshoot: "com.accpt_ffxbase64_Key_allow_ZeroOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        High_Sens_Fix: "com.accpt_ffxbase64_Key_allow_HighSensFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
 
@@ -143,7 +98,7 @@ const DTien_V53_Engine = {
     "Hard_Factor": 0.88,       // Giảm lực cứng → tránh giật lệch đầu
     "Anti_Shake": "Active_1.0", // Chống rung mạnh hơn
     "Max_Speed": 32.0          // Giảm tốc để tránh overshoot
-}
+},
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
     "OFFSETS_V53": {
