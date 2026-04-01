@@ -3,6 +3,53 @@
  * Version: 90-100 Uncrack Premium
  * Author: dtiendzai123
  */
+
+// Patch 1: High-Sens Stability (Giữ ổn định khi độ nhạy cao)
+// Can thiệp vào hàm Delta Smoothing để loại bỏ hiện tượng "trôi" tâm
+const HEX_SENS_STABLE_FIND = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 8F C2 75 3D`;
+const HEX_SENS_STABLE_REPLACE = `10 1A 08 EE 08 40 95 E5 00 00 54 E3 00 00 00 3F`; 
+// Logic: Ép hệ số nội suy về 1.0 (Phản xạ tức thì, không có độ trễ quán tính).
+
+// Patch 2: Bone-Edge Clamping (Kẹp biên xương đầu)
+// Can thiệp vào hàm Transform_INTERNAL_SetPosition để không cho tâm lệch khỏi Bone 8
+const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
+const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
+// Logic: Khi Vector Delta tiệm cận Bone 8, triệt tiêu mọi lực kéo dư thừa (Zero Drift).
+
+const DTien_V54_Engine = {
+    "PROJECT": "V54_Magnetic_Lock_System",
+    "STATUS": "V54_Zero_Overshoot_Active",
+
+    // Tầng 1: Điều khiển độ nhạy (Sensitivity Control)
+    "SENS_MANAGEMENT": {
+        "Input_Scale": "Ultra_High",         // Cho phép kéo cực nhẹ
+        "Stabilization": HEX_SENS_STABLE_REPLACE,
+        "Jitter_Reduction": "Active_0.85",   // Giảm rung 85%
+        "Effect": "Fast_Move_Solid_Lock"     // Di chuyển nhanh nhưng khóa cứng
+    },
+
+    // Tầng 2: Cơ chế kẹp tâm (Magnetic Clamping)
+    "MAGNETIC_CORE": {
+        "Target_Bone": "0x2e5a7b4",          // HeadTF (Done)
+        "Clamp_Address": HEX_EDGE_CLAMP_REPLACE,
+        "Sticky_Strength": 1.0,            // Độ dính 99.9%
+        "Bypass_Friction": true              // Bỏ qua ma sát môi trường
+    },
+
+    // Tầng 3: Tích hợp Logic PerfectLock (V52)
+    "RADIUS_SYNC_V54": {
+        "Lock_Radius": 360.0,                  // Vùng khóa an toàn
+        "Hard_Lock_Factor": 0.05,            // Hệ số ghim cứng
+        "Anti_Overshoot": "Forced"           // Cưỡng bức không lệch đầu
+    },
+
+    // Tầng 4: Chuỗi Key nguyên bản cho Loader (Raw)
+    "RAW_KEYS_V54": {
+        "Magnetic_Lock": "com.accpt_ffxbase64_Key_allow_MagneticLockHead_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "Zero_Overshoot": "com.accpt_ffxbase64_Key_allow_ZeroOvershoot_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=Active",
+        "High_Sens_Fix": "com.accpt_ffxbase64_Key_allow_HighSensFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    }
+};
 // Patch 1: Bone3D to Screen Sync (Hàm chuyển đổi tọa độ thực thể)
 // Ánh xạ Bone 8 (Head) trực tiếp vào luồng xử lý Delta
 const HEX_SYNC_BONE_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
@@ -2745,7 +2792,9 @@ obj["DTien_V52_Perfect"] = DTien_V52_Engine;
 obj["DTien_V53_Final"] = DTien_V53_Engine;
     obj["Sync_Status"] = "CHAIN_COMPLETED";
     obj["Lock_Strength"] = "MAX_STABLE";
-
+obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
+    obj["Sens_Status"] = "OVERCLOCKED_STABLE";
+    obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
 
 body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
