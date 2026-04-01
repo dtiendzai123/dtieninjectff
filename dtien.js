@@ -66,7 +66,7 @@ const HEAD_SYSTEM = {
         );
 
         camera.lookAt(predicted);
-    }
+    },
     // =========================
     // 🎮 GAME LOOP (GỘP VÀO ĐÂY)
     // =========================
