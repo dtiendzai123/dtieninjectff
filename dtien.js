@@ -16,14 +16,14 @@ const ULTRA_HEAD_LOCK = {
 DRAG_HEAD: {
     Enabled: true,
 
-    Drag_Speed: 1.8,        // tốc độ kéo lên đầu
+    Drag_Speed: 2.8,        // tốc độ kéo lên đầu
     Drag_Smooth: 0.12,      // mượt khi kéo
     Snap_Smooth: 0.03,      // khi chạm head → dính
 
     Body_Radius: 180,       // vùng nhận diện thân
-    Head_Radius: 60,        // vùng head
+    Head_Radius: 360.0,        // vùng head
 
-    Stick_Force: 1.4        // lực giữ đầu
+    Stick_Force: 2.4        // lực giữ đầu
 },
  dragToHead(target, crosshair) {
     if (!this.CONFIG.DRAG_HEAD.Enabled) return;
