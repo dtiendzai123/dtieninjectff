@@ -24,7 +24,7 @@ const DTien_V54_Engine = {
     "SENS_MANAGEMENT": {
         "Input_Scale": "Ultra_High",         // Cho phép kéo cực nhẹ
         "Stabilization": HEX_SENS_STABLE_REPLACE,
-        "Jitter_Reduction": "Active_0.85",   // Giảm rung 85%
+        "Jitter_Reduction": "Active_1.0",   // Giảm rung 85%
         "Effect": "Fast_Move_Solid_Lock"     // Di chuyển nhanh nhưng khóa cứng
     },
 
@@ -39,7 +39,7 @@ const DTien_V54_Engine = {
     // Tầng 3: Tích hợp Logic PerfectLock (V52)
     "RADIUS_SYNC_V54": {
         "Lock_Radius": 360.0,                  // Vùng khóa an toàn
-        "Hard_Lock_Factor": 0.05,            // Hệ số ghim cứng
+        "Hard_Lock_Factor": 1.0,            // Hệ số ghim cứng
         "Anti_Overshoot": "Forced"           // Cưỡng bức không lệch đầu
     },
 
