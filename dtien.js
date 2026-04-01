@@ -20,7 +20,7 @@ ANTI_OVER: {
     Slow_Zone: 60,          // vùng giảm tốc gần head
     Dead_Zone: 6,           // vùng dừng hẳn (không di chuyển)
 
-    Damping: 0.7,           // chống vượt
+    Damping: 1.0,           // chống vượt
     Min_Smooth: 0.03,
     Max_Smooth: 0.18
 },
@@ -33,7 +33,7 @@ ANTI_OVER: {
     Max_Correction: 50,     // giới hạn kéo (fix lố tâm)
     Damping: 1.0,          // chống rung
 
-    Predict: 0.04,          // predict nhẹ
+    Predict: 0.001,          // predict nhẹ
     Head_Offset_Y: 0.258     // fix lệch cổ
 },
     trackHeadWhenRed(target, crosshair) {
@@ -162,7 +162,7 @@ ANTI_OVER: {
     Enabled: true,
 
     Pre_Radius: 360,        // phạm vi kích hoạt
-    Pre_Strength: 1.0,     // lực dịch tâm (0.2–0.5)
+    Pre_Strength: 0.5,     // lực dịch tâm (0.2–0.5)
 
     Predict_Time: 0.001,     // dự đoán trước
     Max_Shift: 1000           // giới hạn dịch chuyển (pixel)
