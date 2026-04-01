@@ -69,7 +69,7 @@ PRO_HEAD: {
     }
 
     return false;
-}
+},
 getHeadOffset(target) {
     if (!this.CONFIG.PRO_HEAD.Model_Fix) {
         return this.CONFIG.PRO_HEAD.Base_Offset_Y;
@@ -80,7 +80,7 @@ getHeadOffset(target) {
     if (target.modelType === "short") return 0.06;
 
     return this.CONFIG.PRO_HEAD.Base_Offset_Y;
-}
+},
 predictHeadAdvanced(target) {
     const vel = target.velocity || {x:0,y:0,z:0};
 
@@ -100,7 +100,7 @@ predictHeadAdvanced(target) {
         y: target.headWorldPos.y + offsetY + vel.y * predict - this.CONFIG.PRO_HEAD.Gravity_Comp,
         z: target.headWorldPos.z + vel.z * predict
     };
-}
+},
 proAim(target, crosshair, dt) {
     if (!target) return;
 
