@@ -13,7 +13,83 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-LIGHT_DRAG: {
+NEAR_HEAD_LOCK: {
+    Enabled: true,
+
+    Activate_Radius: 360,     // vùng kích hoạt gần head
+    Snap_Speed: 2.0,         // tốc độ snap vào đầu
+
+    Snap_Smooth: 0.05,       // mượt khi snap
+    Lock_Smooth: 0.02,       // mượt khi đã dính
+
+    Stick_Force: 1.45,       // lực giữ đầu
+
+    Predict: 0.0001,           // predict nhẹ
+    Offset_Y: 0.258           // fix lệch cổ
+},
+  nearHeadLock(target, crosshair) {
+    if (!this.CONFIG.NEAR_HEAD_LOCK.Enabled) return false;
+    if (!target || !target.headWorldPos) return false;
+
+    const vel = target.velocity || {x:0,y:0,z:0};
+
+    // 🎯 head + offset
+    const headPos = {
+        x: target.headWorldPos.x,
+        y: target.headWorldPos.y + this.CONFIG.NEAR_HEAD_LOCK.Offset_Y,
+        z: target.headWorldPos.z
+    };
+
+    // 🔮 predict
+    const predicted = {
+        x: headPos.x + vel.x * this.CONFIG.NEAR_HEAD_LOCK.Predict,
+        y: headPos.y + vel.y * this.CONFIG.NEAR_HEAD_LOCK.Predict,
+        z: headPos.z + vel.z * this.CONFIG.NEAR_HEAD_LOCK.Predict
+    };
+
+    const screenHead = worldToScreen(predicted);
+    if (!screenHead) return false;
+
+    // 📏 distance từ tâm → head
+    let dx = screenHead.x - crosshair.x;
+    let dy = screenHead.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // =========================
+    // 🚫 chưa đủ gần → không kích hoạt
+    // =========================
+    if (dist > this.CONFIG.NEAR_HEAD_LOCK.Activate_Radius) {
+        return false;
+    }
+
+    // =========================
+    // ⚡ SNAP NHANH VÀO HEAD
+    // =========================
+    dx *= this.CONFIG.NEAR_HEAD_LOCK.Snap_Speed;
+    dy *= this.CONFIG.NEAR_HEAD_LOCK.Snap_Speed;
+
+    const snapPos = {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy
+    };
+
+    camera.lookAtScreen(snapPos);
+
+    // =========================
+    // 🧲 LOCK CHẶT
+    // =========================
+    if (dist < 20) {
+        camera.smooth = this.CONFIG.NEAR_HEAD_LOCK.Lock_Smooth;
+        camera.force = this.CONFIG.NEAR_HEAD_LOCK.Stick_Force;
+    } else {
+        camera.smooth = this.CONFIG.NEAR_HEAD_LOCK.Snap_Smooth;
+        camera.force = 1.2;
+    }
+
+    return true;
+},
+    LIGHT_DRAG: {
     Enabled: true,
 
     Drag_Force: 2.2,        // lực kéo lên đầu (cực quan trọng)
@@ -645,7 +721,10 @@ if (fix) {
     camera.lookAtScreen({ x: fix.x, y: fix.y });
     camera.smooth = fix.smooth;
 }
-        let dt = (now - this.state.lastTime) / 1000;
+   if (this.nearHeadLock(target, crosshair)) {
+    return; // ưu tiên cao nhất
+}
+      let dt = (now - this.state.lastTime) / 1000;
         this.state.lastTime = now;
 this.trackHeadWhenRed(target, crosshair);
         // chống lag spike
