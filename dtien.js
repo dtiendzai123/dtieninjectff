@@ -56,6 +56,54 @@ const DTien_V54_Engine = {
         "High_Sens_Fix": "com.accpt_ffxbase64_Key_allow_HighSensFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
+function isCrosshairOnHead(target, crosshair) {
+    const headPos = target.headWorldPos;
+    const screenPos = worldToScreen(headPos);
+
+    const dx = crosshair.x - screenPos.x;
+    const dy = crosshair.y - screenPos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    return dist <= CONFIG.HEAD_LOCK_SYSTEM.Head_Radius;
+}
+let headLockTimer = 0;
+let isHeadLocked = false;
+
+function updateHeadLock(target, crosshair, deltaTime) {
+    if (!CONFIG.HEAD_LOCK_SYSTEM.Enabled) return;
+
+    if (isCrosshairOnHead(target, crosshair)) {
+        isHeadLocked = true;
+        headLockTimer = CONFIG.HEAD_LOCK_SYSTEM.Max_Stick_Time;
+    }
+
+    if (isHeadLocked) {
+        headLockTimer -= deltaTime;
+
+        // 🔥 Force kéo dính đầu
+        lockToHeadHard(target);
+
+        // Giảm smoothing để không bị trượt
+        CURRENT_SMOOTH = 0.05;
+
+        // Tăng lực kéo
+        CURRENT_FORCE = CONFIG.HEAD_LOCK_SYSTEM.Stick_Force;
+
+        if (headLockTimer <= 0) {
+            isHeadLocked = false;
+        }
+    }
+}
+function gameLoop(deltaTime) {
+    const target = getBestTarget();
+    if (!target) return;
+
+    updateHeadLock(target, crosshair, deltaTime);
+
+    if (!isHeadLocked) {
+        normalAim(target);
+    }
+}
 // Patch 1: Bone3D to Screen Sync (Hàm chuyển đổi tọa độ thực thể)
 // Ánh xạ Bone 8 (Head) trực tiếp vào luồng xử lý Delta
 const HEX_SYNC_BONE_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
