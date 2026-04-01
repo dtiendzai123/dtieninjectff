@@ -16,13 +16,13 @@ const ULTRA_HEAD_LOCK = {
 LIGHT_DRAG: {
     Enabled: true,
 
-    Drag_Force: 2.2,        // lực kéo lên đầu (cực quan trọng)
-    Vertical_Boost: 1.8,    // ưu tiên kéo trục Y (lên đầu)
+    Drag_Force: 3.2,        // lực kéo lên đầu (cực quan trọng)
+    Vertical_Boost: 2.8,    // ưu tiên kéo trục Y (lên đầu)
 
     Reduce_Resistance: 1.0, // giảm “nặng tâm”
     Snap_Smooth: 0.04,      // khi gần head → dính
 
-    Body_To_Head_Scale: 1.6,// tăng tốc kéo từ thân lên đầu
+    Body_To_Head_Scale: 2.6,// tăng tốc kéo từ thân lên đầu
 
     Activation_Radius: 360  // vùng kích hoạt
 },
