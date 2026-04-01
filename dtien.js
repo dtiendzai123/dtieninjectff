@@ -13,7 +13,18 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-RED_HEAD_TRACK: {
+ANTI_OVER: {
+    Enabled: true,
+
+    Max_Correction: 35,     // giới hạn kéo (pixel)
+    Slow_Zone: 60,          // vùng giảm tốc gần head
+    Dead_Zone: 6,           // vùng dừng hẳn (không di chuyển)
+
+    Damping: 0.7,           // chống vượt
+    Min_Smooth: 0.03,
+    Max_Smooth: 0.18
+},
+    RED_HEAD_TRACK: {
     Enabled: true,
 
     Stick_Smooth: 0.04,     // độ mượt khi dính đầu
@@ -87,6 +98,65 @@ RED_HEAD_TRACK: {
 
     camera.smooth = this.CONFIG.RED_HEAD_TRACK.Stick_Smooth;
     camera.force = this.CONFIG.RED_HEAD_TRACK.Stick_Force;
+},
+ getDynamicSmooth(dist) {
+    const min = this.CONFIG.ANTI_OVER.Min_Smooth;
+    const max = this.CONFIG.ANTI_OVER.Max_Smooth;
+
+    const t = Math.min(dist / 200, 1);
+
+    return min + (max - min) * t;
+},
+    antiOverAim(target, crosshair) {
+    if (!this.CONFIG.ANTI_OVER.Enabled) return null;
+    if (!target || !target.headWorldPos) return null;
+
+    const head = worldToScreen(target.headWorldPos);
+    if (!head) return null;
+
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // =========================
+    // 🛑 DEAD ZONE (fix rung nhỏ)
+    // =========================
+    if (dist < this.CONFIG.ANTI_OVER.Dead_Zone) {
+        return null; // dừng hẳn → không overshoot
+    }
+
+    // =========================
+    // 🐢 SLOWDOWN GẦN HEAD
+    // =========================
+    let slowFactor = 1.0;
+
+    if (dist < this.CONFIG.ANTI_OVER.Slow_Zone) {
+        slowFactor = dist / this.CONFIG.ANTI_OVER.Slow_Zone;
+    }
+
+    dx *= slowFactor;
+    dy *= slowFactor;
+
+    // =========================
+    // 🚫 CLAMP (chống lố)
+    // =========================
+    const max = this.CONFIG.ANTI_OVER.Max_Correction;
+
+    dx = Math.max(-max, Math.min(max, dx));
+    dy = Math.max(-max, Math.min(max, dy));
+
+    // =========================
+    // 🧊 DAMPING (giảm quán tính)
+    // =========================
+    dx *= this.CONFIG.ANTI_OVER.Damping;
+    dy *= this.CONFIG.ANTI_OVER.Damping;
+
+    return {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy,
+        smooth: this.getDynamicSmooth(dist)
+    };
 },
     PRE_AIM: {
     Enabled: true,
@@ -504,7 +574,12 @@ this.dragToHead(target, crosshair);
         if (!this.state.lastTime) {
             this.state.lastTime = now;
         }
+const fix = this.antiOverAim(target, crosshair);
 
+if (fix) {
+    camera.lookAtScreen({ x: fix.x, y: fix.y });
+    camera.smooth = fix.smooth;
+}
         let dt = (now - this.state.lastTime) / 1000;
         this.state.lastTime = now;
 this.trackHeadWhenRed(target, crosshair);
