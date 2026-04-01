@@ -17,12 +17,12 @@ LIGHT_DRAG: {
     Enabled: true,
 
     Drag_Force: 2.2,        // lực kéo lên đầu (cực quan trọng)
-    Vertical_Boost: 2.8,    // ưu tiên kéo trục Y (lên đầu)
+    Vertical_Boost: 2.0,    // ưu tiên kéo trục Y (lên đầu)
 
     Reduce_Resistance: 1.0, // giảm “nặng tâm”
     Snap_Smooth: 0.04,      // khi gần head → dính
 
-    Body_To_Head_Scale: 2.6,// tăng tốc kéo từ thân lên đầu
+    Body_To_Head_Scale: 2.0,// tăng tốc kéo từ thân lên đầu
 
     Activation_Radius: 360  // vùng kích hoạt
 },
