@@ -79,15 +79,14 @@ const DTien_V53_Engine = {
         "Sync_Latency": "0ms"                  // Đồng bộ tức thời
     },
 
-    // Tầng 2: Thông số kỹ thuật (Cấu hình JS)
-    "CONFIG_SYNC": {
-        "Radius_Snap": 360.0,
-        "Radius_Hard": 360.0,
-        "Smooth_Factor": 0.18,
-        "Hard_Factor": 1.0,
-        "Anti_Shake": "Active_0.4",
-        "Max_Speed": 40.0
-    },
+ "CONFIG_SYNC": {
+    "Radius_Snap": 360.0,      // Giảm để tránh hút sai mục tiêu
+    "Radius_Hard": 360.0,      // Hard lock nhỏ hơn Snap để khóa chính xác hơn
+    "Smooth_Factor": 0.26,     // Tăng mượt → kéo lên đầu ổn định hơn
+    "Hard_Factor": 0.88,       // Giảm lực cứng → tránh giật lệch đầu
+    "Anti_Shake": "Active_1.0", // Chống rung mạnh hơn
+    "Max_Speed": 32.0          // Giảm tốc để tránh overshoot
+}
 
     // Tầng 3: Bản đồ địa chỉ (Memory Map - Done)
     "OFFSETS_V53": {
