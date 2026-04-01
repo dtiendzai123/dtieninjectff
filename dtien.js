@@ -19,8 +19,8 @@ PRE_AIM: {
     Pre_Radius: 360,        // phạm vi kích hoạt
     Pre_Strength: 1.0,     // lực dịch tâm (0.2–0.5)
 
-    Predict_Time: 0.06,     // dự đoán trước
-    Max_Shift: 100           // giới hạn dịch chuyển (pixel)
+    Predict_Time: 0.001,     // dự đoán trước
+    Max_Shift: 500           // giới hạn dịch chuyển (pixel)
 },
     preAimHead(target, crosshair) {
     if (!this.CONFIG.PRE_AIM.Enabled || !target) return null;
