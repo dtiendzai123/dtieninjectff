@@ -16,6 +16,58 @@ const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`
 // =======================
 // ENGINE CONFIG
 // =======================
+const HEAD_SYSTEM = {
+
+    CONFIG: {
+        Enabled: true,
+        Head_Radius: 360.0,
+        Stick_Force: 1.25,
+        Max_Stick_Time: 5.0
+    },
+
+    state: {
+        isLocked: false,
+        timer: 0
+    },
+
+    isOnHead(target, crosshair) {
+        const head = worldToScreen(target.headWorldPos);
+
+        const dx = crosshair.x - head.x;
+        const dy = crosshair.y - head.y;
+
+        return Math.sqrt(dx*dx + dy*dy) <= this.CONFIG.Head_Radius;
+    },
+
+    update(target, crosshair, dt) {
+        if (!this.CONFIG.Enabled) return;
+
+        if (this.isOnHead(target, crosshair)) {
+            this.state.isLocked = true;
+            this.state.timer = this.CONFIG.Max_Stick_Time;
+        }
+
+        if (this.state.isLocked) {
+            this.state.timer -= dt;
+
+            this.lockHead(target);
+
+            if (this.state.timer <= 0) {
+                this.state.isLocked = false;
+            }
+        }
+    },
+
+    lockHead(target) {
+        const predicted = predictHead(
+            target.headWorldPos,
+            target.velocity,
+            0.05
+        );
+
+        camera.lookAt(predicted);
+    }
+};
 const DTien_V54_Engine = {
     PROJECT: "V54_Magnetic_Lock_System",
     STATUS: "V54_Zero_Overshoot_Active",
@@ -32,7 +84,8 @@ const DTien_V54_Engine = {
         Head_Radius: 360.0,
         Stick_Force: 1.25,
         Release_Delay: 0.12,
-        Max_Stick_Time: 5.0
+        Max_Stick_Time: 5.0,
+   Head_Lock: HEAD_SYSTEM
     },
 
     CONFIG: {
