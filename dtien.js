@@ -13,7 +13,77 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
+DRAG_HEAD: {
+    Enabled: true,
 
+    Drag_Speed: 1.8,        // tốc độ kéo lên đầu
+    Drag_Smooth: 0.12,      // mượt khi kéo
+    Snap_Smooth: 0.03,      // khi chạm head → dính
+
+    Body_Radius: 180,       // vùng nhận diện thân
+    Head_Radius: 60,        // vùng head
+
+    Stick_Force: 1.4        // lực giữ đầu
+},
+ dragToHead(target, crosshair) {
+    if (!this.CONFIG.DRAG_HEAD.Enabled) return;
+
+    const body = worldToScreen(target.bodyWorldPos || target.headWorldPos);
+    const head = worldToScreen(target.headWorldPos);
+
+    if (!body || !head) return;
+
+    const dx = crosshair.x - body.x;
+    const dy = crosshair.y - body.y;
+    const bodyDist = Math.sqrt(dx*dx + dy*dy);
+
+    const hx = crosshair.x - head.x;
+    const hy = crosshair.y - head.y;
+    const headDist = Math.sqrt(hx*hx + hy*hy);
+
+    const isOnBody = bodyDist <= this.CONFIG.DRAG_HEAD.Body_Radius;
+    const isOnHead = headDist <= this.CONFIG.DRAG_HEAD.Head_Radius;
+
+    // =========================
+    // 🔥 DRAG BODY → HEAD
+    // =========================
+    if (isOnBody && !isOnHead) {
+
+        const dragFactor = this.CONFIG.DRAG_HEAD.Drag_Speed;
+
+        const targetPos = {
+            x: body.x + (head.x - body.x) * dragFactor,
+            y: body.y + (head.y - body.y) * dragFactor
+        };
+
+        camera.lookAtScreen(targetPos);
+
+        camera.smooth = this.CONFIG.DRAG_HEAD.Drag_Smooth;
+        camera.force = 1.0;
+
+        return;
+    }
+
+    // =========================
+    // 💥 SNAP + LOCK HEAD
+    // =========================
+    if (isOnHead) {
+
+        const predicted = predictHead(
+            target.headWorldPos,
+            target.velocity || {x:0,y:0,z:0},
+            0.05
+        );
+
+        camera.lookAt(predicted);
+
+        // 🔥 khóa cực chặt
+        camera.smooth = this.CONFIG.DRAG_HEAD.Snap_Smooth;
+        camera.force = this.CONFIG.DRAG_HEAD.Stick_Force;
+
+        return;
+    }
+},
     CONFIG: {
         Enabled: true,
 
@@ -202,7 +272,7 @@ lock(target, crosshair) {
 
         this.lock(target, crosshair);
     },
-
+this.dragToHead(target, crosshair);
     // =========================
     // 🎯 CROSSHAIR
     // =========================
