@@ -45,7 +45,7 @@ PRO_HEAD: {
         x: crosshair.x + dx * force * this.CONFIG.PRO_HEAD.Magnet_Force,
         y: crosshair.y + dy * force * this.CONFIG.PRO_HEAD.Magnet_Force
     };
-}
+},
     updateFlickLock(crosshair, dt) {
     if (!this._lastCrosshair) {
         this._lastCrosshair = crosshair;
@@ -131,7 +131,7 @@ proAim(target, crosshair, dt) {
     // 🎯 bình thường
     camera.lookAt(predicted);
     camera.smooth = 0.15;
-};
+},
     
 
 
