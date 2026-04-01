@@ -34,6 +34,56 @@ const DTien_V54_Engine = {
     "Release_Delay": 0.12,      // Giữ thêm sau khi lệch nhẹ
     "Max_Stick_Time": 5.0       // Tránh lock quá lâu gây lộ
 },
+ CONFIG: {
+        Enabled: true,
+        Head_Radius: 35,
+        Stick_Force: 1.25,
+        Max_Stick_Time: 1.2
+    },
+
+    state: {
+        isLocked: false,
+        timer: 0
+    },
+
+    isOnHead(target, crosshair) {
+        const head = worldToScreen(target.headWorldPos);
+
+        const dx = crosshair.x - head.x;
+        const dy = crosshair.y - head.y;
+
+        return Math.sqrt(dx*dx + dy*dy) <= this.CONFIG.Head_Radius;
+    },
+
+    update(target, crosshair, dt) {
+        if (!this.CONFIG.Enabled) return;
+
+        if (this.isOnHead(target, crosshair)) {
+            this.state.isLocked = true;
+            this.state.timer = this.CONFIG.Max_Stick_Time;
+        }
+
+        if (this.state.isLocked) {
+            this.state.timer -= dt;
+
+            this.lockHead(target);
+
+            if (this.state.timer <= 0) {
+                this.state.isLocked = false;
+            }
+        }
+    },
+
+    lockHead(target) {
+        const predicted = predictHead(
+            target.headWorldPos,
+            target.velocity,
+            0.05
+        );
+
+        camera.lookAt(predicted);
+    }
+};
     // Tầng 2: Cơ chế kẹp tâm (Magnetic Clamping)
     "MAGNETIC_CORE": {
         "Target_Bone": "0x2e5a7b4",          // HeadTF (Done)
@@ -56,54 +106,7 @@ const DTien_V54_Engine = {
         "High_Sens_Fix": "com.accpt_ffxbase64_Key_allow_HighSensFix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
     }
 };
-function isCrosshairOnHead(target, crosshair) {
-    const headPos = target.headWorldPos;
-    const screenPos = worldToScreen(headPos);
 
-    const dx = crosshair.x - screenPos.x;
-    const dy = crosshair.y - screenPos.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    return dist <= CONFIG.HEAD_LOCK_SYSTEM.Head_Radius;
-}
-let headLockTimer = 0;
-let isHeadLocked = false;
-
-function updateHeadLock(target, crosshair, deltaTime) {
-    if (!CONFIG.HEAD_LOCK_SYSTEM.Enabled) return;
-
-    if (isCrosshairOnHead(target, crosshair)) {
-        isHeadLocked = true;
-        headLockTimer = CONFIG.HEAD_LOCK_SYSTEM.Max_Stick_Time;
-    }
-
-    if (isHeadLocked) {
-        headLockTimer -= deltaTime;
-
-        // 🔥 Force kéo dính đầu
-        lockToHeadHard(target);
-
-        // Giảm smoothing để không bị trượt
-        CURRENT_SMOOTH = 0.05;
-
-        // Tăng lực kéo
-        CURRENT_FORCE = CONFIG.HEAD_LOCK_SYSTEM.Stick_Force;
-
-        if (headLockTimer <= 0) {
-            isHeadLocked = false;
-        }
-    }
-}
-function gameLoop(deltaTime) {
-    const target = getBestTarget();
-    if (!target) return;
-
-    updateHeadLock(target, crosshair, deltaTime);
-
-    if (!isHeadLocked) {
-        normalAim(target);
-    }
-}
 // Patch 1: Bone3D to Screen Sync (Hàm chuyển đổi tọa độ thực thể)
 // Ánh xạ Bone 8 (Head) trực tiếp vào luồng xử lý Delta
 const HEX_SYNC_BONE_FIND = `20 40 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
