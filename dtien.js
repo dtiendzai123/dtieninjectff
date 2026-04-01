@@ -22,7 +22,7 @@ NEAR_HEAD_LOCK: {
     Snap_Smooth: 0.05,       // mượt khi snap
     Lock_Smooth: 0.02,       // mượt khi đã dính
 
-    Stick_Force: 1.45,       // lực giữ đầu
+    Stick_Force: 3.0,       // lực giữ đầu
 
     Predict: 0.0001,           // predict nhẹ
     Offset_Y: 0.258           // fix lệch cổ
