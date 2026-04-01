@@ -13,7 +13,82 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-PRE_AIM: {
+RED_HEAD_TRACK: {
+    Enabled: true,
+
+    Stick_Smooth: 0.04,     // độ mượt khi dính đầu
+    Stick_Force: 1.35,      // lực giữ
+
+    Max_Correction: 45,     // giới hạn kéo (fix lố tâm)
+    Damping: 0.65,          // chống rung
+
+    Predict: 0.04,          // predict nhẹ
+    Head_Offset_Y: 0.258     // fix lệch cổ
+},
+    trackHeadWhenRed(target, crosshair) {
+    if (!this.CONFIG.RED_HEAD_TRACK.Enabled) return;
+
+    if (!isCrosshairRed()) return; // 🔴 điều kiện kích hoạt
+
+    if (!target || !target.headWorldPos) return;
+
+    const vel = target.velocity || {x:0,y:0,z:0};
+
+    // =========================
+    // 🎯 HEAD + OFFSET
+    // =========================
+    const headPos = {
+        x: target.headWorldPos.x,
+        y: target.headWorldPos.y + this.CONFIG.RED_HEAD_TRACK.Head_Offset_Y,
+        z: target.headWorldPos.z
+    };
+
+    // =========================
+    // 🔮 PREDICT NHẸ
+    // =========================
+    const predicted = {
+        x: headPos.x + vel.x * this.CONFIG.RED_HEAD_TRACK.Predict,
+        y: headPos.y + vel.y * this.CONFIG.RED_HEAD_TRACK.Predict,
+        z: headPos.z + vel.z * this.CONFIG.RED_HEAD_TRACK.Predict
+    };
+
+    const screenHead = worldToScreen(predicted);
+    if (!screenHead) return;
+
+    // =========================
+    // 🧠 CALC DELTA
+    // =========================
+    let dx = screenHead.x - crosshair.x;
+    let dy = screenHead.y - crosshair.y;
+
+    // =========================
+    // 🚫 CLAMP (FIX LỐ TÂM)
+    // =========================
+    const max = this.CONFIG.RED_HEAD_TRACK.Max_Correction;
+
+    dx = Math.max(-max, Math.min(max, dx));
+    dy = Math.max(-max, Math.min(max, dy));
+
+    // =========================
+    // 🧊 DAMPING (FIX RUNG)
+    // =========================
+    dx *= this.CONFIG.RED_HEAD_TRACK.Damping;
+    dy *= this.CONFIG.RED_HEAD_TRACK.Damping;
+
+    // =========================
+    // 💥 APPLY
+    // =========================
+    const finalPos = {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy
+    };
+
+    camera.lookAtScreen(finalPos);
+
+    camera.smooth = this.CONFIG.RED_HEAD_TRACK.Stick_Smooth;
+    camera.force = this.CONFIG.RED_HEAD_TRACK.Stick_Force;
+},
+    PRE_AIM: {
     Enabled: true,
 
     Pre_Radius: 360,        // phạm vi kích hoạt
@@ -432,7 +507,7 @@ this.dragToHead(target, crosshair);
 
         let dt = (now - this.state.lastTime) / 1000;
         this.state.lastTime = now;
-
+this.trackHeadWhenRed(target, crosshair);
         // chống lag spike
         if (dt > 0.05) dt = 0.05;
 
