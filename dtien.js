@@ -16,11 +16,11 @@ const ULTRA_HEAD_LOCK = {
 PRO_HEAD: {
     Enabled: true,
 
-    Magnet_Radius: 140,
-    Magnet_Force: 0.6,
+    Magnet_Radius: 360.0,
+    Magnet_Force: 1.0,
 
-    Flick_Threshold: 120,     // tốc độ lia
-    Flick_Stick_Time: 0.25,
+    Flick_Threshold: 200,     // tốc độ lia
+    Flick_Stick_Time: 0.01,
 
     Base_Offset_Y: 0.08,
     Model_Fix: true,
