@@ -13,6 +13,128 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
+PRO_HEAD: {
+    Enabled: true,
+
+    Magnet_Radius: 140,
+    Magnet_Force: 0.6,
+
+    Flick_Threshold: 120,     // tốc độ lia
+    Flick_Stick_Time: 0.25,
+
+    Base_Offset_Y: 0.08,
+    Model_Fix: true,
+
+    Jump_Predict: 0.12,
+    Gravity_Comp: 0.04
+},
+    magnetHead(target, crosshair) {
+    const head = worldToScreen(target.headWorldPos);
+    if (!head) return null;
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist > this.CONFIG.PRO_HEAD.Magnet_Radius) return null;
+
+    const force = 1 - (dist / this.CONFIG.PRO_HEAD.Magnet_Radius);
+
+    return {
+        x: crosshair.x + dx * force * this.CONFIG.PRO_HEAD.Magnet_Force,
+        y: crosshair.y + dy * force * this.CONFIG.PRO_HEAD.Magnet_Force
+    };
+}
+    updateFlickLock(crosshair, dt) {
+    if (!this._lastCrosshair) {
+        this._lastCrosshair = crosshair;
+        return;
+    }
+
+    const speed = Math.sqrt(
+        (crosshair.x - this._lastCrosshair.x) ** 2 +
+        (crosshair.y - this._lastCrosshair.y) ** 2
+    ) / dt;
+
+    this._lastCrosshair = crosshair;
+
+    if (speed > this.CONFIG.PRO_HEAD.Flick_Threshold) {
+        this._flickTimer = this.CONFIG.PRO_HEAD.Flick_Stick_Time;
+    }
+
+    if (this._flickTimer > 0) {
+        this._flickTimer -= dt;
+        return true;
+    }
+
+    return false;
+}
+getHeadOffset(target) {
+    if (!this.CONFIG.PRO_HEAD.Model_Fix) {
+        return this.CONFIG.PRO_HEAD.Base_Offset_Y;
+    }
+
+    // ví dụ fix theo loại model
+    if (target.modelType === "tall") return 0.1;
+    if (target.modelType === "short") return 0.06;
+
+    return this.CONFIG.PRO_HEAD.Base_Offset_Y;
+}
+predictHeadAdvanced(target) {
+    const vel = target.velocity || {x:0,y:0,z:0};
+
+    let predict = this.CONFIG.Predict_Base || 0.05;
+
+    // detect jump
+    const isJumping = Math.abs(vel.y) > 1.2;
+
+    if (isJumping) {
+        predict += this.CONFIG.PRO_HEAD.Jump_Predict;
+    }
+
+    const offsetY = this.getHeadOffset(target);
+
+    return {
+        x: target.headWorldPos.x + vel.x * predict,
+        y: target.headWorldPos.y + offsetY + vel.y * predict - this.CONFIG.PRO_HEAD.Gravity_Comp,
+        z: target.headWorldPos.z + vel.z * predict
+    };
+}
+proAim(target, crosshair, dt) {
+    if (!target) return;
+
+    // 🎯 flick detect
+    const flicking = this.updateFlickLock(crosshair, dt);
+
+    // 🧲 magnet
+    const magnetPos = this.magnetHead(target, crosshair);
+
+    // 🧠 predict
+    const predicted = this.predictHeadAdvanced(target);
+
+    if (flicking) {
+        // 🔥 flick → lock cực mạnh
+        camera.lookAt(predicted);
+        camera.smooth = 0.02;
+        camera.force = 1.5;
+        return;
+    }
+
+    if (magnetPos) {
+        // 🧲 hút nhẹ vào đầu
+        camera.lookAtScreen(magnetPos);
+        camera.smooth = 0.1;
+        return;
+    }
+
+    // 🎯 bình thường
+    camera.lookAt(predicted);
+    camera.smooth = 0.15;
+};
+    
+
+
 DRAG_HEAD: {
     Enabled: true,
 
@@ -269,7 +391,7 @@ this.dragToHead(target, crosshair);
         if (!target) return;
 
         const crosshair = this.getCrosshair();
-
+this.proAim(target, crosshair, dt);
         this.lock(target, crosshair);
     },
 
