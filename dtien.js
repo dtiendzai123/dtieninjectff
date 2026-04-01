@@ -19,8 +19,8 @@ PRO_HEAD: {
     Magnet_Radius: 360.0,
     Magnet_Force: 1.0,
 
-    Flick_Threshold: 200,     // tốc độ lia
-    Flick_Stick_Time: 0.01,
+    Flick_Threshold: 1000,     // tốc độ lia
+    Flick_Stick_Time: 5.0,
 
     Base_Offset_Y: 0.08,
     Model_Fix: true,
