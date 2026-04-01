@@ -13,7 +13,67 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-ANTI_OVER: {
+LIGHT_DRAG: {
+    Enabled: true,
+
+    Drag_Force: 2.2,        // lực kéo lên đầu (cực quan trọng)
+    Vertical_Boost: 1.8,    // ưu tiên kéo trục Y (lên đầu)
+
+    Reduce_Resistance: 1.0, // giảm “nặng tâm”
+    Snap_Smooth: 0.04,      // khi gần head → dính
+
+    Body_To_Head_Scale: 1.6,// tăng tốc kéo từ thân lên đầu
+
+    Activation_Radius: 360  // vùng kích hoạt
+},
+  lightDragToHead(target, crosshair) {
+    if (!this.CONFIG.LIGHT_DRAG.Enabled) return null;
+    if (!target || !target.headWorldPos) return null;
+
+    const head = worldToScreen(target.headWorldPos);
+    const body = worldToScreen(target.bodyWorldPos || target.headWorldPos);
+
+    if (!head || !body) return null;
+
+    // 📏 khoảng cách từ tâm → body
+    const dxBody = body.x - crosshair.x;
+    const dyBody = body.y - crosshair.y;
+    const distBody = Math.sqrt(dxBody*dxBody + dyBody*dyBody);
+
+    if (distBody > this.CONFIG.LIGHT_DRAG.Activation_Radius) return null;
+
+    // =========================
+    // 🎯 VECTOR BODY → HEAD
+    // =========================
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // 🔥 tăng lực kéo lên đầu
+    dx *= this.CONFIG.LIGHT_DRAG.Drag_Force;
+    dy *= this.CONFIG.LIGHT_DRAG.Drag_Force;
+
+    // 🔥 ưu tiên kéo lên (fix kẹt cổ/ngực)
+    dy *= this.CONFIG.LIGHT_DRAG.Vertical_Boost;
+
+    // 🔥 giảm “ma sát” → nhẹ tâm
+    dx *= (1 + this.CONFIG.LIGHT_DRAG.Reduce_Resistance);
+    dy *= (1 + this.CONFIG.LIGHT_DRAG.Reduce_Resistance);
+
+    // =========================
+    // ⚡ BOOST nếu đang ở thân
+    // =========================
+    const bodyToHeadY = head.y - body.y;
+
+    if (Math.abs(dy) > Math.abs(bodyToHeadY * 0.5)) {
+        dy *= this.CONFIG.LIGHT_DRAG.Body_To_Head_Scale;
+    }
+
+    return {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy
+    };
+},
+    ANTI_OVER: {
     Enabled: true,
 
     Max_Correction: 50,     // giới hạn kéo (pixel)
@@ -575,7 +635,12 @@ this.dragToHead(target, crosshair);
             this.state.lastTime = now;
         }
 const fix = this.antiOverAim(target, crosshair);
+const drag = this.lightDragToHead(target, crosshair);
 
+if (drag) {
+    camera.lookAtScreen(drag);
+    camera.smooth = this.CONFIG.LIGHT_DRAG.Snap_Smooth;
+}
 if (fix) {
     camera.lookAtScreen({ x: fix.x, y: fix.y });
     camera.smooth = fix.smooth;
