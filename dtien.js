@@ -30,8 +30,8 @@ const ULTRA_HEAD_LOCK = {
         Smooth_Far: 0.22,
 
         // 🎯 predict
-        Predict_Base: 0.03,
-        Predict_Moving: 0.08,
+        Predict_Base: 0.001,
+        Predict_Moving: 0.00001,
 
         // 🎯 vùng head
         Head_Radius_Near: 360.0,
@@ -82,7 +82,68 @@ const ULTRA_HEAD_LOCK = {
 
         return Math.sqrt(dx*dx + dy*dy) <= radius;
     },
+lock(target, crosshair) {
+    if (!this.CONFIG.Enabled || !target || !target.headWorldPos) return;
 
+    const playerPos = getPlayerPosition();
+    if (!playerPos) return;
+
+    // 📏 khoảng cách
+    const dist = this.getDistance(playerPos, target.headWorldPos);
+
+    // 🚀 vận tốc enemy
+    const vel = target.velocity || {x:0,y:0,z:0};
+    const speed = Math.sqrt(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z);
+
+    const dyn = this.getDynamic(dist, speed);
+
+    // =========================
+    // 🎯 OFFSET CHÍNH XÁC ĐẦU
+    // =========================
+    const HEAD_OFFSET_Y = 0.08; // nâng lên đúng điểm head (fix bắn cổ)
+
+    const headPos = {
+        x: target.headWorldPos.x,
+        y: target.headWorldPos.y + HEAD_OFFSET_Y,
+        z: target.headWorldPos.z
+    };
+
+    // =========================
+    // 🔮 PREDICT
+    // =========================
+    let predictFactor = dyn.predict;
+
+    // tăng predict nếu địch chạy nhanh
+    if (speed > 1.2) predictFactor += 0.03;
+    if (speed > 2.5) predictFactor += 0.05;
+
+    const predicted = {
+        x: headPos.x + vel.x * predictFactor,
+        y: headPos.y + vel.y * predictFactor,
+        z: headPos.z + vel.z * predictFactor
+    };
+
+    // =========================
+    // 🎯 CHECK HEAD
+    // =========================
+    const onHead = this.isOnHead(target, crosshair, dyn.radius);
+
+    // =========================
+    // 💥 AIM
+    // =========================
+    camera.lookAt(predicted);
+
+    // =========================
+    // 🧲 STICK HEAD
+    // =========================
+    if (onHead) {
+        camera.smooth = 0.02;       // cực dính
+        camera.force = dyn.stick;   // lực giữ cao
+    } else {
+        camera.smooth = dyn.smooth;
+        camera.force = 1.0;
+    }
+},
     // =========================
     // 💥 MAIN LOCK
     // =========================
