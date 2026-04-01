@@ -120,7 +120,55 @@ const ULTRA_HEAD_LOCK = {
             camera.smooth = dyn.smooth;
             camera.force = 1.0;
         }
+    },
+  gameLoop() {
+        const now = Date.now();
+
+        if (!this.state.lastTime) {
+            this.state.lastTime = now;
+        }
+
+        let dt = (now - this.state.lastTime) / 1000;
+        this.state.lastTime = now;
+
+        // chống lag spike
+        if (dt > 0.05) dt = 0.05;
+
+        const target = getBestTarget();
+        if (!target) return;
+
+        const crosshair = this.getCrosshair();
+
+        this.lock(target, crosshair);
+    },
+
+    // =========================
+    // 🎯 CROSSHAIR
+    // =========================
+    getCrosshair() {
+        return {
+            x: screenWidth / 2,
+            y: screenHeight / 2
+        };
+    },
+
+    // =========================
+    // 🚀 START LOOP
+    // =========================
+    start() {
+        const loop = () => {
+            try {
+                this.gameLoop();
+            } catch (e) {
+                // tránh crash script
+            }
+
+            setTimeout(loop, 16); // ~60 FPS
+        };
+
+        loop();
     }
+
 };
 // =======================
 // ENGINE CONFIG
