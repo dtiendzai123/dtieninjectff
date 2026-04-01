@@ -13,7 +13,56 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-PRO_HEAD: {
+PRE_AIM: {
+    Enabled: true,
+
+    Pre_Radius: 360,        // phạm vi kích hoạt
+    Pre_Strength: 1.0,     // lực dịch tâm (0.2–0.5)
+
+    Predict_Time: 0.06,     // dự đoán trước
+    Max_Shift: 100           // giới hạn dịch chuyển (pixel)
+},
+    preAimHead(target, crosshair) {
+    if (!this.CONFIG.PRE_AIM.Enabled || !target) return null;
+
+    const head = worldToScreen(target.headWorldPos);
+    if (!head) return null;
+
+    // 📏 khoảng cách tâm → head
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // ❌ quá xa thì không pre-aim
+    if (dist > this.CONFIG.PRE_AIM.Pre_Radius) return null;
+
+    // =========================
+    // 🔮 PREDICT NHẸ TRƯỚC
+    // =========================
+    const vel = target.velocity || {x:0,y:0,z:0};
+
+    const predicted = {
+        x: head.x + vel.x * this.CONFIG.PRE_AIM.Predict_Time * 100,
+        y: head.y + vel.y * this.CONFIG.PRE_AIM.Predict_Time * 100
+    };
+
+    // =========================
+    // 🧲 DỊCH NHẸ TÂM LÊN HEAD
+    // =========================
+    let shiftX = (predicted.x - crosshair.x) * this.CONFIG.PRE_AIM.Pre_Strength;
+    let shiftY = (predicted.y - crosshair.y) * this.CONFIG.PRE_AIM.Pre_Strength;
+
+    // giới hạn tránh giật
+    const max = this.CONFIG.PRE_AIM.Max_Shift;
+    shiftX = Math.max(-max, Math.min(max, shiftX));
+    shiftY = Math.max(-max, Math.min(max, shiftY));
+
+    return {
+        x: crosshair.x + shiftX,
+        y: crosshair.y + shiftY
+    };
+},
+    PRO_HEAD: {
     Enabled: true,
 
     Magnet_Radius: 360.0,
@@ -514,7 +563,13 @@ const HEAD_SYSTEM = {
 
         // ❗ đảm bảo crosshair tồn tại
         const crosshair = getCrosshair();
+const pre = this.preAimHead(target, crosshair);
 
+if (pre) {
+    camera.lookAtScreen(pre);
+    camera.smooth = 0.12;
+    return;
+}
         this.update(target, crosshair, dt);
 
         if (!this.state.isLocked) {
