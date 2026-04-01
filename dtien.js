@@ -16,7 +16,7 @@ const ULTRA_HEAD_LOCK = {
 ANTI_OVER: {
     Enabled: true,
 
-    Max_Correction: 35,     // giới hạn kéo (pixel)
+    Max_Correction: 50,     // giới hạn kéo (pixel)
     Slow_Zone: 60,          // vùng giảm tốc gần head
     Dead_Zone: 6,           // vùng dừng hẳn (không di chuyển)
 
@@ -30,8 +30,8 @@ ANTI_OVER: {
     Stick_Smooth: 0.04,     // độ mượt khi dính đầu
     Stick_Force: 1.35,      // lực giữ
 
-    Max_Correction: 45,     // giới hạn kéo (fix lố tâm)
-    Damping: 0.65,          // chống rung
+    Max_Correction: 50,     // giới hạn kéo (fix lố tâm)
+    Damping: 1.0,          // chống rung
 
     Predict: 0.04,          // predict nhẹ
     Head_Offset_Y: 0.258     // fix lệch cổ
