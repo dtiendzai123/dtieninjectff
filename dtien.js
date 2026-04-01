@@ -20,18 +20,25 @@ const HEAD_SYSTEM = {
 
     CONFIG: {
         Enabled: true,
-        Head_Radius: 360.0,
+        Head_Radius: 360.0,     // ❗ giảm từ 360 → tránh hút sai
         Stick_Force: 1.25,
-        Max_Stick_Time: 5.0
+        Max_Stick_Time: 5.0     // ❗ giảm để không bị lock quá lâu
     },
 
     state: {
         isLocked: false,
-        timer: 0
+        timer: 0,
+        lastTime: 0
     },
 
+    // =========================
+    // 🎯 CHECK HEAD
+    // =========================
     isOnHead(target, crosshair) {
+        if (!target || !target.headWorldPos) return false;
+
         const head = worldToScreen(target.headWorldPos);
+        if (!head) return false;
 
         const dx = crosshair.x - head.x;
         const dy = crosshair.y - head.y;
@@ -39,8 +46,11 @@ const HEAD_SYSTEM = {
         return Math.sqrt(dx*dx + dy*dy) <= this.CONFIG.Head_Radius;
     },
 
+    // =========================
+    // 🔥 UPDATE
+    // =========================
     update(target, crosshair, dt) {
-        if (!this.CONFIG.Enabled) return;
+        if (!this.CONFIG.Enabled || !target) return;
 
         if (this.isOnHead(target, crosshair)) {
             this.state.isLocked = true;
@@ -58,17 +68,23 @@ const HEAD_SYSTEM = {
         }
     },
 
+    // =========================
+    // 💥 LOCK HEAD
+    // =========================
     lockHead(target) {
+        if (!target.headWorldPos) return;
+
         const predicted = predictHead(
             target.headWorldPos,
-            target.velocity,
+            target.velocity || {x:0,y:0,z:0},
             0.05
         );
 
         camera.lookAt(predicted);
     },
+
     // =========================
-    // 🎮 GAME LOOP (GỘP VÀO ĐÂY)
+    // 🎮 GAME LOOP
     // =========================
     gameLoop() {
         const now = Date.now();
@@ -80,11 +96,14 @@ const HEAD_SYSTEM = {
         let dt = (now - this.state.lastTime) / 1000;
         this.state.lastTime = now;
 
-        // 🔥 chống lag spike
+        // chống lag spike
         if (dt > 0.05) dt = 0.05;
 
         const target = getBestTarget();
         if (!target) return;
+
+        // ❗ đảm bảo crosshair tồn tại
+        const crosshair = getCrosshair();
 
         this.update(target, crosshair, dt);
 
@@ -97,7 +116,11 @@ const HEAD_SYSTEM = {
     // 🎯 AIM THƯỜNG
     // =========================
     normalAim(target, dt) {
+        if (!target.headWorldPos) return;
+
         const pos = worldToScreen(target.headWorldPos);
+        if (!pos) return;
+
         camera.lookAt(pos);
     },
 
@@ -106,8 +129,14 @@ const HEAD_SYSTEM = {
     // =========================
     start() {
         const loop = () => {
-            this.gameLoop();
-            setTimeout(loop, 16); // ~60 FPS
+            try {
+                this.gameLoop();
+            } catch (e) {
+                // tránh crash toàn script
+                // console.log("HEAD_SYSTEM ERROR:", e);
+            }
+
+            setTimeout(loop, 16);
         };
 
         loop();
