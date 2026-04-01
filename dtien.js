@@ -122,7 +122,7 @@ const DTien_V52_Engine = {
     // Tầng 1: Perfect Lock Config (Thông số từ JS)
     "RADIUS_CONFIG": {
         "Snap_Speed": 1.0,                   // Tốc độ tối đa khi ở xa
-        "Slow_Radius": 25.0,                 // Bắt đầu làm mượt
+        "Slow_Radius": 360.0,                 // Bắt đầu làm mượt
         "Lock_Radius": 360.0,                  // Vùng khóa chết
         "Smooth_Factor": 0.18,               // Độ mượt trung tầng
         "Hard_Lock_Factor": 1.0,            // Độ dính tâm tầng cuối
