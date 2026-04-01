@@ -239,7 +239,7 @@ lock(target, crosshair) {
             target.velocity || {x:0,y:0,z:0},
             dyn.predict
         );
-
+this.dragToHead(target, crosshair);
         // 🔥 force lock
         camera.lookAt(predicted);
 
@@ -272,7 +272,7 @@ lock(target, crosshair) {
 
         this.lock(target, crosshair);
     },
-this.dragToHead(target, crosshair);
+
     // =========================
     // 🎯 CROSSHAIR
     // =========================
