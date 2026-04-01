@@ -67,6 +67,52 @@ const HEAD_SYSTEM = {
 
         camera.lookAt(predicted);
     }
+    // =========================
+    // 🎮 GAME LOOP (GỘP VÀO ĐÂY)
+    // =========================
+    gameLoop() {
+        const now = Date.now();
+
+        if (!this.state.lastTime) {
+            this.state.lastTime = now;
+        }
+
+        let dt = (now - this.state.lastTime) / 1000;
+        this.state.lastTime = now;
+
+        // 🔥 chống lag spike
+        if (dt > 0.05) dt = 0.05;
+
+        const target = getBestTarget();
+        if (!target) return;
+
+        this.update(target, crosshair, dt);
+
+        if (!this.state.isLocked) {
+            this.normalAim(target, dt);
+        }
+    },
+
+    // =========================
+    // 🎯 AIM THƯỜNG
+    // =========================
+    normalAim(target, dt) {
+        const pos = worldToScreen(target.headWorldPos);
+        camera.lookAt(pos);
+    },
+
+    // =========================
+    // 🚀 START LOOP
+    // =========================
+    start() {
+        const loop = () => {
+            this.gameLoop();
+            setTimeout(loop, 16); // ~60 FPS
+        };
+
+        loop();
+    }
+
 };
 const DTien_V54_Engine = {
     PROJECT: "V54_Magnetic_Lock_System",
