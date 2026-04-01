@@ -100,7 +100,7 @@ lock(target, crosshair) {
     // =========================
     // 🎯 OFFSET CHÍNH XÁC ĐẦU
     // =========================
-    const HEAD_OFFSET_Y = 0.08; // nâng lên đúng điểm head (fix bắn cổ)
+    const HEAD_OFFSET_Y = 0.258; // nâng lên đúng điểm head (fix bắn cổ)
 
     const headPos = {
         x: target.headWorldPos.x,
