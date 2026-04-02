@@ -43,7 +43,8 @@ CrosshairFollowHead: true,
         Snap_Smooth: 0.02,
         Stick_Force: 10.0,
 HeadWorldPos_TargetBone: "bone_Head",
-        Predict: 0.05,
+     GlobalHeadMagnet_CenterLock: 1.0,
+         Predict: 0.05,
         Offset_Y: 0.258
     },
 
