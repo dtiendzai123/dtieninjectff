@@ -34,11 +34,11 @@ CLOSE_HEAD_LOCK: {
 },
      CONFIG: {
         Enabled: true,
-
+GlobalHeadMagnet_TargetBone: "bone_Head",
         Smooth: 0.08,
         Max_Step: 40,
         Damping: 0.7,
-CrosshairFollowHead: "bone_Head",
+CrosshairFollowHead: true,
         Snap_Distance: 999,
         Snap_Smooth: 0.02,
         Stick_Force: 10.0,
