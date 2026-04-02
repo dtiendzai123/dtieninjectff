@@ -47,7 +47,8 @@ HeadWorldPos_TargetBone: "bone_Head",
          Predict: 0.05,
         Offset_Y: 0.258,
 TeleportResistHeadLock: "PredictInstant",
-   TeleportResistHeadLock_InstantReLock: true
+   TeleportResistHeadLock_InstantReLock: true,
+  TeleportResistHeadLock_ZeroDelayUpdate: true
      },
 
     // =========================
