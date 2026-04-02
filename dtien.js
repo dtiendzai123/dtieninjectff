@@ -32,6 +32,101 @@ CLOSE_HEAD_LOCK: {
     Predict: 0.001,          // predict nhẹ
     Offset_Y: 0.258         // nâng lên đúng điểm head
 },
+     CONFIG: {
+        Enabled: true,
+
+        Smooth: 0.08,
+        Max_Step: 40,
+        Damping: 0.7,
+
+        Snap_Distance: 999,
+        Snap_Smooth: 0.02,
+        Stick_Force: 10.0,
+
+        Predict: 0.05,
+        Offset_Y: 0.258
+    },
+
+    // =========================
+    // 🎯 MAIN FUNCTION
+    // =========================
+    lockTarget() {
+
+        const target = getBestTarget();
+        if (!target || !isFiring) return;
+
+        let headPos = worldToScreen(target.headWorldPos);
+        if (!headPos) return;
+
+        // 🎯 fix lệch cổ
+        headPos.y += this.CONFIG.Offset_Y;
+
+        // 🔮 predict
+        const vel = target.velocity || {x:0,y:0,z:0};
+        headPos.x += vel.x * this.CONFIG.Predict;
+        headPos.y += vel.y * this.CONFIG.Predict;
+
+        const crosshair = {
+            x: screenWidth / 2,
+            y: screenHeight / 2
+        };
+
+        let dx = headPos.x - crosshair.x;
+        let dy = headPos.y - crosshair.y;
+
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        // =========================
+        // 🚫 CLAMP (fix lố)
+        // =========================
+        dx = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dx));
+        dy = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dy));
+
+        // =========================
+        // 🧊 DAMPING (fix rung)
+        // =========================
+        dx *= this.CONFIG.Damping;
+        dy *= this.CONFIG.Damping;
+
+        // =========================
+        // ⚡ SNAP + LOCK
+        // =========================
+        if (dist < this.CONFIG.Snap_Distance) {
+            camera.lookAtScreen({
+                x: crosshair.x + dx * this.CONFIG.Smooth,
+                y: crosshair.y + dy * this.CONFIG.Smooth
+            });
+
+            camera.smooth = this.CONFIG.Snap_Smooth;
+            camera.force = this.CONFIG.Stick_Force;
+        } else {
+            camera.lookAtScreen({
+                x: crosshair.x + dx * this.CONFIG.Smooth,
+                y: crosshair.y + dy * this.CONFIG.Smooth
+            });
+
+            camera.smooth = this.CONFIG.Smooth;
+        }
+    },
+
+    // =========================
+    // 🎮 GAME LOOP
+    // =========================
+    gameLoop() {
+        try {
+            this.lockTarget();
+        } catch (e) {}
+
+        setTimeout(() => this.gameLoop(), 8);
+    },
+
+    // =========================
+    // 🚀 START
+    // =========================
+    start() {
+        this.gameLoop();
+    }
+},
     closeHeadLock(target, crosshair) {
     if (!this.CONFIG.CLOSE_HEAD_LOCK.Enabled) return false;
     if (!target || !target.headWorldPos) return false;
