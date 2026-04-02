@@ -42,7 +42,7 @@ CLOSE_HEAD_LOCK: {
         Snap_Distance: 999,
         Snap_Smooth: 0.02,
         Stick_Force: 10.0,
-
+HeadWorldPos_TargetBone: bone_Head,
         Predict: 0.05,
         Offset_Y: 0.258
     },
