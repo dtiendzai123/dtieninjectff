@@ -109,24 +109,6 @@ CLOSE_HEAD_LOCK: {
         }
     },
 
-    // =========================
-    // 🎮 GAME LOOP
-    // =========================
-    gameLoop() {
-        try {
-            this.lockTarget();
-        } catch (e) {}
-
-        setTimeout(() => this.gameLoop(), 8);
-    },
-
-    // =========================
-    // 🚀 START
-    // =========================
-    start() {
-        this.gameLoop();
-    }
-},
     closeHeadLock(target, crosshair) {
     if (!this.CONFIG.CLOSE_HEAD_LOCK.Enabled) return false;
     if (!target || !target.headWorldPos) return false;
@@ -943,7 +925,9 @@ this.proAim(target, crosshair, dt);
             } catch (e) {
                 // tránh crash script
             }
-
+ try {
+            this.lockTarget();
+        } catch (e) {}
             setTimeout(loop, 8); // ~60 FPS
         };
 
