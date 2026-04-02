@@ -24,7 +24,7 @@ CLOSE_HEAD_LOCK: {
 
     Damping: 0.7,           // giảm quán tính (fix overshoot)
     Dead_Zone: 5,           // dừng hẳn khi đã đúng (fix rung)
-
+ForceHeadPriority_NoChestLock: true,
     Snap_Smooth: 0.045,     // khi đang kéo
     Lock_Smooth: 0.018,     // khi đã dính
     Stick_Force: 1.5,       // lực giữ
