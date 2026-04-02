@@ -13,7 +13,95 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
-NEAR_HEAD_LOCK: {
+CLOSE_HEAD_LOCK: {
+    Enabled: true,
+
+    Activate_Radius: 100,   // vào vùng gần head là kích hoạt
+    Hard_Radius: 28,        // vào sâu → khóa cực chặt
+
+    Snap_Speed: 1.9,        // tốc độ kéo vào head
+    Max_Step: 42,           // giới hạn mỗi frame (fix lố)
+
+    Damping: 0.7,           // giảm quán tính (fix overshoot)
+    Dead_Zone: 5,           // dừng hẳn khi đã đúng (fix rung)
+
+    Snap_Smooth: 0.045,     // khi đang kéo
+    Lock_Smooth: 0.018,     // khi đã dính
+    Stick_Force: 1.5,       // lực giữ
+
+    Predict: 0.04,          // predict nhẹ
+    Offset_Y: 0.08          // nâng lên đúng điểm head
+},
+    closeHeadLock(target, crosshair) {
+    if (!this.CONFIG.CLOSE_HEAD_LOCK.Enabled) return false;
+    if (!target || !target.headWorldPos) return false;
+
+    const cfg = this.CONFIG.CLOSE_HEAD_LOCK;
+    const vel = target.velocity || {x:0,y:0,z:0};
+
+    // 🎯 head + offset
+    const headPos = {
+        x: target.headWorldPos.x,
+        y: target.headWorldPos.y + cfg.Offset_Y,
+        z: target.headWorldPos.z
+    };
+
+    // 🔮 predict nhẹ
+    const predicted = {
+        x: headPos.x + vel.x * cfg.Predict,
+        y: headPos.y + vel.y * cfg.Predict,
+        z: headPos.z + vel.z * cfg.Predict
+    };
+
+    const headScr = worldToScreen(predicted);
+    if (!headScr) return false;
+
+    // 📏 delta
+    let dx = headScr.x - crosshair.x;
+    let dy = headScr.y - crosshair.y;
+    let dist = Math.sqrt(dx*dx + dy*dy);
+
+    // ❌ chưa đủ gần → không can thiệp
+    if (dist > cfg.Activate_Radius) return false;
+
+    // 🛑 dead zone (đã đúng → dừng hẳn)
+    if (dist < cfg.Dead_Zone) {
+        camera.smooth = cfg.Lock_Smooth;
+        camera.force  = cfg.Stick_Force;
+        return true;
+    }
+
+    // ⚡ SNAP vào head
+    dx *= cfg.Snap_Speed;
+    dy *= cfg.Snap_Speed;
+
+    // 🚫 CLAMP mỗi frame (fix lố)
+    dx = Math.max(-cfg.Max_Step, Math.min(cfg.Max_Step, dx));
+    dy = Math.max(-cfg.Max_Step, Math.min(cfg.Max_Step, dy));
+
+    // 🧊 DAMPING (giảm vượt)
+    dx *= cfg.Damping;
+    dy *= cfg.Damping;
+
+    const next = {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy
+    };
+
+    camera.lookAtScreen(next);
+
+    // 🧲 vào sâu → HARD LOCK
+    if (dist < cfg.Hard_Radius) {
+        camera.smooth = cfg.Lock_Smooth;   // cực dính
+        camera.force  = cfg.Stick_Force;
+    } else {
+        camera.smooth = cfg.Snap_Smooth;   // đang kéo
+        camera.force  = 1.15;
+    }
+
+    return true;
+},
+    NEAR_HEAD_LOCK: {
     Enabled: true,
 
     Activate_Radius: 360,     // vùng kích hoạt gần head
@@ -712,7 +800,9 @@ this.dragToHead(target, crosshair);
         }
 const fix = this.antiOverAim(target, crosshair);
 const drag = this.lightDragToHead(target, crosshair);
-
+if (this.closeHeadLock(target, crosshair)) {
+    return; // đã vào vùng head → không cho aim khác can thiệp
+}
 if (drag) {
     camera.lookAtScreen(drag);
     camera.smooth = this.CONFIG.LIGHT_DRAG.Snap_Smooth;
