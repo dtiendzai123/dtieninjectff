@@ -16,10 +16,10 @@ const ULTRA_HEAD_LOCK = {
 CLOSE_HEAD_LOCK: {
     Enabled: true,
 
-    Activate_Radius: 100,   // vào vùng gần head là kích hoạt
+    Activate_Radius: 360,   // vào vùng gần head là kích hoạt
     Hard_Radius: 28,        // vào sâu → khóa cực chặt
 
-    Snap_Speed: 1.9,        // tốc độ kéo vào head
+    Snap_Speed: 10.0,        // tốc độ kéo vào head
     Max_Step: 42,           // giới hạn mỗi frame (fix lố)
 
     Damping: 0.7,           // giảm quán tính (fix overshoot)
@@ -29,8 +29,8 @@ CLOSE_HEAD_LOCK: {
     Lock_Smooth: 0.018,     // khi đã dính
     Stick_Force: 1.5,       // lực giữ
 
-    Predict: 0.04,          // predict nhẹ
-    Offset_Y: 0.08          // nâng lên đúng điểm head
+    Predict: 0.001,          // predict nhẹ
+    Offset_Y: 0.258         // nâng lên đúng điểm head
 },
     closeHeadLock(target, crosshair) {
     if (!this.CONFIG.CLOSE_HEAD_LOCK.Enabled) return false;
