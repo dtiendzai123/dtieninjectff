@@ -55,8 +55,7 @@ TeleportResistHeadLock: "PredictInstant",
         AUTO_SCALE_SMOOTHING: true,    // Tự động giảm Smoothing khi địch ở xa
         BULLET_DROP_COMPENSATION: 1.05 // Bù trừ độ rơi của đạn ở khoảng cách xa
     },
-JavaScript
-const TITAN_HARD_LOCK_ENGINE = {
+
     // [OMNIDIRECTIONAL_TRACKING] - Theo dõi đa hướng
     MOVEMENT_ADAPTIVE: {
         LOCK_BONE_ID: 10,               // Tâm điểm: Đầu (Head)
