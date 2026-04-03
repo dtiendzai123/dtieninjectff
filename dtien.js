@@ -44,11 +44,11 @@ ForceHeadPriority_NoChestLock: true,
     ADAPTIVE_RANGE: {
         CLOSE_QUARTERS: {               // Khoảng cách gần (< 10m)
             DRAG_MULTIPLIER: 1.8,       // Kéo cực mạnh vì mục tiêu to và di chuyển nhanh
-            SENSITIVITY_BOOST: 1.5
+            SENSITIVITY_BOOST: 2.5
         },
         MID_RANGE: {                    // Khoảng cách trung bình (10m - 40m)
-            DRAG_MULTIPLIER: 1.2,       // Kéo vừa phải, tập trung vào độ ổn định
-            SENSITIVITY_BOOST: 1.0
+            DRAG_MULTIPLIER: 2.2,       // Kéo vừa phải, tập trung vào độ ổn định
+            SENSITIVITY_BOOST: 2.0
         },
         LONG_RANGE: {                   // Khoảng cách xa (> 40m)
             DRAG_MULTIPLIER: 0.8,       // Kéo nhẹ, cực mịn để tránh đạn bay lên trời
