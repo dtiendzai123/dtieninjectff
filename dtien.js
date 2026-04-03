@@ -55,7 +55,49 @@ TeleportResistHeadLock: "PredictInstant",
         AUTO_SCALE_SMOOTHING: true,    // Tự động giảm Smoothing khi địch ở xa
         BULLET_DROP_COMPENSATION: 1.05 // Bù trừ độ rơi của đạn ở khoảng cách xa
     },
-ENGINE: {
+JavaScript
+const TITAN_HARD_LOCK_ENGINE = {
+    // [OMNIDIRECTIONAL_TRACKING] - Theo dõi đa hướng
+    MOVEMENT_ADAPTIVE: {
+        LOCK_BONE_ID: 10,               // Tâm điểm: Đầu (Head)
+        STICKY_FORCE: 1.0,              // Lực hút tuyệt đối (Không thể tách rời)
+        MAX_ANGULAR_VELOCITY: 360,      // Tốc độ xoay tối đa để bám kịp mục tiêu di chuyển nhanh
+        FOLLOW_IN_AIR: true,            // Bám đuổi kể cả khi mục tiêu đang nhảy hoặc rơi tự do
+        PREDICT_SPEED_SCALE: 1.85       // Nhân hệ số dự đoán khi địch chạy ngang (Fix bắn sau lưng)
+    },
+
+    // [GEOMETRY_LOCK] - Khóa chặt tọa độ hình học
+    LOCK_STABILITY: {
+        SMOOTHING_MIN: 0.0,             // Triệt tiêu độ mượt (Khóa tức thì, không có độ trễ)
+        SNAPSHOT_PRECISION: "PIXEL",    // Quét mục tiêu chính xác đến từng Pixel màn hình
+        ERROR_MARGIN_FIX: 0.0001,       // Sai số cho phép cực nhỏ (Gần như bằng 0)
+        AUTO_CENTER_HEAD: true,         // Luôn ép tâm vào chính giữa tâm vòng tròn đầu
+        NO_CLIP_AIM: true               // Giữ tâm kể cả khi mục tiêu bị che khuất một phần
+    },
+
+    // [RECOIL_ELIMINATION] - Loại bỏ hoàn toàn độ giật (Fix máu vàng)
+    ANTI_RECOIL_SYSTEM: {
+        ELIMINATE_VISUAL_SHAKE: true,   // Loại bỏ rung lắc màn hình khi bắn
+        FORCE_Y_AXIS_UPWARD: 3.5,       // Lực đẩy trục Y cực mạnh (Ngăn tâm rơi xuống cổ/ngực)
+        ZERO_RECOIL_LEVEL: 100,         // Triệt tiêu 100% độ giật của mọi loại súng
+        STATIC_CROSSHAIR: true          // Giữ tâm súng cố định, không cho phép nở rộng (Bloom)
+    },
+
+    // [LATENCY_COMPENSATION] - Bù trừ trễ mạng và phần cứng
+    PERFORMANCE_SYNC: {
+        FRAME_DELAY_FIX: -1,            // Bù trừ 1 khung hình để đón đầu chuyển động
+        NETWORK_INTERPOLATION: 1.2,     // Xử lý lag: Dự đoán vị trí thực tế của địch khi Ping cao
+        INPUT_REFRESH_RATE: "MAX",      // Tốc độ phản hồi đầu vào tối đa của thiết bị
+        LOCK_DURATION: "UNTIL_DEATH"    // Chỉ nhả khóa khi mục tiêu đã bị hạ gục (HP = 0)
+    },
+
+    // [FIELD_OF_VIEW] - Phạm vi quét
+    FOV_CONTROL: {
+        LOCK_RANGE_DEGREES: 360,        // Khóa mục tiêu ở bất kỳ hướng nào (kể cả sau lưng)
+        DYNAMIC_FOV_SCALING: false,     // Giữ nguyên FOV rộng để không bỏ lỡ mục tiêu di chuyển nhanh
+        SENSITIVITY_BOOST: 2.0          // Nhân đôi độ nhạy khi đang trong trạng thái Tracking
+    },
+         ENGINE: {
         TRACK_BONE: 10,                 // Khóa chặt xương đầu (Head)
         STICKY_STRENGTH: 1.0,           // Lực hút tuyệt đối (1.0 = Nam châm)
         REFRESH_RATE_MS: 1,             // Tốc độ quét (1ms/lần để bám sát từng mili-giây)
