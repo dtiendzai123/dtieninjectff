@@ -125,7 +125,7 @@ TeleportResistHeadLock: "PredictInstant",
     // [RECOIL_ELIMINATION] - Loại bỏ hoàn toàn độ giật (Fix máu vàng)
     ANTI_RECOIL_SYSTEM: {
         ELIMINATE_VISUAL_SHAKE: true,   // Loại bỏ rung lắc màn hình khi bắn
-        FORCE_Y_AXIS_UPWARD: 3.5,       // Lực đẩy trục Y cực mạnh (Ngăn tâm rơi xuống cổ/ngực)
+        FORCE_Y_AXIS_UPWARD: 5.5,       // Lực đẩy trục Y cực mạnh (Ngăn tâm rơi xuống cổ/ngực)
         ZERO_RECOIL_LEVEL: 100,         // Triệt tiêu 100% độ giật của mọi loại súng
         STATIC_CROSSHAIR: true          // Giữ tâm súng cố định, không cho phép nở rộng (Bloom)
     },
@@ -142,7 +142,7 @@ TeleportResistHeadLock: "PredictInstant",
     FOV_CONTROL: {
         LOCK_RANGE_DEGREES: 360,        // Khóa mục tiêu ở bất kỳ hướng nào (kể cả sau lưng)
         DYNAMIC_FOV_SCALING: false,     // Giữ nguyên FOV rộng để không bỏ lỡ mục tiêu di chuyển nhanh
-        SENSITIVITY_BOOST: 2.0          // Nhân đôi độ nhạy khi đang trong trạng thái Tracking
+        SENSITIVITY_BOOST: 4.0          // Nhân đôi độ nhạy khi đang trong trạng thái Tracking
     },
          ENGINE: {
         TRACK_BONE: 10,                 // Khóa chặt xương đầu (Head)
