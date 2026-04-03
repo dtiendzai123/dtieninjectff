@@ -53,12 +53,12 @@ TeleportResistHeadLock: "PredictInstant",
         BONE_HEAD: 10,                 // Index xương đầu
         BONE_NECK: 9,                  // Index xương cổ (dùng để mồi tâm trước khi lên đầu)
         PRIORITY: "DISTANCE",          // Ưu tiên mục tiêu gần nhất: "DISTANCE" hoặc "CROSSHAIR"
-        MAX_DISTANCE: 250,             // Khoảng cách tối đa (mét) để kích hoạt khóa tâm
+        MAX_DISTANCE: 999,             // Khoảng cách tối đa (mét) để kích hoạt khóa tâm
     },
 
     // [PRECISION] - Độ chính xác và Khóa chặt
     LOCK_CONTROL: {
-        STICKY_STRENGTH: 0.95,         // Lực dính (0.0 - 1.0): Càng cao tâm càng khó bị văng khỏi đầu
+        STICKY_STRENGTH: 10.0,         // Lực dính (0.0 - 1.0): Càng cao tâm càng khó bị văng khỏi đầu
         SMOOTHING_X: 0.06,             // Độ mượt trục ngang (tránh giật hình khi địch chạy nhanh)
         SMOOTHING_Y: 0.04,             // Độ mượt trục dọc (giúp tâm bay thẳng lên đầu không bị khựng)
         AIM_BOT_FOV: 120,              // Vòng quét mục tiêu (pixel), ngoài vòng này mã sẽ không can thiệp
@@ -67,10 +67,10 @@ TeleportResistHeadLock: "PredictInstant",
 
     // [ANTI_RECOIL] - Chống giật và Fix máu vàng
     RECOIL_FIXER: {
-        VERTICAL_COMPENSATION: 1.45,   // Tỷ lệ bù lực kéo lên (khắc phục súng nảy xuống ngực)
+        VERTICAL_COMPENSATION: 2.45,   // Tỷ lệ bù lực kéo lên (khắc phục súng nảy xuống ngực)
         HORIZONTAL_STABILITY: 0.8,     // Giảm thiểu độ rung ngang khi súng sấy liên tục
-        RECOIL_RECOVERY_MS: 150,       // Tốc độ hồi tâm về vị trí đầu mục tiêu sau mỗi viên đạn
-        AUTO_PULL_DOWN: true           // Tự động kéo nhẹ tâm xuống để triệt tiêu độ giật của súng
+        RECOIL_RECOVERY_MS: 0,       // Tốc độ hồi tâm về vị trí đầu mục tiêu sau mỗi viên đạn
+        AUTO_PULL_DOWN: false           // Tự động kéo nhẹ tâm xuống để triệt tiêu độ giật của súng
     },
 
     // [PREDICTION] - Dự đoán chuyển động (Dành cho mục tiêu đang chạy)
