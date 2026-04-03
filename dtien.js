@@ -42,7 +42,84 @@ ForceHeadPriority_NoChestLock: true,
         COORDINATE_SYNC_RATE: "1ms",    // Đồng bộ tọa độ siêu tốc
         IGNORE_CHEST_GEOMETRY: true     // Xuyên qua vùng va chạm của ngực
     },
+CameraAutoAimEnable: true,
+GLOBAL_MAGNET: {
+        ENABLE: true,
+        FORCE: 1.0,                     // Lực hút tối đa
+        IGNORE_ZONE: true,              // Kéo tâm kể cả khi mục tiêu ngoài vòng quét
+        ALWAYS_ACTIVE: true,            // Luôn luôn hoạt động
+        INSTANT_PULL: true,             // Kéo tức thời không có độ trễ
+        TARGET_BONE: "bone_head",       // Đích đến: Xương đầu
+        FORCE_VERTICAL: 1.0,            // Ép trục dọc lên đầu
+        CENTER_LOCK: 1.0                // Khóa tâm vào điểm chính giữa đầu
+    },
 
+    // 2. HARDLOCK & TELEPORT RESIST: Chống kẻ địch dịch chuyển/lag
+    TELEPORT_RESIST: {
+        ENABLE: true,
+        STRENGTH: 1.0,
+        PREDICT_INSTANT: true,          // Dự đoán vị trí tức thời
+        NO_BREAK: true,                 // Không cho phép văng tâm
+        REACQUIRE_TIME: 0.0,            // Thời gian bắt lại target = 0ms
+        INSTANT_RELOCK: true,           // Khóa lại ngay lập tức
+        TRACK_VELOCITY: true,           // Theo dõi vận tốc di chuyển
+        ZERO_DELAY_UPDATE: true         // Cập nhật tọa độ 0ms delay
+    },
+
+    // 3. WORLD POSITION CORE: Hệ định vị tọa độ thế giới (XYZ)
+    WORLD_POS_ENGINE: {
+        ENABLE: true,
+        TARGET_BONE: "bone_Head",
+        HUMANOID_SUPPORT: {
+            USE_HUMANOID: true,
+            BONE_ENUM: "Head"           // Truy xuất chính xác Animator Humanoid
+        },
+        GENERIC_RIG: {
+            USE_SEARCH: true,
+            NAME: "bone_Head",
+            RECURSIVE: true             // Tìm kiếm đệ quy trong hệ thống Rig
+        },
+        // Tọa độ Local lấy từ JSON Data (Fix lệch tâm XYZ)
+        TRANSFORM_INPUT: {
+            LOCAL_POS: { x: -0.045697, y: -0.004478, z: -0.020043 },
+            LOCAL_ROT: { x: 0.025817, y: -0.08611, z: -0.140211, w: 0.986032 },
+            LOCAL_SCALE: { x: 1, y: 1, z: 1 }
+        },
+        // Hệ thống Ma trận (Matrix) để tính toán vị trí thực
+        MATRIX_SYSTEM: {
+            PARENT_HASH: 96688289,
+            USE_PARENT_MATRIX: true,
+            COMPUTE_WORLD_MATRIX: true,
+            MATRIX_MULTIPLY: true       // Nhân ma trận Parent * Local để ra vị trí Head chính xác
+        },
+        OUTPUT: {
+            POSITION: true,
+            ROTATION: true,
+            DEBUG_LOG: true,
+            LOG_RATE: 0.1
+        }
+    },
+
+    // 4. Y-AXIS DRAG & PRECISION: Sửa lỗi máu vàng và phanh tâm (Brake)
+    DRAG_ACCURACY: {
+        AUTO_SENS_CUT: true,            // Tự động cắt độ nhạy khi tâm chạm đầu
+        AUTO_BRAKE_POS: -0.005812380,   // Vị trí phanh tâm để không bị bay quá đầu
+        SENS_DROP: 0.00,                // Giảm độ nhạy về 0 khi đã khóa Head
+        BRAKE_FORCE: 1.8,               // Lực phanh để tâm dừng khựng tại đầu
+        WORLD_ANCHOR: { x: true, y: true }, // Neo giữ tâm theo tọa độ thế giới
+        PRECISION_FIX: -0.005812380,    // Fix sai số lệch tâm XYZ
+        SNAP_FORCE: 2.0                 // Lực dính (Snap) cực mạnh khi gần Bone Head
+    },
+
+    // 5. FINAL FORCE CONTROL
+    PRIORITY: {
+        OVERRIDE: true,
+        LEVEL: 1.0,
+        NO_CHEST_LOCK: true,            // Chặn hoàn toàn việc dính vào ngực (Fix máu vàng)
+        DEFAULT_AIM_OUTPUT: "HEAD"      // Mọi đầu ra của đạn đều rơi vào Head
+    },
+
+    
     // [SENSITIVITY_INDEPENDENT] - Độc lập với độ nhạy hệ thống
     // Dù bạn để nhạy 100 hay 1000, mã này vẫn giữ tâm ổn định
     STABILITY_CONTROL: {
