@@ -32,10 +32,45 @@ ForceHeadPriority_NoChestLock: true,
     Predict: 0.001,          // predict nhẹ
     Offset_Y: 0.258         // nâng lên đúng điểm head
 },
-   DRAG_LOGIC: {
+ VECTOR_FIX: {
+        TARGET_BONE: 10,                // Khóa cứng Bone Head
+        XYZ_OFFSET_ADJUST: {            // Bù trừ sai số tọa độ
+            X: 0.00,                    // Giữ tâm thẳng hàng ngang
+            Y: 0.15,                    // Nhích nhẹ lên trên đỉnh đầu để tránh dính cổ
+            Z: 0.00                     // Giữ độ sâu mục tiêu
+        },
+        COORDINATE_SYNC_RATE: "1ms",    // Đồng bộ tọa độ siêu tốc
+        IGNORE_CHEST_GEOMETRY: true     // Xuyên qua vùng va chạm của ngực
+    },
+
+    // [SENSITIVITY_INDEPENDENT] - Độc lập với độ nhạy hệ thống
+    // Dù bạn để nhạy 100 hay 1000, mã này vẫn giữ tâm ổn định
+    STABILITY_CONTROL: {
+        ANTI_MAX_SENS_JITTER: true,     // Khử rung khi độ nhạy quá cao
+        SENSITIVITY_CAP: 1.0,           // Giới hạn lực đẩy để không văng tâm khỏi đầu
+        DYNAMIC_DAMPING: 0.0,          // Lực hãm thông minh: Giúp tâm dừng đúng điểm Head
+        PIXEL_LOCK_STRENGTH: 1.0        // Khóa chặt theo từng điểm ảnh
+    },
+
+    // [FIX_AIM_DEVIATION] - Sửa lỗi lệch tâm (Miss-aim)
+    CORRECTION_LOGIC: {
+        AUTO_CENTERING: true,           // Tự động đưa tâm về trọng tâm của Bone 10
+        RECOIL_REDIRECTION: "HEAD",     // Chuyển hướng lực giật của súng bay thẳng lên đầu
+        POSITION_PREDICTION: 1.2,       // Dự đoán vị trí XYZ khi địch di chuyển lắt léo
+        MISS_SHOT_RECOVERY: "INSTANT"   // Nếu đạn lệch, ngay lập tức kéo tâm trở lại Head
+    },
+
+    // [HARD_LOCK_ADVANCED] - Khóa cứng mục tiêu
+    HARD_LOCK: {
+        STICKY_FACTOR: 1.0,             // Độ dính tuyệt đối
+        FOV_SCAN_TYPE: "STATIC",        // Quét mục tiêu không đổi theo độ nhạy
+        LOCK_ON_VELOCITY: 500,          // Tốc độ khóa (tính bằng mili giây)
+        SMOOTHING_OVERRIDE: 0.0         // Vô hiệu hóa độ mượt để đạt độ chính xác 100%
+    },
+    DRAG_LOGIC: {
         AUTO_DRAG_UP: true,             // Tự động kích hoạt lực kéo lên khi nhấn nút bắn
         BASE_DRAG_FORCE: 2.5,           // Lực kéo cơ bản (Vượt qua vùng ngực)
-        MAX_DRAG_SPEED: 4.0,            // Tốc độ kéo tối đa để không bay quá đầu
+        MAX_DRAG_SPEED: 10.0,            // Tốc độ kéo tối đa để không bay quá đầu
         DRAG_ACCELERATION: 1.25,        // Gia tốc: Càng bắn lâu lực kéo càng tăng nhẹ để giữ tâm
         SMOOTH_DRAG_STEPS: 5,           // Chia nhỏ bước kéo để tránh bị khựng hình
     },
