@@ -55,7 +55,43 @@ TeleportResistHeadLock: "PredictInstant",
         AUTO_SCALE_SMOOTHING: true,    // Tự động giảm Smoothing khi địch ở xa
         BULLET_DROP_COMPENSATION: 1.05 // Bù trừ độ rơi của đạn ở khoảng cách xa
     },
+ENGINE: {
+        TRACK_BONE: 10,                 // Khóa chặt xương đầu (Head)
+        STICKY_STRENGTH: 1.0,           // Lực hút tuyệt đối (1.0 = Nam châm)
+        REFRESH_RATE_MS: 1,             // Tốc độ quét (1ms/lần để bám sát từng mili-giây)
+        LOCK_ON_TRANSITION: "INSTANT",  // Chuyển mục tiêu tức thì khi mục tiêu cũ biến mất
+    },
 
+    // [AUTO_CORRECTION] - Tự động sửa lỗi tâm trôi xuống ngực
+    FIX_LOGIC: {
+        ANTI_CHEST_LOCK: true,          // Chống dính tâm vào vùng ngực/thân
+        VERTICAL_FORCE_PUSH: 2.8,       // Lực đẩy tâm lên trên để luôn ở đỉnh đầu
+        HORIZONTAL_TRACK_LATENCY: 0.0,  // Triệt tiêu độ trễ khi mục tiêu chạy ngang
+        RECOIL_NEGATION: 100            // Loại bỏ 100% độ rung lắc của súng khi sấy
+    },
+
+    // [ADVANCED_MATH] - Thuật toán tính toán vị trí
+    VECTOR_CALCULATION: {
+        PREDICT_MOVEMENT: true,         // Dự đoán hướng chạy của địch
+        PREDICTION_INTENSITY: 1.5,      // Độ nhạy dự đoán (bắn đón đầu)
+        SMOOTH_FACTOR: 0.02,            // Độ mượt cực thấp để dính như keo (Gần như không trễ)
+        FOV_LOCK_ANGLE: 360,            // Khóa mục tiêu ở mọi góc độ xung quanh
+    },
+
+    // [STABILITY_CONTROL] - Giữ ổn định mọi khoảng cách
+    STABILITY: {
+        AUTO_FOCUS: "HEAD_ONLY",        // Chỉ tập trung vào đầu, bỏ qua các bộ phận khác
+        JITTER_REDUCTION: true,         // Khử rung sai số khi mục tiêu ở quá xa
+        PIXEL_PERFECT_AIM: true,        // Khóa tâm đến từng điểm ảnh (Pixel)
+        MAX_TRACKING_RANGE: 999         // Khoảng cách bám đuổi lên đến 500m
+    },
+
+    // [INPUT_OVERRIDE] - Ghi đè điều khiển
+    INPUT: {
+        BYPASS_SYSTEM_LIMIT: true,      // Vượt qua giới hạn độ nhạy của trò chơi
+        TOUCH_RESPONSE_SYNC: "1:1",     // Đồng bộ 1:1 giữa chuyển động địch và tâm súng
+        FORCE_CURSOR_TO_BONE: true      // Ép con trỏ phải trùng khớp với Bone ID 10
+    },
     // [CORE_LOCK_LOGIC] - Khóa cứng tọa độ đầu
     AIM_LOCK: {
         PRIMARY_BONE: 10,              // Xương đầu (Head)
