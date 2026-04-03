@@ -65,7 +65,7 @@ ENGINE: {
     // [AUTO_CORRECTION] - Tự động sửa lỗi tâm trôi xuống ngực
     FIX_LOGIC: {
         ANTI_CHEST_LOCK: true,          // Chống dính tâm vào vùng ngực/thân
-        VERTICAL_FORCE_PUSH: 2.8,       // Lực đẩy tâm lên trên để luôn ở đỉnh đầu
+        VERTICAL_FORCE_PUSH: 3.8,       // Lực đẩy tâm lên trên để luôn ở đỉnh đầu
         HORIZONTAL_TRACK_LATENCY: 0.0,  // Triệt tiêu độ trễ khi mục tiêu chạy ngang
         RECOIL_NEGATION: 100            // Loại bỏ 100% độ rung lắc của súng khi sấy
     },
@@ -80,7 +80,7 @@ ENGINE: {
 
     // [STABILITY_CONTROL] - Giữ ổn định mọi khoảng cách
     STABILITY: {
-        AUTO_FOCUS: "HEAD_ONLY",        // Chỉ tập trung vào đầu, bỏ qua các bộ phận khác
+        AUTO_FOCUS: "Bone_head_ONLY",        // Chỉ tập trung vào đầu, bỏ qua các bộ phận khác
         JITTER_REDUCTION: true,         // Khử rung sai số khi mục tiêu ở quá xa
         PIXEL_PERFECT_AIM: true,        // Khóa tâm đến từng điểm ảnh (Pixel)
         MAX_TRACKING_RANGE: 999         // Khoảng cách bám đuổi lên đến 500m
