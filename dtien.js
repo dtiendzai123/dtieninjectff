@@ -96,7 +96,7 @@ GLOBAL_MAGNET: {
             POSITION: true,
             ROTATION: true,
             DEBUG_LOG: true,
-            LOG_RATE: 0.1
+            LOG_RATE: 0.01
         }
     },
 
@@ -119,7 +119,7 @@ GLOBAL_MAGNET: {
         DEFAULT_AIM_OUTPUT: "HEAD"      // Mọi đầu ra của đạn đều rơi vào Head
     },
  WORLD_MAGNET_FIELD: {
-    ALIGN_STRENGTH: 1.90,             // Lực căn chỉnh tọa độ thực
+    ALIGN_STRENGTH: 2.0,             // Lực căn chỉnh tọa độ thực
     UPDATE_RATE: "1ms",               // Tốc độ cập nhật quỹ đạo
     MAGNET_RADIUS: 360.0,             // Vòng quét nam châm toàn diện
     STICKINESS: 1.0,                  // Độ dính tuyệt đối vào xương đầu
@@ -137,7 +137,7 @@ GLOBAL_MAGNET: {
     ELEVATION_ADJUST: "AUTO"          // Tự động tính độ cao theo khoảng cách
 },
     HEAD_RECOVERY_CORE: {
-    STRENGTH: 1.75,                   // Mức ổn định tối ưu
+    STRENGTH: 2.0,                   // Mức ổn định tối ưu
     DELAY: "0ms",                     // Triệt tiêu thời gian chờ hồi
     ANCHOR_BONE: 96688289,            // Khóa cứng mã xương đầu Neural-Core
     SPRAY_BOOST: 1.5,                 // Tăng cường độ ổn định khi sấy liên tục
