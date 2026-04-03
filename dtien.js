@@ -59,15 +59,15 @@ ForceHeadPriority_NoChestLock: true,
     // [LOCK_ON_HEAD] - Khóa chặt điểm đến (Bone 10)
     HARD_LOCK_CORE: {
         TARGET_BONE: 10,                // Mục tiêu cuối cùng là ĐẦU
-        STICKY_ON_TARGET: 1.0,          // Độ dính 100% khi tâm đã chạm đầu
-        LOCK_RADIUS_FOV: 140,           // Phạm vi tự động nhận diện mục tiêu (pixel)
+        STICKY_ON_TARGET: 20.0,          // Độ dính 100% khi tâm đã chạm đầu
+        LOCK_RADIUS_FOV: 360,           // Phạm vi tự động nhận diện mục tiêu (pixel)
         PRIORITIZE_HEADSHOT: true,      // Ép toàn bộ Vector phải hướng về Bone 10
         ANTI_RECOIL_Y_AXIS: 100         // Triệt tiêu 100% độ giật dọc
     },
 
     // [INPUT_OPTIMIZATION] - Tối ưu hóa phản hồi cảm ứng
     TOUCH_ENGINE: {
-        RESPONSE_MS: 0.1,               // Phản hồi siêu tốc (Gần như tức thời)
+        RESPONSE_MS: 0.001,               // Phản hồi siêu tốc (Gần như tức thời)
         PRECISION_MODE: "ULTRA",        // Chế độ chính xác cao nhất
         TOUCH_STABILIZER: true,         // Khử rung tay khi đang kéo tâm
         DEADZONE_ELIMINATION: 0.0,      // Loại bỏ hoàn toàn vùng chết cảm ứng
