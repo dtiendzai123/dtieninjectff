@@ -49,7 +49,46 @@ HeadWorldPos_TargetBone: "bone_Head",
 TeleportResistHeadLock: "PredictInstant",
    TeleportResistHeadLock_InstantReLock: true,
   TeleportResistHeadLock_ZeroDelayUpdate: true,
-  TARGET: {
+  DISTANCE_ADAPTIVE: {
+        CLOSE_RANGE_LIMIT: 10,        // < 10m: Tăng tốc độ kéo tâm cực mạnh
+        LONG_RANGE_LIMIT: 50,         // > 50m: Tự động siết chặt độ rung (Stable mode)
+        AUTO_SCALE_SMOOTHING: true,    // Tự động giảm Smoothing khi địch ở xa
+        BULLET_DROP_COMPENSATION: 1.05 // Bù trừ độ rơi của đạn ở khoảng cách xa
+    },
+
+    // [CORE_LOCK_LOGIC] - Khóa cứng tọa độ đầu
+    AIM_LOCK: {
+        PRIMARY_BONE: 10,              // Xương đầu (Head)
+        SECONDARY_BONE: 9,             // Xương cổ (Trạm trung chuyển tâm)
+        LOCK_ON_SIGHT: true,           // Chỉ khóa khi mục tiêu trong tầm nhìn (Visibility Check)
+        STICKY_STRENGTH: 1.0,          // Lực dính tuyệt đối (Không cho phép lệch khỏi Head)
+        IGNORE_NON_HEAD_HITS: true     // Ưu tiên bỏ qua các điểm chạm không phải đầu
+    },
+
+    // [PHYSICS_OVERRIDE] - Ghi đè vật lý súng
+    PHYSICS_MODIFIER: {
+        PERFECT_ACCURACY: 100,         // Độ chính xác tuyệt đối (giảm độ nở của tâm)
+        NO_RECOIL_FORCE: 0.0,          // Triệt tiêu lực giật lùi của súng
+        VERTICAL_FORCE_MULTIPLIER: 2.5,// Nhân lực kéo lên để luôn vượt qua ngực
+        HORIZONTAL_SHAKE_FIX: 0.05     // Loại bỏ rung ngang khi sấy (Zero Shake)
+    },
+
+    // [INPUT_SIMULATION] - Mô phỏng thao tác vuốt
+    INPUT_MAPPING: {
+        TOUCH_SENSITIVITY: 1.0,        // Độ nhạy cảm ứng đầu vào
+        SWIPE_ACCELERATION: 1.35,      // Gia tốc vuốt (Càng kéo nhanh lực càng mạnh)
+        POINTER_PRECISION: "HIGH",     // Độ chính xác con trỏ tối cao
+        RESPONSE_TIME_MS: 1,           // Độ trễ phản hồi (Cực thấp để khóa tâm tức thì)
+    },
+
+    // [VISUAL_ASSIST] - Hỗ trợ hiển thị
+    FOV_SYSTEM: {
+        DRAW_FOV: true,                // Hiển thị vòng tròn quét
+        FOV_SIZE: 180,                 // Kích thước vòng quét (pixel)
+        COLOR_LOCK: "#FF0000"          // Màu tâm khi đã khóa vào đầu
+    },
+
+         TARGET: {
         BONE_HEAD: 10,                 // Index xương đầu
         BONE_NECK: 9,                  // Index xương cổ (dùng để mồi tâm trước khi lên đầu)
         PRIORITY: "DISTANCE",          // Ưu tiên mục tiêu gần nhất: "DISTANCE" hoặc "CROSSHAIR"
