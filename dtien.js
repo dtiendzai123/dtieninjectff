@@ -22,7 +22,7 @@ CLOSE_HEAD_LOCK: {
     Snap_Speed: 10.0,        // tốc độ kéo vào head
     Max_Step: 42,           // giới hạn mỗi frame (fix lố)
 
-    Damping: 0.7,           // giảm quán tính (fix overshoot)
+    Damping: 0.0,           // giảm quán tính (fix overshoot)
     Dead_Zone: 5,           // dừng hẳn khi đã đúng (fix rung)
 ForceHeadPriority_NoChestLock: true,
     Snap_Smooth: 0.045,     // khi đang kéo
@@ -50,7 +50,88 @@ TeleportResistHeadLock: "PredictInstant",
    TeleportResistHeadLock_InstantReLock: true,
   TeleportResistHeadLock_ZeroDelayUpdate: true
      },
+ // =========================
+    // 🧠 TÍNH VỊ TRÍ HEAD THEO ROTATION
+    // =========================
+    getHeadWorld(target) {
+        if (!target.headWorldPos) return null;
 
+        const rot = target.headRotation || {x:0,y:0,z:0}; // hướng đầu
+        const pos = target.headWorldPos;
+
+        return {
+            x: pos.x + rot.x * this.CONFIG.Forward_Offset,
+            y: pos.y + this.CONFIG.Up_Offset,
+            z: pos.z + rot.z * this.CONFIG.Forward_Offset
+        };
+    },
+
+    // =========================
+    // 🔮 PREDICT
+    // =========================
+    predict(pos, velocity) {
+        const v = velocity || {x:0,y:0,z:0};
+
+        return {
+            x: pos.x + v.x * this.CONFIG.Predict,
+            y: pos.y + v.y * this.CONFIG.Predict,
+            z: pos.z + v.z * this.CONFIG.Predict
+        };
+    },
+
+    // =========================
+    // 🎯 MAIN LOCK
+    // =========================
+    lock(target, crosshair) {
+        if (!this.CONFIG.Enabled || !target) return false;
+
+        const headWorld = this.getHeadWorld(target);
+        if (!headWorld) return false;
+
+        const predicted = this.predict(headWorld, target.velocity);
+
+        const screen = worldToScreen(predicted);
+        if (!screen) return false;
+
+        let dx = screen.x - crosshair.x;
+        let dy = screen.y - crosshair.y;
+
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        // 🛑 dead zone (không rung)
+        if (dist < this.CONFIG.Dead_Zone) {
+            camera.smooth = this.CONFIG.Lock_Smooth;
+            camera.force = this.CONFIG.Stick_Force;
+            return true;
+        }
+
+        // 🚫 clamp (fix lố)
+        dx = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dx));
+        dy = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dy));
+
+        // 🧊 damping
+        dx *= this.CONFIG.Damping;
+        dy *= this.CONFIG.Damping;
+
+        const finalPos = {
+            x: crosshair.x + dx,
+            y: crosshair.y + dy
+        };
+
+        camera.lookAtScreen(finalPos);
+
+        // 🧲 lock mạnh khi gần
+        if (dist < 25) {
+            camera.smooth = this.CONFIG.Lock_Smooth;
+            camera.force = this.CONFIG.Stick_Force;
+        } else {
+            camera.smooth = this.CONFIG.Smooth;
+        }
+
+        return true;
+    },
+
+    //
     // =========================
     // 🎯 MAIN FUNCTION
     // =========================
