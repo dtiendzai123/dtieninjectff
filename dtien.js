@@ -37,7 +37,7 @@ ForceHeadPriority_NoChestLock: true,
 GlobalHeadMagnet_TargetBone: "bone_Head",
         Smooth: 0.08,
         Max_Step: 40,
-        Damping: 0.7,
+        Damping: 0.0,
 CrosshairFollowHead: true,
         Snap_Distance: 999,
         Snap_Smooth: 0.02,
@@ -61,7 +61,7 @@ TeleportResistHeadLock: "PredictInstant",
         STICKY_STRENGTH: 10.0,         // Lực dính (0.0 - 1.0): Càng cao tâm càng khó bị văng khỏi đầu
         SMOOTHING_X: 0.06,             // Độ mượt trục ngang (tránh giật hình khi địch chạy nhanh)
         SMOOTHING_Y: 0.04,             // Độ mượt trục dọc (giúp tâm bay thẳng lên đầu không bị khựng)
-        AIM_BOT_FOV: 120,              // Vòng quét mục tiêu (pixel), ngoài vòng này mã sẽ không can thiệp
+        AIM_BOT_FOV: 360,              // Vòng quét mục tiêu (pixel), ngoài vòng này mã sẽ không can thiệp
         DEADZONE_CORRECTION: 0.02,     // Loại bỏ rung lắc nhỏ từ cảm ứng/tay người chơi
     },
 
@@ -70,7 +70,7 @@ TeleportResistHeadLock: "PredictInstant",
         VERTICAL_COMPENSATION: 2.45,   // Tỷ lệ bù lực kéo lên (khắc phục súng nảy xuống ngực)
         HORIZONTAL_STABILITY: 0.8,     // Giảm thiểu độ rung ngang khi súng sấy liên tục
         RECOIL_RECOVERY_MS: 0,       // Tốc độ hồi tâm về vị trí đầu mục tiêu sau mỗi viên đạn
-        AUTO_PULL_DOWN: false           // Tự động kéo nhẹ tâm xuống để triệt tiêu độ giật của súng
+        AUTO_PULL_UP: true           // Tự động kéo nhẹ tâm xuống để triệt tiêu độ giật của súng
     },
 
     // [PREDICTION] - Dự đoán chuyển động (Dành cho mục tiêu đang chạy)
