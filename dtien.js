@@ -76,8 +76,8 @@ TeleportResistHeadLock: "PredictInstant",
     // [PREDICTION] - Dự đoán chuyển động (Dành cho mục tiêu đang chạy)
     PREDICTION_LOGIC: {
         ENABLED: true,
-        VELOCITY_SCALE: 1.2,           // Dự đoán vị trí đầu mục tiêu dựa trên tốc độ di chuyển
-        LATENCY_MS: 20,                // Bù trừ độ trễ mạng (Ping) để tâm không bị bắn sau lưng địch
+        VELOCITY_SCALE: 1.5,           // Dự đoán vị trí đầu mục tiêu dựa trên tốc độ di chuyển
+        LATENCY_MS: 0,                // Bù trừ độ trễ mạng (Ping) để tâm không bị bắn sau lưng địch
     },
      },
  // =========================
