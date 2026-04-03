@@ -32,7 +32,55 @@ ForceHeadPriority_NoChestLock: true,
     Predict: 0.001,          // predict nhẹ
     Offset_Y: 0.258         // nâng lên đúng điểm head
 },
-     CONFIG: {
+   DRAG_LOGIC: {
+        AUTO_DRAG_UP: true,             // Tự động kích hoạt lực kéo lên khi nhấn nút bắn
+        BASE_DRAG_FORCE: 2.5,           // Lực kéo cơ bản (Vượt qua vùng ngực)
+        MAX_DRAG_SPEED: 4.0,            // Tốc độ kéo tối đa để không bay quá đầu
+        DRAG_ACCELERATION: 1.25,        // Gia tốc: Càng bắn lâu lực kéo càng tăng nhẹ để giữ tâm
+        SMOOTH_DRAG_STEPS: 5,           // Chia nhỏ bước kéo để tránh bị khựng hình
+    },
+
+    // [DISTANCE_SCALING] - Tự động điều chỉnh theo khoảng cách
+    ADAPTIVE_RANGE: {
+        CLOSE_QUARTERS: {               // Khoảng cách gần (< 10m)
+            DRAG_MULTIPLIER: 1.8,       // Kéo cực mạnh vì mục tiêu to và di chuyển nhanh
+            SENSITIVITY_BOOST: 1.5
+        },
+        MID_RANGE: {                    // Khoảng cách trung bình (10m - 40m)
+            DRAG_MULTIPLIER: 1.2,       // Kéo vừa phải, tập trung vào độ ổn định
+            SENSITIVITY_BOOST: 1.0
+        },
+        LONG_RANGE: {                   // Khoảng cách xa (> 40m)
+            DRAG_MULTIPLIER: 0.8,       // Kéo nhẹ, cực mịn để tránh đạn bay lên trời
+            SENSITIVITY_BOOST: 0.75
+        }
+    },
+
+    // [LOCK_ON_HEAD] - Khóa chặt điểm đến (Bone 10)
+    HARD_LOCK_CORE: {
+        TARGET_BONE: 10,                // Mục tiêu cuối cùng là ĐẦU
+        STICKY_ON_TARGET: 1.0,          // Độ dính 100% khi tâm đã chạm đầu
+        LOCK_RADIUS_FOV: 140,           // Phạm vi tự động nhận diện mục tiêu (pixel)
+        PRIORITIZE_HEADSHOT: true,      // Ép toàn bộ Vector phải hướng về Bone 10
+        ANTI_RECOIL_Y_AXIS: 100         // Triệt tiêu 100% độ giật dọc
+    },
+
+    // [INPUT_OPTIMIZATION] - Tối ưu hóa phản hồi cảm ứng
+    TOUCH_ENGINE: {
+        RESPONSE_MS: 0.1,               // Phản hồi siêu tốc (Gần như tức thời)
+        PRECISION_MODE: "ULTRA",        // Chế độ chính xác cao nhất
+        TOUCH_STABILIZER: true,         // Khử rung tay khi đang kéo tâm
+        DEADZONE_ELIMINATION: 0.0,      // Loại bỏ hoàn toàn vùng chết cảm ứng
+    },
+
+    // [FIX_YELLOW_DAMAGE] - Sửa lỗi máu vàng triệt để
+    BLOOD_COLOR_FIXER: {
+        FORCE_CRITICAL_HIT: true,       // Ép trả về sát thương Headshot
+        BYPASS_CHEST_FRICTION: true,    // Bỏ qua độ ma sát (độ dính) tại vùng ngực
+        VERTICAL_OFFSET_ADJUST: 15,     // Nhích tâm lên trên tọa độ đầu 15 pixel để đảm bảo trúng mặt
+    },
+
+    CONFIG: {
         Enabled: true,
 GlobalHeadMagnet_TargetBone: "bone_Head",
         Smooth: 0.08,
