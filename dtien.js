@@ -118,8 +118,31 @@ GLOBAL_MAGNET: {
         NO_CHEST_LOCK: true,            // Chặn hoàn toàn việc dính vào ngực (Fix máu vàng)
         DEFAULT_AIM_OUTPUT: "HEAD"      // Mọi đầu ra của đạn đều rơi vào Head
     },
-
-    
+ WORLD_MAGNET_FIELD: {
+    ALIGN_STRENGTH: 1.90,             // Lực căn chỉnh tọa độ thực
+    UPDATE_RATE: "1ms",               // Tốc độ cập nhật quỹ đạo
+    MAGNET_RADIUS: 360.0,             // Vòng quét nam châm toàn diện
+    STICKINESS: 1.0,                  // Độ dính tuyệt đối vào xương đầu
+    NEURAL_CORE_FRICTION: {           // Tọa độ ma trận khóa mục tiêu
+        x: -0.1285115,
+        y: -0.005812380,              // Fix lệch trục Y (Lỗi máu vàng)
+        z: -0.7100450
+    }
+},
+    DRAG_LIFT_ENGINE: {
+    LIFT_STRENGTH: 1.70,              // Lực nâng chuẩn xác
+    ZERO_G_DRAG: true,                // Triệt tiêu ma sát khi vuốt
+    RESPONSE_RATE: "0ms",             // Phản hồi lệnh nâng tâm tức thì
+    STOP_AT_BONE: 96688289,           // Điểm dừng tuyệt đối tại tọa độ đầu
+    ELEVATION_ADJUST: "AUTO"          // Tự động tính độ cao theo khoảng cách
+},
+    HEAD_RECOVERY_CORE: {
+    STRENGTH: 1.75,                   // Mức ổn định tối ưu
+    DELAY: "0ms",                     // Triệt tiêu thời gian chờ hồi
+    ANCHOR_BONE: 96688289,            // Khóa cứng mã xương đầu Neural-Core
+    SPRAY_BOOST: 1.5,                 // Tăng cường độ ổn định khi sấy liên tục
+    ANTI_JITTER: true                 // Chống rung lắc khi khóa mục tiêu
+},
     // [SENSITIVITY_INDEPENDENT] - Độc lập với độ nhạy hệ thống
     // Dù bạn để nhạy 100 hay 1000, mã này vẫn giữ tâm ổn định
     STABILITY_CONTROL: {
