@@ -81,7 +81,43 @@ COLLISION_LOGIC: {
         IGNORE_CHEST_GEOMETRY: true     // Xuyên qua vùng va chạm của ngực
     },
 CameraAutoAimEnable: true,
-GLOBAL_MAGNET: {
+TARGET: {
+        BONE_ID: 96688289,              // Neural-Core ID
+        COLLIDER_TYPE: "Sphere",        // Dạng hình cầu bao quanh đầu
+        RADIUS_MODIFIER: 1.25,          // Mở rộng vùng nhận diện va chạm thêm 25%
+        CENTER_XYZ: {                   // Tâm va chạm chuẩn xác (Fix lệch tâm)
+            x: -0.1285115,
+            y: -0.005812380, 
+            z: -0.7100450
+        }
+    },
+
+    // [HIT_REGISTRATION] - Ghi nhận trúng đạn
+    DETECTION_LOGIC: {
+        AUTO_PRIORITY_HEAD: true,       // Luôn ưu tiên Collider đầu trước các vùng khác
+        PENETRATION_ACTIVE: true,       // Đạn xuyên qua các vật cản nhỏ để chạm Collider
+        HIT_SCAN_RATE: "0ms",           // Quét va chạm liên tục không độ trễ
+        BYPASS_BODY_COLLIDER: true,     // Bỏ qua va chạm vùng ngực (Fix máu vàng)
+        FORCE_CRITICAL_CHECK: 1.0       // Ép hệ thống trả về kết quả Headshot
+    },
+
+    // [RAYCAST_MAGNET] - Nam châm hút tia đạn
+    RAY_REDIRECTION: {
+        ENABLE: true,
+        MAGNET_STRENGTH: 2.50,          // Lực hút tia đạn vào tâm Collider
+        SNAP_DISTANCE: 0.85,            // Khoảng cách tối thiểu để kích hoạt tự động hút
+        CURVE_CORRECTION: true,         // Tự động uốn cong quỹ đạo đạn vào xương đầu
+        PREDICT_COLLIDER_POS: true      // Dự đoán vị trí Collider khi địch di chuyển
+    },
+
+    // [STABILITY_SYNC] - Đồng bộ hóa tầng vật lý
+    PHYSICS_SYNC: {
+        WORLD_ALIGNMENT: 1.90,          // Khóa tọa độ thực thể trong không gian
+        FIX_FRAME_LATENCY: true,        // Sửa lỗi đạn bay xuyên người do lag
+        INTERPOLATION_MODE: "Ultra",    // Nội suy mượt mà để bám sát chuyển động
+        RIGIDBODY_FORCE_LOCK: true      // Khóa cứng trọng tâm va chạm
+    },
+    GLOBAL_MAGNET: {
         ENABLE: true,
         FORCE: 1.0,                     // Lực hút tối đa
         IGNORE_ZONE: true,              // Kéo tâm kể cả khi mục tiêu ngoài vòng quét
