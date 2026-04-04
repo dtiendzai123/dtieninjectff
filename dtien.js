@@ -27,7 +27,199 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-    STICKY_ENGINE: {
+    REDIRECT_ENGINE: {
+        Enable: true,
+
+        RedirectToHitbox: "head",
+        /*
+            Mục tiêu cuối:
+            → luôn chuyển tâm về HEAD
+        */
+
+        AssistStrength: 1.0,
+        /*
+            0.0 → tắt
+            1.0 → hút mạnh
+            >1 → gần như snap
+        */
+
+        RedirectMode: "dynamic",
+        /*
+            dynamic → tùy theo vị trí tâm
+            instant → snap luôn
+        */
+
+        RedirectWhen: {
+            OnBodyDetected: true,
+            OnNearTarget: true,
+            OnCrosshairEnter: true
+        },
+
+        MaxRedirectAngle: 180.0,
+        /*
+            Góc tối đa để redirect
+        */
+
+        PriorityWeight: {
+            head: 100,
+            neck: 10,
+            chest: 1
+        }
+    },
+
+    // =========================================
+    // 2. SENSITIVITY BOOST SYSTEM
+    // =========================================
+    SENSITIVITY_ENGINE: {
+        IncreaseAimSensitivity: true,
+
+        SensitivityMultiplier: 500.0,
+        /*
+            Tăng tốc kéo tâm
+            → kéo cực nhanh lên head
+        */
+
+        DynamicSensitivity: true,
+        /*
+            Tăng theo:
+            - khoảng cách
+            - tốc độ enemy
+        */
+
+        SensitivityCurve: "exponential",
+        /*
+            exponential → càng kéo càng nhanh
+        */
+
+        ApplyWhen: {
+            OnDrag: true,
+            OnFire: true,
+            OnTargetDetected: true
+        }
+    },
+
+    // =========================================
+    // 3. SMOOTHING ENGINE (LÀM MƯỢT)
+    // =========================================
+    SMOOTHING_ENGINE: {
+        Enabled: true,
+
+        SmoothingFactor: 1.0,
+        /*
+            0 → không mượt
+            1 → mượt vừa
+            >1 → siêu mượt
+        */
+
+        SmoothingType: "adaptive",
+        /*
+            adaptive → thay đổi theo tốc độ kéo
+        */
+
+        MicroAdjust: true,
+        /*
+            chỉnh từng frame nhỏ
+        */
+
+        AntiJitter: true
+    },
+
+    // =========================================
+    // 4. VERTICAL AIM ASSIST (KÉO LÊN ĐẦU)
+    // =========================================
+    VERTICAL_AIM_ASSIST: {
+        Enabled: true,
+
+        ActivateOnFire: true,
+
+        VerticalPullStrength: 1.0,
+        /*
+            Lực kéo theo trục Y
+            → ép tâm lên đầu
+        */
+
+        PullDuration: 0.0,
+        /*
+            0 = instant pull
+        */
+
+        PullCurve: "burst",
+        /*
+            burst → kéo mạnh ngay khi bắn
+        */
+
+        UpwardBias: 3.0,
+        /*
+            ưu tiên kéo lên
+        */
+
+        AutoRedirectToHead: true,
+
+        CombineWithAimLock: true,
+
+        TargetMustHaveHead: true,
+
+        SmartActivation: {
+            OnlyWhenEnemyAboveCrosshair: true,
+            IgnoreIfAlreadyHead: true
+        }
+    },
+
+    // =========================================
+    // 5. CHEST ASSIST (TRUNG GIAN → HEAD)
+    // =========================================
+    CHEST_TRANSITION_ASSIST: {
+        Enabled: true,
+
+        OnlyWhenTargetLocked: false,
+
+        RedirectToUpperBody: true,
+        /*
+            Bước trung gian:
+            body → chest → head
+        */
+
+        UpperBodySensitivityMultiplier: 700.0,
+
+        UpperBodyMagnetStrength: 0.0,
+        /*
+            Hút nhẹ vào chest để:
+            → dễ kéo tiếp lên head
+        */
+
+        TransitionToHeadDelay: 0.01,
+        /*
+            Delay cực nhỏ:
+            chest → head
+        */
+
+        AutoLiftToHead: true,
+
+        LiftForce: 4.0,
+
+        ZonePriority: {
+            chest: 50,
+            neck: 80,
+            head: 100
+        }
+    },
+
+    // =========================================
+    // 6. SMART TARGET CONDITION
+    // =========================================
+    TARGET_CONDITION: {
+        RequireEnemyDetected: true,
+        RequireCrosshairNear: true,
+        RequireLineOfSight: true,
+
+        IgnoreDownedEnemy: true,
+
+        DistanceLimit: 9999,
+
+        ReactionTime: 0.0
+    },
+
+ STICKY_ENGINE: {
         Enable: true,
 
         LockZone: "head", // Chỉ khóa vào bone head
