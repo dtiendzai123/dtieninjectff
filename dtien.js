@@ -94,7 +94,54 @@ REDIRECT_ENGINE: {
 
         FireSnapTime: 0.0
     },
+ HEAD_ZONE: {
+        Enable: true,
 
+        HeadRadius: 0.025,
+        /*
+            Khi tâm vào vùng này:
+            → kích hoạt sticky
+        */
+
+        NeckBufferZone: 0.04,
+        /*
+            Nếu ở cổ:
+            → vẫn kéo lên head
+        */
+    },
+
+    // =========================================
+    // 3. STICKY LOCK (QUAN TRỌNG NHẤT)
+    // =========================================
+    STICKY_LOCK: {
+        Enable: true,
+
+        ActivateOnHeadTouch: true,
+
+        StickStrength: 2.2,
+        /*
+            Lực bám đầu
+        */
+
+        MaxDriftX: 0.001,
+        MaxDriftY: 0.001,
+        /*
+            Gần như không cho lệch
+        */
+
+        StickWhileDragging: true,
+        /*
+            Dù đang kéo:
+            → vẫn giữ head
+        */
+
+        BreakThreshold: 0.05
+        /*
+            Kéo mạnh quá mới thoát
+        */
+    },
+
+    
      HEAD_LOCK: {
         Enable: true,
 
@@ -118,12 +165,59 @@ REDIRECT_ENGINE: {
         MicroStep: 0.001,
 
         MicroSpeed: 5.5,
-
+AlwaysActiveOnHead: true,
         AlwaysActiveNearHead: true,
 
         AntiJitter: true
     },
+ANTI_DROP: {
+        Enable: true,
 
+        PreventDownwardMovement: true,
+
+        DownwardBlockStrength: 2.5,
+        /*
+            Không cho tụt xuống body
+        */
+
+        AutoLiftBackToHead: true,
+
+        LiftBackForce: 1.8
+    },
+
+    // =========================================
+    // 6. DRAG CONTROL WHILE LOCKED
+    // =========================================
+    DRAG_CONTROL: {
+        ReduceDragWhenOnHead: true,
+
+        DragMultiplierOnHead: 0.3,
+        /*
+            Khi đã dính head:
+            → giảm lực kéo để không bị lệch
+        */
+
+        AllowMicroMovementOnly: true
+    },
+
+    // =========================================
+    // 7. FIRE SYNC (BẮN LÀ DÍNH CHẶT)
+    // =========================================
+    FIRE_SYNC: {
+        Enable: true,
+
+        ActivateOnFire: true,
+
+        LockBoostOnFire: 1.5,
+        /*
+            Khi bắn:
+            → bám đầu chặt hơn
+        */
+
+        RecenterEveryShot: true
+    },
+
+    // =============
     // =========================================
     // 7. TARGET PRIORITY
     // =========================================
