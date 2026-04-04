@@ -29,9 +29,9 @@ const ULTRA_HEAD_LOCK = {
 },
     // --- [HIT_JUDGEMENT_OVERRIDE] ---
  HIT_REGISTRATION_LOGIC : {
-    ClientAimPart: "HEAD",            // Chỉ định bộ phận ngắm là ĐẦU
-    ClientAimAssistHitPart: "Head",   // Ép hỗ trợ ngắm chỉ hút vào ĐẦU
-    ClientBulletHitPartJudgment: "Head", // Phán quyết va chạm của viên đạn là ĐẦU
+    ClientAimPart: "bone_Head",            // Chỉ định bộ phận ngắm là ĐẦU
+    ClientAimAssistHitPart: "bone_Head",   // Ép hỗ trợ ngắm chỉ hút vào ĐẦU
+    ClientBulletHitPartJudgment: "bone_Head", // Phán quyết va chạm của viên đạn là ĐẦU
     
     // --- [CRITICAL_STATS] ---
     UseWeaponHeadshotHitRate: 100.0,  // Tỷ lệ trúng đầu tuyệt đối 100%
