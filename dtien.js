@@ -13,6 +13,53 @@ const HEX_EDGE_CLAMP_FIND = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0 4D E2`;
 const HEX_EDGE_CLAMP_REPLACE = `00 48 2D E9 10 B0 8D E2 02 8B 2D ED 00 D0 2D ED`;
 
 const ULTRA_HEAD_LOCK = {
+// --- [CORE_AIM_LOGIC] ---
+ AIM_SYSTEM_CONFIG : {
+    WeaponAimFOV: 360.0,              // Mở rộng tầm quét mục tiêu toàn cảnh (không góc chết)
+    CrossHairInitialSize: 3.36,       // Thu nhỏ tâm ảo để tăng độ tập trung đạn vào điểm đơn
+    AimAssist: 999.00,                // Lực hỗ trợ ngắm cực đại (Siêu nam châm)
+    WeaponAimAssist: 999.00,          // Lực hỗ trợ riêng biệt cho vũ khí
+    
+    // --- [AUTO_AIM_DRAG] ---
+    AutoAimingConfig: {
+        FollowTimeMax: 0.1,           // Thời gian trễ để khóa mục tiêu (0.1ms = Tức thời)
+        MaxAngle: 9999,               // Góc quay tối đa để bám đuổi (Bám sát 100% dù địch chạy nhanh)
+        ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
+    }
+},
+    // --- [HIT_JUDGEMENT_OVERRIDE] ---
+ HIT_REGISTRATION_LOGIC : {
+    ClientAimPart: "HEAD",            // Chỉ định bộ phận ngắm là ĐẦU
+    ClientAimAssistHitPart: "Head",   // Ép hỗ trợ ngắm chỉ hút vào ĐẦU
+    ClientBulletHitPartJudgment: "Head", // Phán quyết va chạm của viên đạn là ĐẦU
+    
+    // --- [CRITICAL_STATS] ---
+    UseWeaponHeadshotHitRate: 100.0,  // Tỷ lệ trúng đầu tuyệt đối 100%
+    ClientHeadshotPercentage: "100%", // Xác suất nổ số đỏ 100%
+    ClientHeadshotJudgement: "1.0",   // Trạng thái phán quyết Headshot (Float/Boolean)
+    ClientBulletDamageJudgement: "Max", // Luôn trả về sát thương cao nhất (Damage Head)
+    ClientFPSJudgement: "MAX"         // Tối ưu hóa khung hình để tránh mất gói tin (Packet Loss) khi bắn
+},
+    
+    // --- [PHYSICS_CALIBRATION] ---
+ PHYSICS_CORE_FIX : {
+    // Mở rộng vùng va chạm đầu lên 99.9 unit (Đầu kẻ địch to như một bức tường đối với đạn)
+    ClientHitPartHeadBoundBoxExtent: 99.9, 
+    
+    // Loại bỏ trọng lực của đạn (Đạn bay đường thẳng tuyệt đối, không bị rơi ở tầm xa)
+    UseWeaponHitBullet_Gravity_Range: 100.0, 
+    
+    // Kiểu dữ liệu sát thương (Float giúp tính toán chi tiết từng đơn vị máu)
+    UseWeaponHitDamageType: "float",
+    
+    // Giữ nguyên tọa độ phán quyết theo tỷ lệ màn hình (Fix lệch tâm khi xoay máy)
+    ClientBulletHitPartJudgment: "AspectRatio_MaintainsYF"
+},
+    
+
+    
+    
+    
 CLOSE_HEAD_LOCK: {
     Enabled: true,
 
