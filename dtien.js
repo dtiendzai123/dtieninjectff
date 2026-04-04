@@ -52,7 +52,7 @@ const ULTRA_HEAD_LOCK = {
             Mượt, không giật
         */
 
-        MaxDragPerFrame: 0.015
+        MaxDragPerFrame: 0.0
         /*
             Giới hạn lực mỗi frame → tránh snap
         */
@@ -92,7 +92,7 @@ REDIRECT_ENGINE: {
             Viên đầu → gần như auto head
         */
 
-        FireSnapTime: 0.01
+        FireSnapTime: 0.0
     },
 
      HEAD_LOCK: {
@@ -102,7 +102,7 @@ REDIRECT_ENGINE: {
 
         LockStrength: 3.0,
 
-        HardLockRadius: 0.015,
+        HardLockRadius: 360.0,
 
         ZeroDrift: true,
         ZeroHorizontalError: true,
@@ -117,7 +117,7 @@ REDIRECT_ENGINE: {
 
         MicroStep: 0.001,
 
-        MicroSpeed: 1.5,
+        MicroSpeed: 5.5,
 
         AlwaysActiveNearHead: true,
 
@@ -134,7 +134,7 @@ REDIRECT_ENGINE: {
 
         AutoLiftFromBody: true,
 
-        LiftForce: 2.5
+        LiftForce: 5.5
     },
 
     // =========================================
@@ -188,11 +188,11 @@ REDIRECT_ENGINE: {
             Bước chỉnh cực nhỏ → không thấy snap
         */
 
-        MicroSpeed: 0.8,
+        MicroSpeed: 1.0,
 
         AlwaysActiveNearHead: true,
 
-        PrecisionRadius: 0.02,
+        PrecisionRadius: 0.002,
         /*
             Khi tâm gần head:
             → bắt đầu vi chỉnh
@@ -217,7 +217,7 @@ REDIRECT_ENGINE: {
             → kéo nhẹ lên head
         */
 
-        LiftForce: 0.6
+        LiftForce: 5.6
     },
 
     // =========================================
