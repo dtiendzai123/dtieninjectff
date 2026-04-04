@@ -32,7 +32,37 @@ ForceHeadPriority_NoChestLock: true,
     Predict: 0.001,          // predict nhẹ
     Offset_Y: 0.258         // nâng lên đúng điểm head
 },
-COLLISION_LOGIC: {
+BODY_RESISTANCE: {
+        CHEST_FRICTION_LEVEL: 0.0000,   // Vô hiệu hóa lực hút vào ngực (Mặc định thường là 1.0)
+        BODY_PENETRATION_SENS: true,    // Cho phép tâm súng đi xuyên qua vùng thân không bị khựng
+        FRICTION_BYPASS_THRESHOLD: 1.0, // Bỏ qua hoàn toàn mọi vật cản trước khi chạm Head
+        SLIDE_UP_FORCE: 2.50            // Lực đẩy trượt dọc (Giúp tâm lướt qua ngực cực nhanh)
+    },
+
+    // [SECTION 2: BONE COORDINATE PRIORITIZATION] - Ưu tiên tọa độ xương đầu
+    TARGET_LOCK: {
+        PRIMARY_BONE_ID: 96688289,      // Neural-Core Head
+        IGNORE_BONE_IDS: [7, 8, 9],     // Bỏ qua các xương vùng bụng, ngực, cổ
+        SNAP_ON_HEAD_ONLY: true,        // Chỉ kích hoạt lực hút (Magnet) khi tâm gần đầu
+        NEURAL_LOCK_Y: -0.005812380     // Tọa độ dừng tuyệt đối (Fix lỗi kéo quá tay)
+    },
+
+    // [SECTION 3: VELOCITY DRAG BOOST] - Gia tốc kéo tâm
+    LIFT_CONTROL: {
+        DRAG_LIFT_STRENGTH: 1.75,       // Lực nâng tâm tự động khi nhấn nút bắn
+        LIFT_RESPONSE_RATE: "0ms",      // Tốc độ phản hồi cực cao
+        RECOIL_REDIRECTION_Y: 1.85,     // Chuyển hướng độ giật của súng thành lực đẩy lên đầu
+        STABILITY_ON_LIFT: 1.0          // Giữ tâm thẳng hàng, không cho phép rung ngang khi kéo
+    },
+
+    // [SECTION 4: HIT_DETECT_COLLIDER_FIX] - Hiệu chuẩn va chạm
+    HIT_DETECTION: {
+        DETECTOR_MODE: "HeadOnly",      // Chế độ quét va chạm: Chỉ lấy điểm đầu
+        COLLIDER_SENSITIVITY: 0.0,      // Độ nhạy vùng thân = 0
+        HIT_SCAN_RADIUS: 150.0,         // Bán kính tìm kiếm đầu mục tiêu
+        ZERO_LATENCY_SYNC: true         // Đồng bộ hóa va chạm 0ms
+    },
+    COLLISION_LOGIC: {
         SNAP_ON_CONTACT: true,          // Hút tâm ngay lập tức khi vào vùng va chạm đầu
         CONTACT_PRECISION: "0.000001",  // Sai số va chạm gần như bằng 0
         BONE_PENETRATION_FIX: true,     // Đảm bảo đạn xuyên thẳng vào tâm xương 96688289
