@@ -32,7 +32,45 @@ ForceHeadPriority_NoChestLock: true,
     Predict: 0.001,          // predict nhẹ
     Offset_Y: 0.258         // nâng lên đúng điểm head
 },
- VECTOR_FIX: {
+COLLISION_LOGIC: {
+        SNAP_ON_CONTACT: true,          // Hút tâm ngay lập tức khi vào vùng va chạm đầu
+        CONTACT_PRECISION: "0.000001",  // Sai số va chạm gần như bằng 0
+        BONE_PENETRATION_FIX: true,     // Đảm bảo đạn xuyên thẳng vào tâm xương 96688289
+        HIT_REGISTER_PRIORITY: "HEAD",  // Ưu tiên ghi nhận sát thương đầu (Số đỏ)
+        MAX_COLLISION_STRENGTH: 2.80    // Lực va chạm cưỡng bức
+    },
+
+    // [SECTION 2: WORLD SPACE ANCHOR] - Neo giữ trong không gian 3D
+    SPACE_ANCHOR: {
+        WORLD_ALIGNMENT_STRENGTH: 1.90, // Khóa theo trục tọa độ thực tế
+        NEURAL_CORE_ID: 96688289,       // Mã định danh xương đầu cố định
+        UPDATE_RATE: "0ms",             // Cập nhật quỹ đạo không độ trễ
+        XYZ_FIXED_POINT: {              // Tọa độ vàng để "Full Đỏ"
+            x: -0.1285115,
+            y: -0.005812380,            // Điểm dừng hoàn hảo (Fix máu vàng)
+            z: -0.7100450
+        }
+    },
+
+    // [SECTION 3: ADAPTIVE DYNAMIC TRACKING] - Tracking đa hướng
+    TRACKING_ENGINE: {
+        MODE: "DynamicHeadTrack",       // Theo dõi đầu linh hoạt theo chuyển động địch
+        SMOOTH_FACTOR: 1.15,            // Độ mượt lý tưởng để bám dính như keo
+        STICKINESS: 1.0,                // Độ dính 100% (Sticky Aim)
+        ANTI_JITTER_ACTIVE: true,       // Khử mọi rung lắc từ độ nhạy cao hoặc tay người
+        PREDICTION_SPEED: 2.50          // Dự đoán vị trí đầu khi địch Teleport hoặc chạy nhanh
+    },
+
+    // [SECTION 4: RECOIL & FRICTION ELIMINATION] - Triệt tiêu lực cản
+    FORCE_CONTROL: {
+        ZERO_FRICTION: 0.0000,          // Loại bỏ hoàn toàn ma sát tại vùng ngực
+        AUTO_LIFT_BOOST: 1.75,          // Lực nâng tâm tự động
+        SPRAY_STABILITY: 1.65,          // Ổn định tuyệt đối khi sấy (Spray)
+        RECOVERY_DELAY: "0ms",          // Hồi tâm về đầu ngay lập tức sau mỗi viên đạn
+        AUTO_BRAKE_ENABLE: true         // Tự động phanh tâm khi chạm đúng tọa độ Y
+    },
+
+    VECTOR_FIX: {
         TARGET_BONE: 10,                // Khóa cứng Bone Head
         XYZ_OFFSET_ADJUST: {            // Bù trừ sai số tọa độ
             X: 0.00,                    // Giữ tâm thẳng hàng ngang
