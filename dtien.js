@@ -109,7 +109,154 @@ REDIRECT_ENGINE: {
             → vẫn kéo lên head
         */
     },
+    SPRAY_ENGINE: {
+        Enable: true,
 
+        SprayMode: "full-auto",
+
+        PerBulletCorrection: true,
+        /*
+            Mỗi viên đạn:
+            → chỉnh lại về head
+        */
+
+        CorrectionStrength: 1.2,
+
+        SprayStability: 0.9,
+        /*
+            Giữ tâm ổn định khi xả đạn
+        */
+
+        AutoCompensateRecoil: true,
+
+        RecoilCompensationStrength: 2.0
+    },
+
+    // =========================================
+    // 2. HEAD TRACKING (REALTIME)
+    // =========================================
+    HEAD_TRACKING: {
+        Enable: true,
+
+        TrackBoneHead: true,
+
+        TrackingSpeed: 2.0,
+
+        RealTimeUpdate: true,
+
+        UpdateInterval: 0.000001,
+
+        StickyTracking: true
+    },
+
+    // =========================================
+    // 3. MOVEMENT PREDICTION (CỰC QUAN TRỌNG)
+    // =========================================
+    PREDICTION_ENGINE: {
+        Enable: true,
+
+        PredictMovement: true,
+
+        VelocityMultiplier: 1.3,
+        /*
+            Dự đoán hướng chạy enemy
+        */
+
+        PredictionOffset: 0.02,
+
+        DynamicPrediction: true,
+        /*
+            Tốc độ chạy càng nhanh → predict càng xa
+        */
+
+        AirbornePrediction: true
+        /*
+            Predict khi enemy nhảy
+        */
+    },
+
+    // =========================================
+    // 4. STICKY HEAD LOCK (BÁM CHẶT)
+    // =========================================
+    STICKY_HEAD: {
+        Enable: true,
+
+        LockOnHead: true,
+
+        StickStrength: 2.5,
+
+        StickWhileSpraying: true,
+
+        MaxDriftX: 0.001,
+        MaxDriftY: 0.001,
+
+        ReLockEachBullet: true
+    },
+
+    // =========================================
+    // 5. ANTI-RECOIL SYNC (CHỐNG TỤT)
+    // =========================================
+    ANTI_RECOIL: {
+        Enable: true,
+
+        RecoilPattern: "auto",
+
+        VerticalRecoilCompensation: 2.2,
+        /*
+            Kéo lên để giữ head khi spray
+        */
+
+        HorizontalRecoilCompensation: 1.0,
+
+        SyncWithFireRate: true
+    },
+
+    // =========================================
+    // 6. ANTI-DROP SYSTEM
+    // =========================================
+    ANTI_DROP: {
+        Enable: true,
+
+        PreventDownwardDrift: true,
+
+        DownwardBlockStrength: 3.0,
+
+        AutoLiftToHead: true,
+
+        LiftForce: 2.0
+    },
+
+    // =========================================
+    // 7. MICRO ADJUST (CHỐNG HỤT)
+    // =========================================
+    MICRO_ADJUST: {
+        Enable: true,
+
+        MicroStep: 0.0007,
+
+        MicroSpeed: 1.4,
+
+        AlwaysActive: true,
+
+        AntiJitter: true
+    },
+
+    // =========================================
+    // 8. TARGET SWITCH & TRACK
+    // =========================================
+    TARGET_SYSTEM: {
+        Enable: true,
+
+        AutoSwitchTarget: true,
+
+        PriorityMode: "closest-to-crosshair",
+
+        LockWhileVisible: true,
+
+        ReacquireIfLost: true
+    },
+
+    // ========
     // =========================================
     // 3. STICKY LOCK (QUAN TRỌNG NHẤT)
     // =========================================
