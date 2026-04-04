@@ -27,7 +27,157 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-   HEAD_ROTATION_TRACKING: {
+  DRAG_ENGINE: {
+        Enable: true,
+
+        DragStrength: 2.5,
+        /*
+            0.2 → cực nhẹ (gần như tay)
+            0.35 → nhẹ nhưng có hỗ trợ
+            0.5 → bắt đầu rõ lực kéo
+        */
+
+        VerticalBias: 0.8,
+        /*
+            Ưu tiên kéo lên đầu nhưng rất nhẹ
+        */
+
+        HorizontalAssist: 0.25,
+        /*
+            Sửa lệch ngang nhẹ
+        */
+
+        DragSmoothness: 0.9,
+        /*
+            Mượt, không giật
+        */
+
+        MaxDragPerFrame: 0.015
+        /*
+            Giới hạn lực mỗi frame → tránh snap
+        */
+    },
+
+    // =========================================
+    // 2. PER-SHOT HEAD CORRECTION
+    // =========================================
+    SHOT_CORRECTION: {
+        Enable: true,
+
+        ApplyEveryBullet: true,
+        /*
+            Mỗi viên:
+            → chỉnh lại hướng về head
+        */
+
+        CorrectionStrength: 0.6,
+        /*
+            Lực chỉnh nhẹ nhưng chính xác
+        */
+
+        FirstBulletBoost: 1.2,
+        /*
+            Viên đầu ưu tiên head cao hơn
+        */
+
+        FollowUpCorrection: 0.5,
+        /*
+            Các viên sau chỉnh nhẹ hơn
+        */
+
+        DelayBetweenShots: 0.0
+    },
+
+    // =========================================
+    // 3. MICRO HEAD ADJUST (VI CHỈNH)
+    // =========================================
+    MICRO_HEAD_ADJUST: {
+        Enable: true,
+
+        MicroStep: 0.0008,
+        /*
+            Bước chỉnh cực nhỏ → không thấy snap
+        */
+
+        MicroSpeed: 0.8,
+
+        AlwaysActiveNearHead: true,
+
+        PrecisionRadius: 0.02,
+        /*
+            Khi tâm gần head:
+            → bắt đầu vi chỉnh
+        */
+
+        AntiJitter: true
+    },
+
+    // =========================================
+    // 4. HEAD PRIORITY FILTER
+    // =========================================
+    HEAD_PRIORITY: {
+        Enable: true,
+
+        HeadWeight: 100.0,
+        NeckWeight: 5.0,
+        BodyWeight: 0.5,
+
+        AutoLiftFromBody: true,
+        /*
+            Nếu đang ở body:
+            → kéo nhẹ lên head
+        */
+
+        LiftForce: 0.6
+    },
+
+    // =========================================
+    // 5. ANTI-OVERSHOOT (TRÁNH LỐ TÂM)
+    // =========================================
+    ANTI_OVERSHOOT: {
+        Enable: true,
+
+        SlowDownNearHead: true,
+
+        SlowFactor: 0.4,
+        /*
+            Gần head → giảm tốc
+        */
+
+        MaxErrorDistance: 0.025,
+
+        SoftClamp: true,
+        /*
+            Giữ tâm trong vùng head
+        */
+
+        NoHardSnap: true
+    },
+
+    // =========================================
+    // 6. FIRE SYNC (ĐỒNG BỘ BẮN)
+    // =========================================
+    FIRE_SYNC: {
+        Enable: true,
+
+        ActivateOnFire: true,
+
+        SyncWithShot: true,
+        /*
+            Khi bắn:
+            → trigger chỉnh tâm
+        */
+
+        FireWindow: 0.0,
+        /*
+            Khoảng thời gian vàng mỗi viên đạn
+        */
+
+        AutoRecenterAfterShot: true
+    },
+
+   
+ HEAD_ROTATION_TRACKING: {
         Enable: true,
 
         UseBoneHeadRotation: true,
