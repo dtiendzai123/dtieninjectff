@@ -232,7 +232,9 @@ REDIRECT_ENGINE: {
         /*
             Gần head → giảm tốc
         */
+  ReverseIfOvershoot: true,
 
+        SnapBackForce: 0.7,
         MaxErrorDistance: 0.025,
 
         SoftClamp: true,
