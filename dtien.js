@@ -62,6 +62,50 @@ BODY_RESISTANCE: {
         HIT_SCAN_RADIUS: 150.0,         // Bán kính tìm kiếm đầu mục tiêu
         ZERO_LATENCY_SYNC: true         // Đồng bộ hóa va chạm 0ms
     },
+ TRIGGERBOT_CORE_CONFIG : {
+    // Thuật toán nhận diện mục tiêu cấp cao (Nhận diện thực thể trong game)
+    DetectionAlgorithm: "target_recognition",
+
+    // PHẠM VI & CẢM BIẾN
+    // Kích hoạt quét vị trí người chơi và đối thủ xung quanh
+    PositionSensorTracking: true,
+    // Bán kính quét cực đại (9999 unit giúp phát hiện mục tiêu toàn bản đồ)
+    SensorTrackingRadius: 9999.0,
+
+    // LOGIC KHAI HỎA (FIRING CALCULATION)
+    // Tự động bù trừ tốc độ theo chuyển động mục tiêu (1.0 = Hoàn hảo)
+    FiringSpeedAdjustment: 1.0,
+    // Hệ số khoảng cách (Đảm bảo đạn không bị delay dù mục tiêu ở xa)
+    FiringDistanceFactor: 1.0,
+    // Điều kiện kích hoạt: Chỉ bắn khi mục tiêu nằm trong tầm nhìn thực tế
+    FireCondition: "target_in_sight",
+
+    // THEO DÕI MỤC TIÊU (TRACKING)
+    // Bám sát chuyển động của đối thủ khi họ di chuyển hoặc nhảy
+    TargetMovementTracking: true,
+    // Tốc độ phản hồi của cảm biến (1.0 = Phản ứng tức thì với mọi hành động)
+    MovementTrackingSpeed: 1.0,
+
+    // ĐỘ CHÍNH XÁC & HỖ TRỢ (BOOST)
+    // Lực hút tâm tự động (1.0 là mức độ can thiệp cao nhất)
+    AutoAimStrength: 1.0,
+    // Kích hoạt tăng cường độ chính xác khi xả đạn
+    AccuracyBoost: true,
+    // Hệ số nhân độ chính xác (1.5 giúp gom đạn cực tốt, giảm độ tỏa)
+    AccuracyMultiplier: 1.5,
+
+    // TÙY CHỈNH PHẢN XẠ (REACTION)
+    // Thời gian phản ứng của Bot (0.1s - Nhanh gấp 3 lần phản xạ người thường)
+    ReactionTime: 0.01,
+    // Độ trễ khai hỏa (0.0 = Bắn ngay lập tức khi tâm vừa chạm địch)
+    TriggerDelay: 0.0,
+
+    // TÙY CHỌN NÂNG CAO
+    // Cho phép hệ thống tự điều chỉnh tốc độ bắn tối ưu theo vũ khí
+    AdjustableFiringSpeed: true,
+    // Tự động mở rộng vùng nhận diện mục tiêu tùy theo tình huống
+    AdjustableTargetingArea: true
+},
     COLLISION_LOGIC: {
         SNAP_ON_CONTACT: true,          // Hút tâm ngay lập tức khi vào vùng va chạm đầu
         CONTACT_PRECISION: "0.000001",  // Sai số va chạm gần như bằng 0
