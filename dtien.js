@@ -57,6 +57,95 @@ const ULTRA_HEAD_LOCK = {
             Giới hạn lực mỗi frame → tránh snap
         */
     },
+REDIRECT_ENGINE: {
+        Enable: true,
+
+        ForceRedirectToHead: true,
+
+        RedirectStrength: 2.0,
+        /*
+            Khi chạm body:
+            → đẩy thẳng lên head
+        */
+
+        ActivationRadius: 400.0,
+
+        IgnoreBodyCompletely: true
+    },
+
+    // =========================================
+    // 3. FIRE BOOST (KHI BẮN)
+    // =========================================
+    FIRE_BOOST: {
+        Enable: true,
+
+        ActivateOnFire: true,
+
+        DragMultiplierOnFire: 1.5,
+        /*
+            Khi bóp cò:
+            → kéo mạnh hơn nữa
+        */
+
+        FirstBulletBoost: 2.0,
+        /*
+            Viên đầu → gần như auto head
+        */
+
+        FireSnapTime: 0.01
+    },
+
+     HEAD_LOCK: {
+        Enable: true,
+
+        LockOnHead: true,
+
+        LockStrength: 3.0,
+
+        HardLockRadius: 0.015,
+
+        ZeroDrift: true,
+        ZeroHorizontalError: true,
+        ZeroVerticalDrop: true
+    },
+
+    // =========================================
+    // 6. MICRO FIX (CHỐNG HỤT)
+    // =========================================
+    MICRO_ADJUST: {
+        Enable: true,
+
+        MicroStep: 0.001,
+
+        MicroSpeed: 1.5,
+
+        AlwaysActiveNearHead: true,
+
+        AntiJitter: true
+    },
+
+    // =========================================
+    // 7. TARGET PRIORITY
+    // =========================================
+    TARGET_PRIORITY: {
+        HeadWeight: 100,
+        NeckWeight: 1,
+        BodyWeight: 0.01,
+
+        AutoLiftFromBody: true,
+
+        LiftForce: 2.5
+    },
+
+    // =========================================
+    // 8. ACTIVATION
+    // =========================================
+    ACTIVATION: {
+        OnlyWhenFiring: true,
+        RequireCrosshairNear: true,
+
+        ReactionTime: 0.0
+    },
 
     // =========================================
     // 2. PER-SHOT HEAD CORRECTION
@@ -70,7 +159,7 @@ const ULTRA_HEAD_LOCK = {
             → chỉnh lại hướng về head
         */
 
-        CorrectionStrength: 0.6,
+        CorrectionStrength: 1.0,
         /*
             Lực chỉnh nhẹ nhưng chính xác
         */
@@ -80,7 +169,7 @@ const ULTRA_HEAD_LOCK = {
             Viên đầu ưu tiên head cao hơn
         */
 
-        FollowUpCorrection: 0.5,
+        FollowUpCorrection: 2.0,
         /*
             Các viên sau chỉnh nhẹ hơn
         */
