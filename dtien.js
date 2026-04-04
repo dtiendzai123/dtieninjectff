@@ -282,7 +282,7 @@ const ULTRA_HEAD_LOCK = {
             4.0 = instant snap
         */
 
-        SnapOffsetZ: 2.0,
+        SnapOffsetY: 2.0,
         /*
             Offset từ body → head
             dùng khi detect body trước
