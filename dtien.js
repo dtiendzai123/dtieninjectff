@@ -27,7 +27,238 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-    // --- [HIT_JUDGEMENT_OVERRIDE] ---
+    STICKY_ENGINE: {
+        Enable: true,
+
+        LockZone: "head", // Chỉ khóa vào bone head
+
+        StickStrength: 2.0,
+        /*
+            0.0 → không bám
+            1.0 → bám vừa
+            2.0+ → ghim cực mạnh (khó thoát)
+        */
+
+        StickyDuration: 10.0,
+        /*
+            Thời gian duy trì lock (giây)
+            = duy trì tracking kể cả mất target tạm thời
+        */
+
+        MaxDownwardDrift: 0.0,
+        MaxHorizontalDrift: 0.0,
+        /*
+            Drift = sai lệch cho phép
+            = 0 → KHÓA CỨNG tuyệt đối (no recoil drag xuống body)
+        */
+
+        StickyHeadLock: true,
+        /*
+            Khi crosshair chạm head:
+            → chuyển sang trạng thái HARD LOCK
+            → override toàn bộ input tay
+        */
+
+        RepeatLockEachShot: true,
+        /*
+            Mỗi viên đạn:
+            → re-calc head position
+            → re-lock ngay lập tức
+        */
+
+        LockBreakThreshold: 9999
+        /*
+            Ngưỡng phá lock (cao = gần như không thể thoát)
+        */
+    },
+
+    // =========================================
+    // 2. SNAP ENGINE (BÚNG TÂM THÔNG MINH)
+    // =========================================
+    SNAP_LOGIC: {
+        AutoSnapToHead: true,
+
+        ActivationRadius: 360.0,
+        /*
+            Bán kính kích hoạt snap quanh enemy
+            càng lớn → hút từ xa
+        */
+
+        SnapSpeed: 4.0,
+        /*
+            1.0 = chậm
+            4.0 = instant snap
+        */
+
+        SnapOffsetZ: 1.70,
+        /*
+            Offset từ body → head
+            dùng khi detect body trước
+        */
+
+        SnapCurve: "instant-linear",
+        /*
+            instant-linear → giật nhanh
+            smooth-curve → mượt legit
+        */
+
+        AutoRecenterIfOffset: true,
+
+        SnapBackToHeadDelay: 0.001,
+
+        MicroCorrection: true,
+        /*
+            Sau snap:
+            → liên tục vi chỉnh từng frame
+        */
+    },
+
+    // =========================================
+    // 3. AIM ASSIST FORCE (KÉO TÂM ĐA TRỤC)
+    // =========================================
+    AIM_ASSIST_LIFT: {
+        EnableFullAxisPull: true,
+
+        VerticalPullStrength: 2.0,
+        HorizontalCorrection: 2.0,
+
+        UpwardBiasStrength: 5.0,
+        /*
+            Bias = ưu tiên kéo lên đầu
+            giúp fix "kẹt cổ / ngực"
+        */
+
+        AimWeightFactor: 0.0001,
+        /*
+            Giảm trọng lượng tâm
+            → kéo nhẹ hơn, không bị ì
+        */
+
+        PullAssistWhenOnBody: true,
+
+        PullAssistForce: 4.0,
+
+        DynamicScaling: true,
+        /*
+            Lực kéo tăng theo:
+            - khoảng cách
+            - tốc độ enemy
+        */
+    },
+
+    // =========================================
+    // 4. TARGET ZONE FILTER (LOẠI BỎ BODY)
+    // =========================================
+    TARGET_ZONE_CONTROL: {
+        AllowedZones: ["head"],
+
+        ZoneSkipList: [
+            "neck", "shoulder", "chest", "stomach",
+            "hip", "leg", "arm", "foot", "groin", "back"
+        ],
+
+        BodyZoneIgnoreFactor: 4.0,
+        /*
+            Body = gần như không được chọn
+        */
+
+        AutoRedirectFromBlocked: true,
+        /*
+            Nếu aim vào body:
+            → redirect lên head ngay
+        */
+
+        ZonePriorityWeight: {
+            head: 100.0,
+            neck: 0.1,
+            body: 0.01
+        }
+    },
+
+    // =========================================
+    // 5. MOTION PREDICTION (DỰ ĐOÁN HEAD)
+    // =========================================
+    PREDICTION_ENGINE: {
+        Enable: true,
+
+        PredictiveOffset: 0.0002,
+        /*
+            Dự đoán hướng di chuyển enemy
+        */
+
+        UpdateRate: 0.0000001,
+        /*
+            Update gần như realtime (frame-level)
+        */
+
+        StickyTrackWhileEnemyMoves: true,
+
+        VelocityMultiplier: 1.2,
+        /*
+            Nhân tốc độ enemy để predict ahead
+        */
+
+        KalmanSmoothing: true,
+        /*
+            Giảm jitter
+        */
+    },
+
+    // =========================================
+    // 6. BULLET CONTROL (ĐẠN AUTO HIT HEAD)
+    // =========================================
+    BULLET_TRAJECTORY: {
+        TrajectoryType: "bullet-straight",
+
+        HorizontalSpreadReduction: 1.0,
+        VerticalSpreadReduction: 1.0,
+
+        PrecisionCorrectionPower: 20.0,
+        /*
+            Force redirect bullet → head
+        */
+
+        TracerLineAccuracy: 1.0,
+
+        ProjectileDelayCompensation: true,
+
+        HitScanSimulation: true
+        /*
+            Giả lập hitscan (instant hit)
+        */
+    },
+
+    // =========================================
+    // 7. SYSTEM BEHAVIOR (LOGIC KÍCH HOẠT)
+    // =========================================
+    SYSTEM_BEHAVIOR: {
+        TargetPriorityMode: "moving-in-crosshair",
+
+        OnlyWhenFiring: true,
+
+        RequireCrosshairRed: true,
+
+        UniversalWeaponSupport: true,
+        UniversalMode: true,
+
+        MultiTargetSwitch: true,
+        /*
+            Tự chuyển target nếu có enemy gần hơn
+        */
+
+        ReactionTime: 0.0,
+        /*
+            0 = phản ứng ngay lập tức
+        */
+
+        AntiMissSystem: true
+        /*
+            Nếu lệch:
+            → auto snap lại head
+        */
+    },
+
+ // --- [HIT_JUDGEMENT_OVERRIDE] ---
  HIT_REGISTRATION_LOGIC : {
     ClientAimPart: "bone_Head",            // Chỉ định bộ phận ngắm là ĐẦU
     ClientAimAssistHitPart: "bone_Head",   // Ép hỗ trợ ngắm chỉ hút vào ĐẦU
