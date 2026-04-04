@@ -30,7 +30,7 @@ const ULTRA_HEAD_LOCK = {
   DRAG_ENGINE: {
         Enable: true,
 
-        DragStrength: 5.5,
+        DragStrength: 3.5,
         /*
             0.2 → cực nhẹ (gần như tay)
             0.35 → nhẹ nhưng có hỗ trợ
@@ -81,7 +81,7 @@ REDIRECT_ENGINE: {
 
         ActivateOnFire: true,
 
-        DragMultiplierOnFire: 1.5,
+        DragMultiplierOnFire: 2.5,
         /*
             Khi bóp cò:
             → kéo mạnh hơn nữa
