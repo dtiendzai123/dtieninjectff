@@ -27,7 +27,183 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-    REDIRECT_ENGINE: {
+   HEAD_ROTATION_TRACKING: {
+        Enable: true,
+
+        UseBoneHeadRotation: true,
+        /*
+            Lấy rotation (Quaternion/Euler) của xương đầu
+        */
+
+        RotationInfluence: 1.2,
+        /*
+            0 → chỉ position
+            1 → chuẩn theo rotation
+            >1 → ưu tiên hướng nhìn của đầu
+        */
+
+        PredictRotation: true,
+        RotationPredictionFactor: 0.15,
+
+        CombinePositionAndRotation: true,
+
+        RotationSmoothing: 0.25,
+        /*
+            Làm mượt hướng quay đầu
+        */
+    },
+
+    // =========================================
+    // 2. SMART AIM LOCK (KHÓA THÔNG MINH)
+    // =========================================
+    SMART_HEAD_LOCK: {
+        Enable: true,
+
+        LockOnHeadOnly: true,
+
+        LockStrength: 2.5,
+
+        DynamicLockStrength: true,
+        /*
+            Xa → lock mạnh
+            Gần → lock nhẹ (tránh lố)
+        */
+
+        LockFalloffDistance: 1.5,
+        /*
+            Khi gần head:
+            → giảm lực để tránh vượt quá
+        */
+
+        StickyLock: true,
+
+        MicroCorrectionWhileLocked: true
+    },
+
+    // =========================================
+    // 3. ANTI-OVERSHOOT SYSTEM (QUAN TRỌNG)
+    // =========================================
+    ANTI_OVERSHOOT: {
+        Enable: true,
+
+        OvershootThreshold: 0.015,
+        /*
+            Khoảng cách gần head
+            → bắt đầu giảm lực
+        */
+
+        DecelerationFactor: 0.35,
+        /*
+            Giảm tốc khi gần head
+        */
+
+        ReverseCorrection: true,
+        /*
+            Nếu lố:
+            → kéo ngược lại ngay
+        */
+
+        MaxOvershootDistance: 0.03,
+
+        SnapBackSpeed: 0.6,
+        /*
+            Tốc độ kéo lại khi bị lệch
+        */
+    },
+
+    // =========================================
+    // 4. MICRO ADJUST ENGINE (VI CHỈNH)
+    // =========================================
+    MICRO_ADJUST: {
+        Enable: true,
+
+        MicroStepSize: 0.0005,
+        /*
+            Bước chỉnh cực nhỏ
+        */
+
+        MicroSpeed: 1.2,
+
+        AlwaysActiveNearHead: true,
+
+        AntiJitter: true,
+
+        StabilizationForce: 0.8
+    },
+
+    // =========================================
+    // 5. AIM FORCE CONTROL (LỰC KÉO)
+    // =========================================
+    AIM_FORCE_ENGINE: {
+        BasePullStrength: 4.0,
+
+        VerticalBias: 3.5,
+        HorizontalCorrection: 2.0,
+
+        DynamicScaling: true,
+
+        DistanceMultiplier: 1.3,
+        VelocityMultiplier: 1.1,
+
+        ReduceForceNearTarget: true
+    },
+
+    // =========================================
+    // 6. ROTATION-BASED REDIRECT
+    // =========================================
+    ROTATION_REDIRECT: {
+        Enable: true,
+
+        RedirectUsingLookDirection: true,
+        /*
+            Aim theo hướng đầu đang nhìn
+        */
+
+        ForwardOffset: 0.08,
+        /*
+            Dịch nhẹ theo hướng nhìn (tránh hụt head)
+        */
+
+        VerticalOffsetCorrection: 0.02,
+
+        AutoAlignToFaceDirection: true
+    },
+
+    // =========================================
+    // 7. FINAL LOCK STABILIZER (CHỐNG LỆCH)
+    // =========================================
+    FINAL_STABILIZER: {
+        Enable: true,
+
+        HardLockThreshold: 0.01,
+        /*
+            Khi đủ gần:
+            → khóa cứng hoàn toàn
+        */
+
+        ZeroDrift: true,
+        ZeroHorizontalError: true,
+        ZeroVerticalDrop: true,
+
+        LockBreakProtection: true,
+
+        ReacquireIfLost: true
+    },
+
+    // =========================================
+    // 8. TRIGGER CONDITION
+    // =========================================
+    ACTIVATION: {
+        OnlyWhenFiring: true,
+        RequireCrosshairNear: true,
+        RequireEnemyVisible: true,
+
+        ReactionTime: 0.0,
+
+        AlwaysTrackWhileLocked: true
+    },
+
+ REDIRECT_ENGINE: {
         Enable: true,
 
         RedirectToHitbox: "head",
