@@ -43,7 +43,7 @@ const ULTRA_HEAD_LOCK = {
             >1 → gần như snap
         */
 
-        RedirectMode: "dynamic",
+        RedirectMode: "instant",
         /*
             dynamic → tùy theo vị trí tâm
             instant → snap luôn
@@ -181,7 +181,7 @@ const ULTRA_HEAD_LOCK = {
 
         UpperBodySensitivityMultiplier: 700.0,
 
-        UpperBodyMagnetStrength: 0.0,
+        UpperBodyMagnetStrength: 0.01,
         /*
             Hút nhẹ vào chest để:
             → dễ kéo tiếp lên head
@@ -198,8 +198,8 @@ const ULTRA_HEAD_LOCK = {
         LiftForce: 4.0,
 
         ZonePriority: {
-            chest: 50,
-            neck: 80,
+            chest: 6,
+            neck: 10,
             head: 100
         }
     },
@@ -282,7 +282,7 @@ const ULTRA_HEAD_LOCK = {
             4.0 = instant snap
         */
 
-        SnapOffsetZ: 1.70,
+        SnapOffsetZ: 2.0,
         /*
             Offset từ body → head
             dùng khi detect body trước
