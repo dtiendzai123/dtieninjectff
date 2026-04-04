@@ -30,7 +30,7 @@ const ULTRA_HEAD_LOCK = {
   DRAG_ENGINE: {
         Enable: true,
 
-        DragStrength: 10.5,
+        DragStrength: 5.5,
         /*
             0.2 → cực nhẹ (gần như tay)
             0.35 → nhẹ nhưng có hỗ trợ
@@ -42,7 +42,7 @@ const ULTRA_HEAD_LOCK = {
             Ưu tiên kéo lên đầu nhưng rất nhẹ
         */
 
-        HorizontalAssist: 0.25,
+        HorizontalAssist: 1.0,
         /*
             Sửa lệch ngang nhẹ
         */
