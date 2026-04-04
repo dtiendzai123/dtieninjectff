@@ -234,7 +234,7 @@ REDIRECT_ENGINE: {
         */
   ReverseIfOvershoot: true,
 
-        SnapBackForce: 0.7,
+        SnapBackForce: 1.0,
         MaxErrorDistance: 0.025,
 
         SoftClamp: true,
