@@ -16,13 +16,13 @@ const ULTRA_HEAD_LOCK = {
 // --- [CORE_AIM_LOGIC] ---
  AIM_SYSTEM_CONFIG : {
     WeaponAimFOV: 360.0,              // Mở rộng tầm quét mục tiêu toàn cảnh (không góc chết)
-    CrossHairInitialSize: 3.36,       // Thu nhỏ tâm ảo để tăng độ tập trung đạn vào điểm đơn
+    CrossHairInitialSize: 10.36,       // Thu nhỏ tâm ảo để tăng độ tập trung đạn vào điểm đơn
     AimAssist: 999.00,                // Lực hỗ trợ ngắm cực đại (Siêu nam châm)
     WeaponAimAssist: 999.00,          // Lực hỗ trợ riêng biệt cho vũ khí
     
     // --- [AUTO_AIM_DRAG] ---
     AutoAimingConfig: {
-        FollowTimeMax: 0.1,           // Thời gian trễ để khóa mục tiêu (0.1ms = Tức thời)
+        FollowTimeMax: 0.01,           // Thời gian trễ để khóa mục tiêu (0.1ms = Tức thời)
         MaxAngle: 9999,               // Góc quay tối đa để bám đuổi (Bám sát 100% dù địch chạy nhanh)
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
@@ -106,7 +106,7 @@ BODY_RESISTANCE: {
     HIT_DETECTION: {
         DETECTOR_MODE: "HeadOnly",      // Chế độ quét va chạm: Chỉ lấy điểm đầu
         COLLIDER_SENSITIVITY: 0.0,      // Độ nhạy vùng thân = 0
-        HIT_SCAN_RADIUS: 150.0,         // Bán kính tìm kiếm đầu mục tiêu
+        HIT_SCAN_RADIUS: 360.0,         // Bán kính tìm kiếm đầu mục tiêu
         ZERO_LATENCY_SYNC: true         // Đồng bộ hóa va chạm 0ms
     },
  TRIGGERBOT_CORE_CONFIG : {
@@ -157,7 +157,7 @@ BODY_RESISTANCE: {
         SNAP_ON_CONTACT: true,          // Hút tâm ngay lập tức khi vào vùng va chạm đầu
         CONTACT_PRECISION: "0.000001",  // Sai số va chạm gần như bằng 0
         BONE_PENETRATION_FIX: true,     // Đảm bảo đạn xuyên thẳng vào tâm xương 96688289
-        HIT_REGISTER_PRIORITY: "HEAD",  // Ưu tiên ghi nhận sát thương đầu (Số đỏ)
+        HIT_REGISTER_PRIORITY: "bone_Head",  // Ưu tiên ghi nhận sát thương đầu (Số đỏ)
         MAX_COLLISION_STRENGTH: 2.80    // Lực va chạm cưỡng bức
     },
 
