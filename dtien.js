@@ -32,7 +32,7 @@ const ULTRA_HEAD_LOCK = {
 
         Use3DDistance: true,
 
-        HeadRadius: 0.03,
+        HeadRadius: 360.0,
         /*
             Vùng nhận diện head
         */
@@ -77,7 +77,7 @@ const ULTRA_HEAD_LOCK = {
 
         ReduceDragNearHead: true,
 
-        DragMultiplierNearHead: 0.3,
+        DragMultiplierNearHead: 0.0,
         /*
             Gần head → giảm lực kéo tay
             để không bị lệch
@@ -109,17 +109,17 @@ const ULTRA_HEAD_LOCK = {
     // =========================================
     LOCK_ZONES: {
         FarZone: {
-            Radius: 0.1,
+            Radius: 360.0,
             LockStrength: 9999.0
         },
 
         MidZone: {
-            Radius: 0.05,
+            Radius: 360.0,
             LockStrength: 9999.0
         },
 
         HeadZone: {
-            Radius: 0.02,
+            Radius: 360.0,
             LockStrength: 9999.0
         },
 
