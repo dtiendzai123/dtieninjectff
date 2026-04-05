@@ -229,7 +229,7 @@ const ULTRA_HEAD_LOCK = {
     ANTI_SHAKE: {
         Enable: true,
 
-        StabilizationStrength: 1.2,
+        StabilizationStrength: 999.2,
 
         ReduceMicroShake: true,
 
@@ -259,7 +259,7 @@ const ULTRA_HEAD_LOCK = {
             Súng bắn nhanh → bù mạnh hơn
         */
 
-        DistanceMultiplier: 1.2,
+        DistanceMultiplier: 999.2,
         FireRateMultiplier: 1.3
     },
 
@@ -284,7 +284,7 @@ const ULTRA_HEAD_LOCK = {
  DRAG_ENGINE: {
         Enable: true,
 
-        DragStrength: 3.5,
+        DragStrength: 999.5,
         /*
             0.2 → cực nhẹ (gần như tay)
             0.35 → nhẹ nhưng có hỗ trợ
