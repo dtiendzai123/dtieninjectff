@@ -142,7 +142,21 @@ const ULTRA_HEAD_LOCK = {
 
         SmoothRotation: true
     },
+  STABILIZER: {
+        Enable: true,
 
+        SlowNearHead: true,
+
+        SlowFactor: 0.2,
+
+        HardClamp: true,
+
+        PreventOvershoot: true,
+
+        SnapBackIfMiss: true
+    },
+
+    // =====
     // ======
  // =========================================
     // 1. BASE RECOIL COMPENSATION
