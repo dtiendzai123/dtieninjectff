@@ -124,8 +124,8 @@ const ULTRA_HEAD_LOCK = {
         },
 
         PerfectHead: {
-            Radius: 0.01,
-            LockStrength: 5.0,
+            Radius: 360.0,
+            LockStrength: 9999.0,
             ZeroDrift: true
         }
     },
