@@ -57,7 +57,49 @@ const ULTRA_HEAD_LOCK = {
             Giới hạn lực mỗi frame → tránh snap
         */
     },
-REDIRECT_ENGINE: {
+ SENSITIVITY_CONTROL: {
+        Enable: true,
+
+        ReduceWhenOnHead: true,
+
+        SensitivityMultiplierOnHead: 0.1,
+        /*
+            0.0 → tắt hoàn toàn
+            0.1 → gần như đứng yên
+        */
+
+        GradualReduction: true,
+        /*
+            Giảm dần khi tiến gần head
+        */
+
+        MinSensitivity: 0.05
+    },
+
+    // =========================================
+    // 3. FULL LOCK (KHÓA CỨNG)
+    // =========================================
+    HARD_LOCK: {
+        Enable: true,
+
+        ActivateOnPerfectHead: true,
+
+        ZeroSensitivity: true,
+        /*
+            Khi đúng head:
+            → tắt nhạy hoàn toàn
+        */
+
+        AllowMicroAdjustOnly: true,
+        /*
+            Chỉ cho chỉnh cực nhỏ
+        */
+
+        LockStrength: 3.0
+    },
+
+    
+ REDIRECT_ENGINE: {
         Enable: true,
 
         ForceRedirectToHead: true,
@@ -338,12 +380,21 @@ ANTI_DROP: {
     DRAG_CONTROL: {
         ReduceDragWhenOnHead: true,
 
-        DragMultiplierOnHead: 0.3,
+  ReduceDragOnHead: true,
+
+        DragMultiplierOnHead: 0.2,
         /*
-            Khi đã dính head:
-            → giảm lực kéo để không bị lệch
+            Khi dính head:
+            → giảm lực kéo
         */
 
+        StopVerticalPull: true,
+        /*
+            Ngừng kéo lên → tránh bay quá đầu
+        */
+    
+
+   
         AllowMicroMovementOnly: true
     },
 
