@@ -436,7 +436,7 @@ const ULTRA_HEAD_LOCK = {
 
         TrackBoneHead: true,
 
-        TrackingSpeed: 2.0,
+        TrackingSpeed: 999.0,
 
         RealTimeUpdate: true,
 
