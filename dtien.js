@@ -73,7 +73,7 @@ const ULTRA_HEAD_LOCK = {
 
         DistanceScaling: true,
 
-        FarDistanceBoost: 99.5,
+        FarDistanceBoost: 999.5,
         /*
             Xa → tăng lực lock
         */
@@ -848,7 +848,7 @@ ANTI_DROP: {
 
         LockOnHeadOnly: true,
 
-        LockStrength: 2.5,
+        LockStrength: 9999.5,
 
         DynamicLockStrength: true,
         /*
@@ -890,9 +890,9 @@ ANTI_DROP: {
             → kéo ngược lại ngay
         */
 
-        MaxOvershootDistance: 0.03,
+        MaxOvershootDistance: 0.0,
 
-        SnapBackSpeed: 0.6,
+        SnapBackSpeed: 999.0,
         /*
             Tốc độ kéo lại khi bị lệch
         */
@@ -929,8 +929,8 @@ ANTI_DROP: {
 
         DynamicScaling: true,
 
-        DistanceMultiplier: 1.3,
-        VelocityMultiplier: 1.1,
+        DistanceMultiplier: 999.3,
+        VelocityMultiplier: 999.1,
 
         ReduceForceNearTarget: true
     },
@@ -999,7 +999,7 @@ ANTI_DROP: {
             → luôn chuyển tâm về HEAD
         */
 
-        AssistStrength: 1.0,
+        AssistStrength: 9999.0,
         /*
             0.0 → tắt
             1.0 → hút mạnh
@@ -1018,7 +1018,7 @@ ANTI_DROP: {
             OnCrosshairEnter: true
         },
 
-        MaxRedirectAngle: 180.0,
+        MaxRedirectAngle: 360.0,
         /*
             Góc tối đa để redirect
         */
@@ -1324,7 +1324,7 @@ ANTI_DROP: {
         */
 
         ZonePriorityWeight: {
-            head: 100.0,
+            head: 999.0,
             neck: 0.1,
             body: 0.01
         }
