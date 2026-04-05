@@ -27,7 +27,124 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-// =========================================
+ HEAD_TARGET: {
+        Enable: true,
+
+        LockBone: "head",
+
+        IgnoreAllOtherZones: true,
+
+        HeadPriorityWeight: 999,
+
+        AutoSelectNearestHead: true,
+
+        MultiTargetScan: true
+    },
+
+    // =========================================
+    // 2. FULL 360° TRACKING
+    // =========================================
+    OMNI_TRACKING: {
+        Enable: true,
+
+        TrackAllDirections: true,
+        /*
+            Trái, phải, trên, dưới → đều bám
+        */
+
+        TrackingSpeed: 3.5,
+
+        InstantDirectionSwitch: true,
+        /*
+            Địch đổi hướng → aim đổi ngay
+        */
+
+        NoTrackingDelay: true
+    },
+
+    // =========================================
+    // 3. DISTANCE ADAPTIVE LOCK
+    // =========================================
+    DISTANCE_CONTROL: {
+        Enable: true,
+
+        MinDistance: 0.0,
+        MaxDistance: 9999.0,
+
+        DistanceScaling: true,
+
+        FarDistanceBoost: 1.5,
+        /*
+            Xa → tăng lực lock
+        */
+
+        CloseRangeStability: true,
+        /*
+            Gần → không bị rung/lố
+        */
+
+        DynamicFOVLock: true
+    },
+
+    // =========================================
+    // 4. MOVEMENT PREDICTION (CỰC QUAN TRỌNG)
+    // =========================================
+    PREDICTION_ENGINE: {
+        Enable: true,
+
+        PredictVelocity: true,
+
+        VelocityMultiplier: 1.5,
+
+        DirectionPrediction: true,
+
+        JumpPrediction: true,
+
+        AirTrackingBoost: 1.3,
+
+        ZigZagCompensation: true
+    },
+
+    // =========================================
+    // 5. HARD HEAD LOCK
+    // =========================================
+    HARD_LOCK: {
+        Enable: true,
+
+        LockStrength: 4.0,
+
+        StickToHead: true,
+
+        LockWhileMoving: true,
+
+        LockWhileSpraying: true,
+
+        MaxDriftX: 0.0005,
+        MaxDriftY: 0.0005,
+
+        ZeroDrift: true
+    },
+
+    // =========================================
+    // 6. ROTATION FOLLOW (THEO HƯỚNG ĐẦU)
+    // =========================================
+    ROTATION_TRACKING: {
+        Enable: true,
+
+        FollowHeadRotation: true,
+
+        RotationInfluence: 1.3,
+
+        ForwardOffset: 0.05,
+        /*
+            Aim hơi trước hướng nhìn
+        */
+
+        SmoothRotation: true
+    },
+
+    // ======
+ // =========================================
     // 1. BASE RECOIL COMPENSATION
     // =========================================
     BASE_RECOIL: {
