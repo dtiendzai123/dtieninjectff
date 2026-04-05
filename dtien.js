@@ -52,7 +52,7 @@ const ULTRA_HEAD_LOCK = {
             Trái, phải, trên, dưới → đều bám
         */
 
-        TrackingSpeed: 3.5,
+        TrackingSpeed: 999.5,
 
         InstantDirectionSwitch: true,
         /*
@@ -73,7 +73,7 @@ const ULTRA_HEAD_LOCK = {
 
         DistanceScaling: true,
 
-        FarDistanceBoost: 1.5,
+        FarDistanceBoost: 99.5,
         /*
             Xa → tăng lực lock
         */
@@ -111,7 +111,7 @@ const ULTRA_HEAD_LOCK = {
     HARD_LOCK: {
         Enable: true,
 
-        LockStrength: 4.0,
+        LockStrength: 999.0,
 
         StickToHead: true,
 
