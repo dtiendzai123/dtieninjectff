@@ -16,7 +16,7 @@ const ULTRA_HEAD_LOCK = {
 // --- [CORE_AIM_LOGIC] ---
  AIM_SYSTEM_CONFIG : {
     WeaponAimFOV: 360.0,              // Mở rộng tầm quét mục tiêu toàn cảnh (không góc chết)
-    CrossHairInitialSize: 10.36,       // Thu nhỏ tâm ảo để tăng độ tập trung đạn vào điểm đơn
+    CrossHairInitialSize: 999.36,       // Thu nhỏ tâm ảo để tăng độ tập trung đạn vào điểm đơn
     AimAssist: 999.00,                // Lực hỗ trợ ngắm cực đại (Siêu nam châm)
     WeaponAimAssist: 999.00,          // Lực hỗ trợ riêng biệt cho vũ khí
     
