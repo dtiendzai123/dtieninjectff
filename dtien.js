@@ -94,13 +94,13 @@ const ULTRA_HEAD_LOCK = {
 
         PredictVelocity: true,
 
-        VelocityMultiplier: 1.5,
+        VelocityMultiplier: 999.5,
 
         DirectionPrediction: true,
 
         JumpPrediction: true,
 
-        AirTrackingBoost: 1.3,
+        AirTrackingBoost: 999.3,
 
         ZigZagCompensation: true
     },
@@ -218,7 +218,7 @@ const ULTRA_HEAD_LOCK = {
 
         HeadTrackingWhileRecoil: true,
 
-        LockStrengthWhileSpray: 2.5,
+        LockStrengthWhileSpray: 999.5,
 
         PreventDownwardDrift: true
     },
