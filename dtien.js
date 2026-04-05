@@ -27,7 +27,161 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-    DISTANCE_TRACKING: {
+
+    // =========================================
+    // 1. AIM SPEED SYSTEM
+    // =========================================
+    AIM_CONTROL: {
+        WeaponAimYawRate: 99999,
+        /*
+            Tốc độ xoay tâm cực đại
+            → aim gần như instant
+        */
+
+        CrossHairBurstIncreaseSpeed: 9999,
+        /*
+            Tốc độ mở rộng tâm khi spray
+            → tăng nhanh để sync recoil
+        */
+
+        AimResponseTime: 0.0,
+        /*
+            Phản hồi ngay lập tức
+        */
+
+        InstantSnap: true
+    },
+
+    // =========================================
+    // 2. BULLET SYSTEM
+    // =========================================
+    BULLET_CONFIG: {
+        BulletFireSpeed: "AspectRatio_MaintainsYFOV",
+        /*
+            Đồng bộ tốc độ đạn với FOV
+        */
+
+        BulletRangeMax: 99999,
+        /*
+            Tầm bắn tối đa (không giới hạn)
+        */
+
+        ProjectileType: "hitscan",
+        /*
+            Đạn gần như trúng ngay
+        */
+
+        BulletAccuracy: 1.0
+    },
+
+    // =========================================
+    // 3. CROSSHAIR SYSTEM
+    // =========================================
+    CROSSHAIR: {
+        CrossHairInitialSize: "AspectRatio_MaintainsYFOV",
+
+        DynamicSpread: false,
+        /*
+            Tắt spread → tâm luôn chính xác
+        */
+
+        Stability: 1.0,
+
+        LockCenter: true
+    },
+
+    // =========================================
+    // 4. FIRE RATE SYSTEM
+    // =========================================
+    FIRE_CONTROL: {
+        ShootInterval: "Float",
+        /*
+            Tốc độ bắn (có thể override)
+        */
+
+        BurstShootBulletsNum: "AspectRatio_MaintainsYFOV",
+
+        NoFireDelay: true,
+
+        InstantFire: true
+    },
+
+    // =========================================
+    // 5. RELOAD SYSTEM
+    // =========================================
+    RELOAD_SYSTEM: {
+        ReloadTime: "AspectRatio_MaintainsYFOV",
+
+        InstantReload: true,
+
+        NoReloadDelay: true
+    },
+
+    // =========================================
+    // 6. AIM ASSIST SYSTEM
+    // =========================================
+    AIM_ASSIST_SYSTEM: {
+        AimAssist: "AspectRatio_MaintainsYFOV",
+
+        WeaponAimAssist: "AspectRatio_MaintainsYFOV",
+
+        WeaponAimFOV: "AspectRatio_MaintainsYFOV",
+        /*
+            FOV rộng → dễ bắt head
+        */
+
+        FullAssistStrength: 9999,
+
+        AutoTrackTarget: true
+    },
+
+    // =========================================
+    // 7. HEAD LOCK SYSTEM
+    // =========================================
+    TARGET_LOCK: {
+        Target: "Lock_Head",
+
+        LockEnemy: true,
+
+        LockStrength: 9999,
+
+        AlwaysLockHead: true,
+
+        IgnoreBody: true,
+
+        StickyHead: true,
+
+        ZeroDrift: true
+    },
+
+    // =========================================
+    // 8. DAMAGE SYSTEM
+    // =========================================
+    DAMAGE_SYSTEM: {
+        RadialDamageScale: 99999,
+        /*
+            Tăng damage cực đại
+        */
+
+        HeadshotMultiplier: 10.0,
+
+        AlwaysHeadshot: true
+    },
+
+    // =========================================
+    // 9. FOV & RENDER CONTROL
+    // =========================================
+    FOV_CONTROL: {
+        AspectRatioAxisConstraint: "AspectRatio_MaintainYFOV",
+
+        MaintainYFOV: true,
+
+        WideFOVDetection: true,
+
+        TargetLockFOVBoost: true
+    },
+
+ DISTANCE_TRACKING: {
         Enable: true,
 
         Use3DDistance: true,
