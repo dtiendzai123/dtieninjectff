@@ -27,7 +27,130 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
-  DRAG_ENGINE: {
+// =========================================
+    // 1. BASE RECOIL COMPENSATION
+    // =========================================
+    BASE_RECOIL: {
+        Enable: true,
+
+        VerticalCompensation: 2.2,
+        /*
+            Kéo ngược recoil lên trên
+            (giữ head khi spray)
+        */
+
+        HorizontalCompensation: 0.8,
+        /*
+            Sửa lệch ngang nhẹ
+        */
+
+        AdaptiveStrength: true,
+        /*
+            Spray càng lâu → lực bù càng mạnh
+        */
+
+        MaxCompensation: 3.5
+    },
+
+    // =========================================
+    // 2. PER BULLET SYNC (QUAN TRỌNG)
+    // =========================================
+    BULLET_SYNC: {
+        Enable: true,
+
+        SyncWithFireRate: true,
+
+        CompensationPerShot: 0.25,
+        /*
+            Mỗi viên:
+            → bù recoil 1 lần
+        */
+
+        FirstBulletBoost: 0.4,
+        /*
+            Viên đầu ổn định hơn
+        */
+
+        SprayRampUp: true,
+        /*
+            Càng bắn → càng ổn định
+        */
+    },
+
+    // =========================================
+    // 3. HEAD LOCK INTEGRATION
+    // =========================================
+    HEAD_LOCK_SYNC: {
+        Enable: true,
+
+        MaintainHeadLevel: true,
+
+        HeadTrackingWhileRecoil: true,
+
+        LockStrengthWhileSpray: 2.5,
+
+        PreventDownwardDrift: true
+    },
+
+    // =========================================
+    // 4. ANTI-SHAKE SYSTEM
+    // =========================================
+    ANTI_SHAKE: {
+        Enable: true,
+
+        StabilizationStrength: 1.2,
+
+        ReduceMicroShake: true,
+
+        SmoothRecoilCurve: true,
+
+        SmoothingFactor: 0.6
+    },
+
+    // =========================================
+    // 5. DYNAMIC RECOIL CONTROL
+    // =========================================
+    DYNAMIC_CONTROL: {
+        Enable: true,
+
+        AdjustByWeapon: true,
+        /*
+            Nếu có data súng → auto chỉnh
+        */
+
+        AdjustByDistance: true,
+        /*
+            Xa → giảm recoil mạnh hơn
+        */
+
+        AdjustByFireRate: true,
+        /*
+            Súng bắn nhanh → bù mạnh hơn
+        */
+
+        DistanceMultiplier: 1.2,
+        FireRateMultiplier: 1.3
+    },
+
+    // =========================================
+    // 6. DRAG SYNC (KẾT HỢP KÉO TÂM)
+    // =========================================
+    DRAG_SYNC: {
+        Enable: true,
+
+        CombineWithDrag: true,
+
+        DragCompensationFactor: 0.8,
+        /*
+            Khi drag:
+            → recoil vẫn được fix
+        */
+
+        ReduceDragWhenStable: true
+    },
+
+    
+ DRAG_ENGINE: {
         Enable: true,
 
         DragStrength: 3.5,
