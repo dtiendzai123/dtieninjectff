@@ -27,6 +27,110 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
+    DISTANCE_TRACKING: {
+        Enable: true,
+
+        Use3DDistance: true,
+
+        HeadRadius: 0.03,
+        /*
+            Vùng nhận diện head
+        */
+
+        LockStartRadius: 0.08
+        /*
+            Bắt đầu tăng lực từ đây
+        */
+    },
+
+    // =========================================
+    // 2. DYNAMIC LOCK STRENGTH
+    // =========================================
+    LOCK_SCALING: {
+        Enable: true,
+
+        MinLockStrength: 99.0,
+        /*
+            Khi còn xa head
+        */
+
+        MaxLockStrength: 9999.0,
+        /*
+            Khi sát head
+        */
+
+        ScalingCurve: "exponential",
+        /*
+            exponential = càng gần càng tăng mạnh
+        */
+
+        InstantMaxAtHead: true
+    },
+
+    // =========================================
+    // 3. DRAG INTEGRATION
+    // =========================================
+    DRAG_SYNC: {
+        Enable: true,
+
+        BaseDragStrength: 999.0,
+
+        ReduceDragNearHead: true,
+
+        DragMultiplierNearHead: 0.3,
+        /*
+            Gần head → giảm lực kéo tay
+            để không bị lệch
+        */
+
+        AllowMicroDragOnly: true
+    },
+
+    // =========================================
+    // 4. STICKY LOCK CORE
+    // =========================================
+    STICKY_LOCK: {
+        Enable: true,
+
+        ActivateOnNearHead: true,
+
+        DynamicStickStrength: true,
+
+        MaxDriftX: 0.001,
+        MaxDriftY: 0.001,
+
+        StickWhileDragging: true
+    },
+
+   
+
+    // =========================================
+    // 7. HEAD LOCK ZONES
+    // =========================================
+    LOCK_ZONES: {
+        FarZone: {
+            Radius: 0.1,
+            LockStrength: 9999.0
+        },
+
+        MidZone: {
+            Radius: 0.05,
+            LockStrength: 9999.0
+        },
+
+        HeadZone: {
+            Radius: 0.02,
+            LockStrength: 9999.0
+        },
+
+        PerfectHead: {
+            Radius: 0.01,
+            LockStrength: 5.0,
+            ZeroDrift: true
+        }
+    },
+
+    // ====
  HEAD_TARGET: {
         Enable: true,
 
