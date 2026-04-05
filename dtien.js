@@ -316,7 +316,7 @@ const ULTRA_HEAD_LOCK = {
 
         ReduceWhenOnHead: true,
 
-        SensitivityMultiplierOnHead: 0.1,
+        SensitivityMultiplierOnHead: 0.01,
         /*
             0.0 → tắt hoàn toàn
             0.1 → gần như đứng yên
@@ -349,7 +349,7 @@ const ULTRA_HEAD_LOCK = {
             Chỉ cho chỉnh cực nhỏ
         */
 
-        LockStrength: 3.0
+        LockStrength: 999.0
     },
 
     
@@ -358,7 +358,7 @@ const ULTRA_HEAD_LOCK = {
 
         ForceRedirectToHead: true,
 
-        RedirectStrength: 2.0,
+        RedirectStrength: 999.0,
         /*
             Khi chạm body:
             → đẩy thẳng lên head
@@ -377,7 +377,7 @@ const ULTRA_HEAD_LOCK = {
 
         ActivateOnFire: true,
 
-        DragMultiplierOnFire: 2.5,
+        DragMultiplierOnFire: 999.5,
         /*
             Khi bóp cò:
             → kéo mạnh hơn nữa
