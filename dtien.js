@@ -164,13 +164,13 @@ const ULTRA_HEAD_LOCK = {
     BASE_RECOIL: {
         Enable: true,
 
-        VerticalCompensation: 2.2,
+        VerticalCompensation: 999.2,
         /*
             Kéo ngược recoil lên trên
             (giữ head khi spray)
         */
 
-        HorizontalCompensation: 0.8,
+        HorizontalCompensation: 0.0,
         /*
             Sửa lệch ngang nhẹ
         */
