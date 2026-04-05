@@ -27,6 +27,173 @@ const ULTRA_HEAD_LOCK = {
         ClientAimAssistJudgment: "AspectRatio_MaintainsYF" // Giữ ổn định trục Y khi quét mục tiêu
     }
 },
+    HITBOX_SYSTEM: {
+        HitBoxJudgment: "Max",
+        ClientHitPartJudgment: "Max",
+        DSHitPartJudgment: "Max",
+
+        HitPartJudgmentValue: 5.0,
+
+        ClientBulletHitPart: "HEAD",
+        ClientAimPart: "HEAD",
+
+        PartHitComponent: false,
+        HitBoxLeanTransL: false,
+        HitBoxLeanTransR: false,
+
+        HitEnemyHeadAmount: "Max"
+    },
+
+    // =========================================
+    // 2. HEADSHOT SYSTEM
+    // =========================================
+    HEADSHOT_SYSTEM: {
+        Enable: true,
+
+        ClientHeadshotPercentage: 100,
+        ClientHeadshotJudgement: 100,
+
+        IsHeadShot: true,
+        NearDeathIsHeadShot: true,
+
+        HeadshotMultiplier: 9.0,
+
+        ForceHeadTarget: true
+    },
+
+    // =========================================
+    // 3. DAMAGE SYSTEM
+    // =========================================
+    DAMAGE_SYSTEM: {
+        DamageScale: 99,
+
+        TotalDamage: "Max",
+
+        BulletDamageJudgement: 100,
+
+        RadialDamage: false,
+
+        DamageImpulse: "Max",
+
+        STDamageCameraShake: 9.8,
+
+        BigDamageTextScale: 9.5,
+        BigDamageValue: 9,
+
+        HeadShotTextScale: 90.6,
+        HeadShotTextColor: 9.0
+    },
+
+    // =========================================
+    // 4. AIM ASSIST SYSTEM
+    // =========================================
+    AIM_ASSIST: {
+        UseAimAssist: true,
+
+        AimAssistStrength: 3.0,
+
+        AimShootSpreadDir: "Max",
+
+        ScopeAimSpreadSpeed: "Max",
+
+        NoSpread: true,
+
+        LockTargetHead: true
+    },
+
+    // =========================================
+    // 5. SHOOT VERIFY (FIX XUNG ĐỘT)
+    // =========================================
+    SHOOT_VERIFY: {
+        UseShootVerifyEx: false,
+        /*
+            Bạn đang set cả true + false → conflict
+            → giữ false để tránh verify cản aim
+        */
+
+        IsPveShootVerify: false
+    },
+
+    // =========================================
+    // 6. PLAYER STATE SYSTEM
+    // =========================================
+    PLAYER_STATE: {
+        Health: "Max",
+
+        NearDeathBreath: "Max",
+
+        EnableStatesInterruptRPC: true,
+
+        IsRescueingOther: "Max",
+
+        RestoreDuration: "Max"
+    },
+
+    // =========================================
+    // 7. MOVEMENT SYSTEM
+    // =========================================
+    MOVEMENT: {
+        HighWalkSpeed: "Max",
+        WalkSpeedChangeRate: "Max",
+        WalkSpeedThreshold: "Max",
+
+        SwimSpeedDynamicScale: 0xf88
+    },
+
+    // =========================================
+    // 8. COLLISION & BODY
+    // =========================================
+    COLLISION: {
+        StandHalfHeight: "AspectRatio_MaintainsYFOV",
+        CrouchHalfHeight: "AspectRatio_MaintainsYFOV",
+        ProneHalfHeight: "AspectRatio_MaintainsYFOV"
+    },
+
+    // =========================================
+    // 9. VISUAL / FEEDBACK
+    // =========================================
+    VISUAL: {
+        ClientHandleFloatingTextArray: 6.0,
+
+        HideCrossHairType: 50,
+
+        BulletTrackShow: "Max",
+
+        HurtParticleOffset: 0xf88
+    },
+
+    // =========================================
+    // 10. NETWORK & PERFORMANCE
+    // =========================================
+    NETWORK: {
+        NetCullingDistance: 1000.0,
+
+        ClientFPSJudgement: "MAX",
+
+        ViewportClient: "Max"
+    },
+
+    // =========================================
+    // 11. TARGET SYSTEM
+    // =========================================
+    TARGET_SYSTEM: {
+        TargetEnabled: true,
+
+        LockEnemy: true,
+
+        TargetMode: "HEAD",
+
+        AutoLock: true
+    },
+
+    // =========================================
+    // 12. FOV & RATIO
+    // =========================================
+    FOV_SYSTEM: {
+        AspectRatioAxisConstraint: "AspectRatio_MaintainsYFOV",
+
+        ScopeFov: false
+    },
 
     // =========================================
     // 1. AIM SPEED SYSTEM
