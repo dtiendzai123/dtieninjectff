@@ -6588,7 +6588,37 @@ if (obj.trigger_status !== undefined) {
         obj.accuracy_stabilizer = 1.0; 
         obj.bullet_straightness = 1.0; // Đạn đi theo đường thẳng tắp
     }
+if (obj.aim_position < obj.head_coordinate) {
+        obj.pull_force_y = 1.6;        // Tăng lực kéo dọc để đẩy tâm lên nhanh hơn
+        obj.acceleration_y = 0.25;     // Gia tốc tăng dần cho đến khi chạm mục tiêu
+    }
 
+    // TRƯỜNG HỢP 2: TÂM ĐÃ KÉO LỐ ĐẦU (OVER-AIM)
+    if (obj.aim_position > obj.head_coordinate) {
+        obj.pull_force_y = -0.5;       // Lực kéo ngược (đảo chiều) để tâm hạ xuống đầu
+        obj.recenter_speed = 0.8;      // Tốc độ hồi quy về điểm mục tiêu cực nhanh
+        obj.magnetic_lock = "head";    // Ép tâm đứng yên tại tọa độ đầu
+    }
+
+    // TRƯỜNG HỢP 3: TÂM LỆCH HOẶC KHÔNG THEO KỊP (DRIFT & LAG)
+    if (obj.horizontal_drift !== 0 || obj.tracking_error === true) {
+        obj.snap_to_x = obj.target_x;  // Tự động hút ngang về đúng trục dọc của địch
+        obj.tracking_sensitivity = 1.5; // Tăng độ nhạy bám đuổi để bắt kịp tốc độ địch
+        obj.prediction_interval = 0.01; // Cập nhật tọa độ mỗi 0.01 giây (siêu nhanh)
+    }
+
+    // ===== 2. ĐIỂM GHI ĐÈ HITBOX (STAY-IN-HEAD) =====
+    // Khi tâm đã vào vùng Head, kích hoạt chế độ "đóng băng" sai số
+    if (obj.on_target_head === true) {
+        obj.sensitivity_multiplier = 0.1; // Làm cực chậm tâm để không bị văng ra ngoài
+        obj.lock_duration = "infinite";   // Khóa cho đến khi đối thủ gục hoặc ngừng bắn
+    }
+
+    // ===== 3. CÔNG NGHỆ KHÔNG GIẬT & CHỐNG RUNG =====
+    if (obj.recoil_compensation !== undefined) {
+        obj.recoil_compensation = 1.0; 
+        obj.jitter_suppression = 1.0;
+    }
     
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
