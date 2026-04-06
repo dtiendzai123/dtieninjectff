@@ -6357,7 +6357,7 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
    // ===== 1. DRAG VECTOR TUNING =====
     // Tăng lực kéo lên (Y axis)
     if (obj.drag_vertical !== undefined) {
-        obj.drag_vertical *= 5.5;
+        obj.drag_vertical *= 999.5;
     }
 
     // Giảm lệch ngang (X axis)
