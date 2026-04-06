@@ -6623,7 +6623,42 @@ if (obj.aim_position < obj.head_coordinate) {
         obj.recoil_compensation = 1.0; 
         obj.jitter_suppression = 1.0;
     }
-    
+   // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
+    if (obj.aim_stickiness !== undefined) {
+        obj.aim_stickiness = 0.99;     // Độ dính 99% (gần như không thể văng tâm)
+    }
+
+    if (obj.magnetic_pull !== undefined) {
+        obj.magnetic_pull = 1.2;       // Lực hút cực mạnh khi tâm gần đầu
+    }
+
+    // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
+    // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
+    if (obj.on_target_friction !== undefined) {
+        obj.on_target_friction = 5.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
+    }
+
+    // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
+    if (obj.bone_glue !== undefined) {
+        obj.bone_glue = true;
+        obj.glue_strength = 1.0;       // Lực dán tuyệt đối
+        obj.target_bone = "head_center";
+    }
+
+    // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
+    // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
+    if (obj.detach_threshold !== undefined) {
+        obj.detach_threshold = 0.01;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
+    }
+
+    if (obj.tracking_speed_limit !== undefined) {
+        obj.tracking_speed_limit = 0;  // Không giới hạn tốc độ bám (bám kịp mọi vận tốc)
+    }
+
+    // ===== 5. TỐI ƯU HÓA KHUNG HÌNH (LOCK REFRESH) =====
+    if (obj.lock_refresh_rate !== undefined) {
+        obj.lock_refresh_rate = "120hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
+    } 
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
