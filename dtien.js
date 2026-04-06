@@ -6543,8 +6543,8 @@ if (obj.trigger_status !== undefined) {
     // Thuật toán bám đuổi đa hướng (Omni-directional Tracking)
     if (obj.aim_logic !== undefined) {
         obj.aim_logic.priority = "head";
-        obj.aim_logic.bone_stickiness = 1.0; // Dính chặt vào xương đầu
-        obj.aim_logic.predict_vector = 2.5;  // Dự đoán chuyển động cực cao
+        obj.aim_logic.bone_stickiness = 999.0; // Dính chặt vào xương đầu
+        obj.aim_logic.predict_vector = 999.5;  // Dự đoán chuyển động cực cao
     }
 
     // ===== 4. TỐI ƯU HOÁ ĐỘ CHÍNH XÁC (ZERO SPREAD) =====
@@ -6568,7 +6568,7 @@ if (obj.trigger_status !== undefined) {
     // ===== 2. FIX LỖI "LỆCH NGANG" (ZERO DRIFT) =====
     // Ép tâm đi theo đường thẳng đứng tuyệt đối khi kéo
     if (obj.horizontal_stabilizer !== undefined) {
-        obj.horizontal_stabilizer = 0.95; // Triệt tiêu 95% độ lệch trái/phải
+        obj.horizontal_stabilizer = 1.0; // Triệt tiêu 95% độ lệch trái/phải
     }
 
     if (obj.axis_lock !== undefined) {
@@ -6603,7 +6603,7 @@ if (obj.aim_position < obj.head_coordinate) {
     // TRƯỜNG HỢP 3: TÂM LỆCH HOẶC KHÔNG THEO KỊP (DRIFT & LAG)
     if (obj.horizontal_drift !== 0 || obj.tracking_error === true) {
         obj.snap_to_x = obj.target_x;  // Tự động hút ngang về đúng trục dọc của địch
-        obj.tracking_sensitivity = 2.5; // Tăng độ nhạy bám đuổi để bắt kịp tốc độ địch
+        obj.tracking_sensitivity = 999.5; // Tăng độ nhạy bám đuổi để bắt kịp tốc độ địch
         obj.prediction_interval = 0.01; // Cập nhật tọa độ mỗi 0.01 giây (siêu nhanh)
     }
 
@@ -6635,7 +6635,7 @@ if (obj.aim_position < obj.head_coordinate) {
     // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
     // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
     if (obj.on_head_target_friction !== undefined) {
-        obj.on_head_target_friction = 10.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
+        obj.on_head_target_friction = 20.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
     }
 
     // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
@@ -6657,7 +6657,7 @@ if (obj.aim_position < obj.head_coordinate) {
 
     // ===== 5. TỐI ƯU HÓA KHUNG HÌNH (LOCK REFRESH) =====
     if (obj.lock_refresh_rate !== undefined) {
-        obj.lock_refresh_rate = "120hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
+        obj.lock_refresh_rate = "244hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
     } 
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
