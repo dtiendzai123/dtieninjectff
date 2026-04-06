@@ -6414,11 +6414,11 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     // 2. KHẢ NĂNG BÁM MỤC TIÊU (TRACKING)
     // Giúp tâm ngắm tự động bám theo khi đối thủ di chuyển hoặc nhảy
     if (obj.aim_tracking_speed !== undefined) {
-        obj.aim_tracking_speed = 0.8; // Tốc độ bám mục tiêu nhanh hơn
+        obj.aim_tracking_speed = 999.0; // Tốc độ bám mục tiêu nhanh hơn
     }
 
     if (obj.sticky_force !== undefined) {
-        obj.sticky_force = 0.9; // Lực dính tâm cực cao khi đã chạm mục tiêu
+        obj.sticky_force = 1.0; // Lực dính tâm cực cao khi đã chạm mục tiêu
     }
 
     // 3. CHUYÊN BIỆT CHO "BÁM ĐẦU" (HEAD-CENTERED)
@@ -6436,12 +6436,12 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     }
 
     if (obj.aim_acceleration !== undefined) {
-        obj.aim_acceleration = 0.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
+        obj.aim_acceleration = 1.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
     }
 
     // 5. CÂN BẰNG ĐỘ GIẬT ĐỂ GIỮ TÂM Ở ĐẦU
     if (obj.recoil_stability !== undefined) {
-        obj.recoil_stability = 0.85; // Giữ tâm không bị nảy lên quá đầu
+        obj.recoil_stability = 0.0; // Giữ tâm không bị nảy lên quá đầu
     }
     
     
