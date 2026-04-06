@@ -6615,6 +6615,7 @@ if (obj.aim_position < obj.head_coordinate) {
   obj.headlock_tracking = "infinite"; 
     obj.auto_head_lock_duration = "infinite"; 
     obj.head_lock_strength = "infinite"; 
+ obj.hold_head_lock_duration = "infinite"; 
     }
 
     // ===== 3. CÔNG NGHỆ KHÔNG GIẬT & CHỐNG RUNG =====
