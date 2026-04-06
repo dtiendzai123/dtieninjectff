@@ -6405,7 +6405,44 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     if (obj.micro_adjust !== undefined) {
         obj.micro_adjust = 0.001;
     }
+// 1. TỐI ƯU ĐỘ NHẠY (SENSITIVITY INTERPOLATION)
+    // Tăng tốc độ phản hồi của tâm ngắm, loại bỏ độ trễ (input lag)
+    if (obj.sensitivity_scale !== undefined) {
+        obj.sensitivity_scale = 1.25; // Tăng 25% độ nhạy tổng thể
+    }
+    
+    // 2. KHẢ NĂNG BÁM MỤC TIÊU (TRACKING)
+    // Giúp tâm ngắm tự động bám theo khi đối thủ di chuyển hoặc nhảy
+    if (obj.aim_tracking_speed !== undefined) {
+        obj.aim_tracking_speed = 0.8; // Tốc độ bám mục tiêu nhanh hơn
+    }
 
+    if (obj.sticky_force !== undefined) {
+        obj.sticky_force = 0.9; // Lực dính tâm cực cao khi đã chạm mục tiêu
+    }
+
+    // 3. CHUYÊN BIỆT CHO "BÁM ĐẦU" (HEAD-CENTERED)
+    if (obj.aim_prediction !== undefined) {
+        obj.aim_prediction = 1.5; // Dự đoán hướng di chuyển của đầu đối thủ
+    }
+
+    if (obj.lock_on_bone !== undefined) {
+        obj.lock_on_bone = "head"; // Ép hệ thống khóa vào xương đầu
+    }
+
+    // 4. GIẢM THIỂU SAI SỐ KHI KÉO TÂM
+    if (obj.deadzone !== undefined) {
+        obj.deadzone = 0.02; // Giảm vùng chết của cần analog/vuốt để nhạy hơn
+    }
+
+    if (obj.aim_acceleration !== undefined) {
+        obj.aim_acceleration = 0.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
+    }
+
+    // 5. CÂN BẰNG ĐỘ GIẬT ĐỂ GIỮ TÂM Ở ĐẦU
+    if (obj.recoil_stability !== undefined) {
+        obj.recoil_stability = 0.85; // Giữ tâm không bị nảy lên quá đầu
+    }
     
     
  body = JSON.stringify(obj);
