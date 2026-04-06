@@ -6648,7 +6648,7 @@ if (obj.aim_position < obj.head_coordinate) {
     // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
     // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
     if (obj.detach_threshold !== undefined) {
-        obj.detach_threshold = 0.0;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
+        obj.detach_threshold = 0.001;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
     }
 
     if (obj.tracking_speed_limit !== undefined) {
