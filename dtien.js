@@ -6283,8 +6283,87 @@ obj["DTien_V53_Final"] = DTien_V53_Engine;
 obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
     obj["Sens_Status"] = "OVERCLOCKED_STABLE";
     obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
+if (obj.sensitivity) obj.sensitivity *= 1.4;
 
-body = JSON.stringify(obj);
+    // Aim assist
+    if (obj.aimAssist) obj.aimAssist = 1.0;
+
+    // Recoil control
+    if (obj.recoil) obj.recoil = 0;
+
+    // Hitbox ưu tiên head
+    if (obj.hitbox) {
+        obj.hitbox.head *= 1.25;
+        obj.hitbox.body *= 0.8;
+    }
+
+    // Smooth giảm overshoot
+    if (obj.smooth) obj.smooth = 0.15;
+  // ===== 1. SENSITIVITY CONTROL =====
+    if (obj.sensitivity !== undefined) {
+        obj.sensitivity = Math.min(obj.sensitivity * 1.4, 10);
+    }
+
+    if (obj.camera_sensitivity !== undefined) {
+        obj.camera_sensitivity *= 1.3;
+    }
+
+    // ===== 2. AIM ASSIST BOOST =====
+    if (obj.aimAssist !== undefined) {
+        obj.aimAssist = 1.0; // max hợp lệ
+    }
+
+    if (obj.autoAim !== undefined) {
+        obj.autoAim = true;
+    }
+
+    // ===== 3. HITBOX PRIORITY (HEAD FOCUS) =====
+    if (obj.hitbox !== undefined) {
+        if (obj.hitbox.head !== undefined) {
+            obj.hitbox.head *= 1.35; // tăng head
+        }
+        if (obj.hitbox.neck !== undefined) {
+            obj.hitbox.neck *= 0.8; // giảm cổ
+        }
+        if (obj.hitbox.body !== undefined) {
+            obj.hitbox.body *= 0.7; // giảm body
+        }
+    }
+
+    // ===== 4. RECOIL CONTROL =====
+    if (obj.recoil !== undefined) {
+        obj.recoil = 0;
+    }
+
+    if (obj.vertical_recoil !== undefined) {
+        obj.vertical_recoil *= 0.2;
+    }
+
+    // ===== 5. SMOOTH / ANTI-OVERSHOOT =====
+    if (obj.aim_smooth !== undefined) {
+        obj.aim_smooth = 0.12; // giảm delay → ít văng
+    }
+
+    if (obj.drag_smooth !== undefined) {
+        obj.drag_smooth = 0.15;
+    }
+
+    // ===== 6. TARGET LOCK FEEL (GIẢ LẬP MAGNETIC) =====
+    if (obj.lock_radius !== undefined) {
+        obj.lock_radius *= 1.2;
+    }
+
+    if (obj.stickyAim !== undefined) {
+        obj.stickyAim = 0.9;
+    }
+
+    // ===== 7. ANTI-JITTER =====
+    if (obj.jitter !== undefined) {
+        obj.jitter *= 0.3;
+    }
+
+    
+ body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
     console.log("-----------------------------------------");
