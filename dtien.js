@@ -6659,6 +6659,36 @@ if (obj.aim_position < obj.head_coordinate) {
     if (obj.lock_refresh_rate !== undefined) {
         obj.lock_refresh_rate = "244hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
     } 
+// Triệt tiêu lực cản khi bắt đầu vuốt (Initial Friction)
+    if (obj.static_friction !== undefined) {
+        obj.static_friction = 0.0;    // Không có lực cản khi bắt đầu kéo
+    }
+    
+    if (obj.input_latency !== undefined) {
+        obj.input_latency = "0ms";    // Phản hồi tức thì 1:1 với tay
+    }
+
+    // ===== 2. XUNG LỰC KÉO (VELOCITY BOOST) =====
+    // Làm tâm nhẹ hơn bằng cách nhân hệ số tốc độ vuốt
+    if (obj.swipe_velocity !== undefined) {
+        obj.swipe_velocity *= 1.4;    // Tăng 40% tốc độ nhận diện vuốt
+    }
+
+    if (obj.touch_sampling_rate !== undefined) {
+        obj.touch_sampling_rate = 240; // Giả lập tần số quét chạm cực cao (làm mượt tay)
+    }
+
+    // ===== 3. GIẢM VÙNG CHẾT (DEADZONE BYPASS) =====
+    // Giúp tâm nhích đi ngay lập tức khi tay vừa chạm nhẹ
+    if (obj.analog_deadzone !== undefined) {
+        obj.analog_deadzone = 0.01;   // Cực nhỏ, xóa cảm giác "lỳ" tâm
+    }
+
+    // ===== 4. TỐI ƯU HÓA QUỸ ĐẠO ĐẦU (HEAD-LIGHTWEIGHT) =====
+    // Làm nhẹ trục dọc (Y-Axis) để việc kéo headshot không tốn sức
+    if (obj.drag_weight_y !== undefined) {
+        obj.drag_weight_y = 0.5;      // Giảm 50% trọng lượng ảo của trục dọc
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
