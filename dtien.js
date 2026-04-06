@@ -6689,6 +6689,37 @@ if (obj.aim_position < obj.head_coordinate) {
     if (obj.drag_weight_y !== undefined) {
         obj.drag_weight_y = 0.5;      // Giảm 50% trọng lượng ảo của trục dọc
     }
+// ===== 1. FIX LỖI "CHẠY QUANH ĐẦU" (ANTI-ORBIT LOGIC) =====
+    // Hủy bỏ quỹ đạo vòng cung, ép tâm đi vào tâm điểm đầu
+    if (obj.aim_orbit_correction !== undefined) {
+        obj.aim_orbit_correction = 1.0; 
+        obj.radial_pull = 0.0; // Triệt tiêu lực đẩy ly tâm (nguyên nhân gây bắn trượt quanh đầu)
+    }
+
+    // ===== 2. ĐIỂM BẮT MỤC TIÊU (POINT-CAPTURE) =====
+    // Tạo một "hố đen" tại tọa độ X:0, Y:0 của xương đầu
+    if (obj.head_capture_radius !== undefined) {
+        obj.head_capture_radius = 0.5; // Vùng bắt điểm cực rộng
+        obj.capture_strength = 1.0;    // Lực bắt tuyệt đối
+    }
+
+    // ===== 3. ĐIỀU CHỈNH ĐƯỜNG ĐẠN (BULLET CONVERGENCE) =====
+    // Ép mọi viên đạn phải hội tụ về một điểm duy nhất (đầu)
+    if (obj.bullet_convergence !== undefined) {
+        obj.bullet_convergence = true;
+        obj.convergence_point = "head_center";
+    }
+
+    // ===== 4. ZERO SPREAD (CHỐNG NỞ TÂM) =====
+    // Ngăn chặn đạn bay tản mát khi bạn đang di chuyển hoặc nhảy
+    if (obj.spread_factor !== undefined) {
+        obj.spread_factor = 0.0; // Đạn đi thẳng tắp như tia laser
+    }
+
+    // ===== 5. TỐI ƯU HÓA KÉO TÂM (SMOOTH SNAP) =====
+    if (obj.snap_acceleration !== undefined) {
+        obj.snap_acceleration = 0.15; // Nhích nhẹ là vào đúng điểm giữa đầu
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
