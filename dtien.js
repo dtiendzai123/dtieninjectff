@@ -6720,6 +6720,52 @@ if (obj.aim_position < obj.head_coordinate) {
     if (obj.snap_acceleration !== undefined) {
         obj.snap_acceleration = 0.15; // Nhích nhẹ là vào đúng điểm giữa đầu
     }
+ JavaScript
+/*
+ * DTien V90 - Tọa độ X,Y Tuyệt đối (Absolute Head Anchor)
+ * Mục tiêu: Ghim chặt tâm vào tọa độ đầu, triệt tiêu mọi sai số X,Y
+ */
+
+let body = $response.body;
+
+try {
+    let obj = JSON.parse(body);
+
+    // ===== 1. ĐỊNH VỊ TỌA ĐỘ X,Y (XY-COORDINATE LOCK) =====
+    // Ép tâm ngắm bám sát theo trục X (ngang) và Y (dọc) của đầu
+    if (obj.aim_coordinate !== undefined) {
+        obj.aim_coordinate.x_offset = 0.0; // Triệt tiêu độ lệch ngang
+        obj.aim_coordinate.y_offset = 0.0; // Triệt tiêu độ lệch dọc (ghim đúng đỉnh đầu)
+        obj.aim_coordinate.snap_speed = 1.0; // Tốc độ bắt tọa độ tức thời
+    }
+
+    // ===== 2. THUẬT TOÁN "NAM CHÂM ĐIỂM" (POINT MAGNETISM) =====
+    // Khi kéo tâm, hệ thống tự động lọc bỏ các đầu vào (input) gây lệch khỏi X,Y của đầu
+    if (obj.input_filter !== undefined) {
+        obj.input_filter.ignore_drift = true;   // Bỏ qua rung tay
+        obj.input_filter.precision_level = 1.0; // Độ chính xác 100%
+    }
+
+    // ===== 3. KHÓA MỤC TIÊU DI ĐỘNG (DYNAMIC XY TRACKING) =====
+    // Cập nhật tọa độ X,Y liên tục kể cả khi địch đang chạy hoặc nhảy
+    if (obj.tracking_logic !== undefined) {
+        obj.tracking_logic.refresh_ms = 1;      // Tần số quét 1ms (siêu nhanh)
+        obj.tracking_logic.prediction_xy = 2.0; // Dự đoán vị trí X,Y tiếp theo để chặn đầu
+    }
+
+    // ===== 4. ZERO DEVIATION (SAI SỐ BẰNG 0) =====
+    // Đảm bảo đạn bay đúng vào tọa độ đã khóa, bất kể khoảng cách
+    if (obj.bullet_trajectory !== undefined) {
+        obj.bullet_trajectory.deviation = 0.0;  // Độ lệch đạn bằng 0
+        obj.bullet_trajectory.straight_line = true;
+    }
+
+    // ===== 5. TỐI ƯU LỰC KÉO (DRAG-TO-XY) =====
+    // Biến hành động vuốt tay thành lệnh "Go to Head XY"
+    if (obj.drag_to_head !== undefined) {
+        obj.drag_to_head.enabled = true;
+        obj.drag_to_head.force_multiplier = 1.8; // Đẩy tâm về tọa độ XY nhanh hơn
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
