@@ -6283,10 +6283,10 @@ obj["DTien_V53_Final"] = DTien_V53_Engine;
 obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
     obj["Sens_Status"] = "OVERCLOCKED_STABLE";
     obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
-if (obj.sensitivity) obj.sensitivity *= 999.4;
+if (obj.sensitivity) obj.sensitivity *= 1.4;
 
     // Aim assist
-    if (obj.aimAssist) obj.aimAssist = 999.0;
+    if (obj.aimAssist) obj.aimAssist = 1.0;
 
     // Recoil control
     if (obj.recoil) obj.recoil = 0;
@@ -6305,12 +6305,12 @@ if (obj.sensitivity) obj.sensitivity *= 999.4;
     }
 
     if (obj.camera_sensitivity !== undefined) {
-        obj.camera_sensitivity *= 999.3;
+        obj.camera_sensitivity *= 1.3;
     }
 
     // ===== 2. AIM ASSIST BOOST =====
     if (obj.aimAssist !== undefined) {
-        obj.aimAssist = 999.0; // max hợp lệ
+        obj.aimAssist = 1.0; // max hợp lệ
     }
 
     if (obj.autoAim !== undefined) {
@@ -6361,7 +6361,59 @@ if (obj.sensitivity) obj.sensitivity *= 999.4;
     if (obj.jitter !== undefined) {
         obj.jitter *= 0.3;
     }
+   // ===== 1. DRAG VECTOR TUNING =====
+    // Tăng lực kéo lên (Y axis)
+    if (obj.drag_vertical !== undefined) {
+        obj.drag_vertical *= 1.5;
+    }
 
+    // Giảm lệch ngang (X axis)
+    if (obj.drag_horizontal !== undefined) {
+        obj.drag_horizontal *= 0.6;
+    }
+
+    // ===== 2. AIM CURVE (ĐƯỜNG CONG KÉO) =====
+    if (obj.aim_curve !== undefined) {
+        obj.aim_curve = "easeOut"; 
+        // kéo đầu nhanh hơn ở đoạn cuối
+    }
+
+    // ===== 3. HEAD PRIORITY =====
+    if (obj.hitbox !== undefined) {
+        if (obj.hitbox.head !== undefined) obj.hitbox.head *= 1.4;
+        if (obj.hitbox.neck !== undefined) obj.hitbox.neck *= 0.7;
+        if (obj.hitbox.body !== undefined) obj.hitbox.body *= 0.6;
+    }
+
+    // ===== 4. SNAP KHI GẦN HEAD =====
+    if (obj.head_snap !== undefined) {
+        obj.head_snap = 0.35; // lực hút nhẹ
+    }
+
+    if (obj.stickyAim !== undefined) {
+        obj.stickyAim = 0.85;
+    }
+
+    // ===== 5. ANTI OVERSHOOT =====
+    if (obj.drag_smooth !== undefined) {
+        obj.drag_smooth = 0.12;
+    }
+
+    if (obj.aim_smooth !== undefined) {
+        obj.aim_smooth = 0.1;
+    }
+
+    // ===== 6. JITTER FIX =====
+    if (obj.jitter !== undefined) {
+        obj.jitter *= 0.25;
+    }
+
+    // ===== 7. AUTO MICRO-CORRECTION =====
+    if (obj.micro_adjust !== undefined) {
+        obj.micro_adjust = 0.2;
+    }
+
+    
     
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
