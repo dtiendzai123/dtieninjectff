@@ -6624,8 +6624,8 @@ if (obj.aim_position < obj.head_coordinate) {
         obj.jitter_suppression = 1.0;
     }
    // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
-    if (obj.aim_stickiness !== undefined) {
-        obj.aim_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
+    if (obj.aim_head_stickiness !== undefined) {
+        obj.aim_head_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
     }
 
     if (obj.magnetic_pull !== undefined) {
@@ -6634,14 +6634,14 @@ if (obj.aim_position < obj.head_coordinate) {
 
     // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
     // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
-    if (obj.on_target_friction !== undefined) {
-        obj.on_target_friction = 10.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
+    if (obj.on_head_target_friction !== undefined) {
+        obj.on_head_target_friction = 10.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
     }
 
     // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
     if (obj.bone_glue !== undefined) {
         obj.bone_glue = true;
-        obj.glue_strength = 999.0;       // Lực dán tuyệt đối
+        obj.glue_strength = 2.0;       // Lực dán tuyệt đối
         obj.target_bone = "head_center";
     }
 
