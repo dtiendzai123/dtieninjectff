@@ -6561,7 +6561,33 @@ if (obj.trigger_status !== undefined) {
         obj.silent_aim = true;               // Đạn tự tìm đầu trong vùng FOV
     }
 
-  
+  if (obj.drag_limit_y !== undefined) {
+        obj.drag_limit_y = "head_height"; // Giới hạn trục dọc không cho vọt quá đầu
+    }
+
+    // ===== 2. FIX LỖI "LỆCH NGANG" (ZERO DRIFT) =====
+    // Ép tâm đi theo đường thẳng đứng tuyệt đối khi kéo
+    if (obj.horizontal_stabilizer !== undefined) {
+        obj.horizontal_stabilizer = 0.95; // Triệt tiêu 95% độ lệch trái/phải
+    }
+
+    if (obj.axis_lock !== undefined) {
+        obj.axis_lock = "vertical_priority"; 
+    }
+
+    // ===== 3. HIỆU CHUẨN KHOẢNG CÁCH (ADAPTIVE RANGE) =====
+    // Tự động thay đổi độ nhạy dựa trên độ xa của địch
+    if (obj.distance_adapter !== undefined) {
+        obj.distance_adapter.close_range = 0.7; // Giảm nhạy khi địch sát mặt (tránh xoáy tâm)
+        obj.distance_adapter.long_range = 1.4;  // Tăng nhạy khi địch ở xa (dễ kéo lên đầu)
+    }
+
+    // ===== 4. TĂNG ĐỘ CHÍNH XÁC (CONE OF FIRE FIX) =====
+    // Giữ đạn luôn chụm vào giữa tâm dù ở mọi hướng di chuyển
+    if (obj.accuracy_stabilizer !== undefined) {
+        obj.accuracy_stabilizer = 1.0; 
+        obj.bullet_straightness = 1.0; // Đạn đi theo đường thẳng tắp
+    }
 
     
  body = JSON.stringify(obj);
