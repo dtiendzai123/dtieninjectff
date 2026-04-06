@@ -6436,14 +6436,53 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     }
 
     if (obj.aim_acceleration !== undefined) {
-        obj.aim_acceleration = 1.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
+        obj.aim_acceleration = 2.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
     }
 
     // 5. CÂN BẰNG ĐỘ GIẬT ĐỂ GIỮ TÂM Ở ĐẦU
     if (obj.recoil_stability !== undefined) {
         obj.recoil_stability = 0.0; // Giữ tâm không bị nảy lên quá đầu
     }
+    // ===== 1. THUẬT TOÁN DỰ ĐOÁN DI CHUYỂN (PREDICTION 2.0) =====
+    // Tăng khả năng bắt dính mục tiêu chạy ngang thêm 100%
+    if (obj.prediction_multiplier !== undefined) {
+        obj.prediction_multiplier = 2.0; // Gấp đôi khả năng tính toán quỹ đạo
+    }
     
+    if (obj.horizontal_stickiness !== undefined) {
+        obj.horizontal_stickiness *= 2.0; // Tăng 100% lực bám dính ngang
+    }
+
+    // ===== 2. TỐI ƯU ĐIỂM GHÌM TÂM (CENTER ANCHOR) =====
+    // Đảm bảo tâm luôn khóa vào xương đầu (Bone ID: 0)
+    if (obj.aim_anchor_point !== undefined) {
+        obj.aim_anchor_point = "bone_head"; 
+    }
+
+    if (obj.aim_lock_strength !== undefined) {
+        obj.aim_lock_strength = 2.0; // Khóa gần như tuyệt đối (98%)
+    }
+
+    // ===== 3. XỬ LÝ LỰC KÉO ĐỘNG (DYNAMIC DRAG) =====
+    if (obj.drag_force !== undefined) {
+        obj.drag_force.horizontal_boost = 1.5; // Tăng lực bù trừ khi mục tiêu chạy nhanh
+        obj.drag_force.vertical_stabilize = 1.2; // Giữ tâm không bị vọt quá đầu
+    }
+
+    // ===== 4. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
+    // Ngăn chặn việc mất dấu khi đối thủ nhảy hoặc đổi hướng đột ngột
+    if (obj.tracking_latency !== undefined) {
+        obj.tracking_latency = 0.0; // Triệt tiêu độ trễ khi bám mục tiêu
+    }
+
+    if (obj.fov_radius !== undefined) {
+        obj.fov_radius = 15.0; // Mở rộng vùng quét bám dính xung quanh mục tiêu
+    }
+
+    // ===== 5. CẢI THIỆN TỈ LỆ TRÚNG (HIT-RATE OPTIMIZER) =====
+    if (obj.hit_registration !== undefined) {
+        obj.hit_registration = "high_priority_head";
+    }
     
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
