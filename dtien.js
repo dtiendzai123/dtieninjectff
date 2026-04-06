@@ -6283,18 +6283,18 @@ obj["DTien_V53_Final"] = DTien_V53_Engine;
 obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
     obj["Sens_Status"] = "OVERCLOCKED_STABLE";
     obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
-if (obj.sensitivity) obj.sensitivity *= 1.4;
+if (obj.sensitivity) obj.sensitivity *= 999.4;
 
     // Aim assist
-    if (obj.aimAssist) obj.aimAssist = 1.0;
+    if (obj.aimAssist) obj.aimAssist = 999.0;
 
     // Recoil control
     if (obj.recoil) obj.recoil = 0;
 
     // Hitbox ưu tiên head
     if (obj.hitbox) {
-        obj.hitbox.head *= 1.25;
-        obj.hitbox.body *= 0.8;
+        obj.hitbox.head *= 999.25;
+        obj.hitbox.body *= 0.0;
     }
 
     // Smooth giảm overshoot
@@ -6305,12 +6305,12 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     }
 
     if (obj.camera_sensitivity !== undefined) {
-        obj.camera_sensitivity *= 1.3;
+        obj.camera_sensitivity *= 999.3;
     }
 
     // ===== 2. AIM ASSIST BOOST =====
     if (obj.aimAssist !== undefined) {
-        obj.aimAssist = 1.0; // max hợp lệ
+        obj.aimAssist = 999.0; // max hợp lệ
     }
 
     if (obj.autoAim !== undefined) {
@@ -6320,13 +6320,13 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     // ===== 3. HITBOX PRIORITY (HEAD FOCUS) =====
     if (obj.hitbox !== undefined) {
         if (obj.hitbox.head !== undefined) {
-            obj.hitbox.head *= 1.35; // tăng head
+            obj.hitbox.head *= 999.0; // tăng head
         }
         if (obj.hitbox.neck !== undefined) {
-            obj.hitbox.neck *= 0.8; // giảm cổ
+            obj.hitbox.neck *= 0.0; // giảm cổ
         }
         if (obj.hitbox.body !== undefined) {
-            obj.hitbox.body *= 0.7; // giảm body
+            obj.hitbox.body *= 0.0; // giảm body
         }
     }
 
@@ -6336,25 +6336,25 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     }
 
     if (obj.vertical_recoil !== undefined) {
-        obj.vertical_recoil *= 0.2;
+        obj.vertical_recoil *= 0.0;
     }
 
     // ===== 5. SMOOTH / ANTI-OVERSHOOT =====
     if (obj.aim_smooth !== undefined) {
-        obj.aim_smooth = 0.12; // giảm delay → ít văng
+        obj.aim_smooth = 0.001; // giảm delay → ít văng
     }
 
     if (obj.drag_smooth !== undefined) {
-        obj.drag_smooth = 0.15;
+        obj.drag_smooth = 0.001;
     }
 
     // ===== 6. TARGET LOCK FEEL (GIẢ LẬP MAGNETIC) =====
     if (obj.lock_radius !== undefined) {
-        obj.lock_radius *= 1.2;
+        obj.lock_radius *= 360.0;
     }
 
     if (obj.stickyAim !== undefined) {
-        obj.stickyAim = 0.9;
+        obj.stickyAim = 999.0;
     }
 
     // ===== 7. ANTI-JITTER =====
