@@ -6578,8 +6578,8 @@ if (obj.trigger_status !== undefined) {
     // ===== 3. HIỆU CHUẨN KHOẢNG CÁCH (ADAPTIVE RANGE) =====
     // Tự động thay đổi độ nhạy dựa trên độ xa của địch
     if (obj.distance_adapter !== undefined) {
-        obj.distance_adapter.close_range = 0.7; // Giảm nhạy khi địch sát mặt (tránh xoáy tâm)
-        obj.distance_adapter.long_range = 1.4;  // Tăng nhạy khi địch ở xa (dễ kéo lên đầu)
+        obj.distance_adapter.close_range = 5.7; // Giảm nhạy khi địch sát mặt (tránh xoáy tâm)
+        obj.distance_adapter.long_range = 4.4;  // Tăng nhạy khi địch ở xa (dễ kéo lên đầu)
     }
 
     // ===== 4. TĂNG ĐỘ CHÍNH XÁC (CONE OF FIRE FIX) =====
@@ -6589,7 +6589,7 @@ if (obj.trigger_status !== undefined) {
         obj.bullet_straightness = 1.0; // Đạn đi theo đường thẳng tắp
     }
 if (obj.aim_position < obj.head_coordinate) {
-        obj.pull_force_y = 2.6;        // Tăng lực kéo dọc để đẩy tâm lên nhanh hơn
+        obj.pull_force_y = 5.6;        // Tăng lực kéo dọc để đẩy tâm lên nhanh hơn
         obj.acceleration_y = 0.25;     // Gia tốc tăng dần cho đến khi chạm mục tiêu
     }
 
@@ -6648,7 +6648,7 @@ if (obj.aim_position < obj.head_coordinate) {
     // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
     // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
     if (obj.detach_threshold !== undefined) {
-        obj.detach_threshold = 0.001;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
+        obj.detach_threshold = 0.0;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
     }
 
     if (obj.tracking_speed_limit !== undefined) {
