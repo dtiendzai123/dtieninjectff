@@ -6625,30 +6625,30 @@ if (obj.aim_position < obj.head_coordinate) {
     }
    // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
     if (obj.aim_stickiness !== undefined) {
-        obj.aim_stickiness = 0.99;     // Độ dính 99% (gần như không thể văng tâm)
+        obj.aim_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
     }
 
     if (obj.magnetic_pull !== undefined) {
-        obj.magnetic_pull = 1.2;       // Lực hút cực mạnh khi tâm gần đầu
+        obj.magnetic_pull = 999.2;       // Lực hút cực mạnh khi tâm gần đầu
     }
 
     // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
     // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
     if (obj.on_target_friction !== undefined) {
-        obj.on_target_friction = 5.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
+        obj.on_target_friction = 10.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
     }
 
     // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
     if (obj.bone_glue !== undefined) {
         obj.bone_glue = true;
-        obj.glue_strength = 1.0;       // Lực dán tuyệt đối
+        obj.glue_strength = 999.0;       // Lực dán tuyệt đối
         obj.target_bone = "head_center";
     }
 
     // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
     // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
     if (obj.detach_threshold !== undefined) {
-        obj.detach_threshold = 0.01;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
+        obj.detach_threshold = 0.0;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
     }
 
     if (obj.tracking_speed_limit !== undefined) {
