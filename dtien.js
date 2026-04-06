@@ -6641,7 +6641,7 @@ if (obj.aim_position < obj.head_coordinate) {
     // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
     if (obj.bone_glue !== undefined) {
         obj.bone_glue = true;
-        obj.glue_strength = 2.0;       // Lực dán tuyệt đối
+        obj.glue_strength = 999.0;       // Lực dán tuyệt đối
         obj.target_bone = "head_center";
     }
 
