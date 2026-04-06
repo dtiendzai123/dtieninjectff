@@ -6476,13 +6476,56 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     }
 
     if (obj.fov_radius !== undefined) {
-        obj.fov_radius = 15.0; // Mở rộng vùng quét bám dính xung quanh mục tiêu
+        obj.fov_radius = 360.0; // Mở rộng vùng quét bám dính xung quanh mục tiêu
     }
 
     // ===== 5. CẢI THIỆN TỈ LỆ TRÚNG (HIT-RATE OPTIMIZER) =====
     if (obj.hit_registration !== undefined) {
         obj.hit_registration = "high_priority_head";
     }
+     // ===== 1. REMOVE DOWNWARD FORCE =====
+    if (obj.vertical_recoil !== undefined) {
+        obj.vertical_recoil = 0; // triệt tiêu giật xuống
+    }
+
+    if (obj.gravity !== undefined) {
+        obj.gravity = 0; // tắt hoàn toàn "trọng lực tâm"
+    }
+
+    if (obj.aim_gravity !== undefined) {
+        obj.aim_gravity = 0;
+    }
+
+    // ===== 2. STABLE HEAD LEVEL =====
+    if (obj.vertical_drift !== undefined) {
+        obj.vertical_drift = 0; // không tụt tâm
+    }
+
+    if (obj.crosshair_drop !== undefined) {
+        obj.crosshair_drop = 0;
+    }
+
+    // ===== 3. MICRO UP ASSIST (GIỮ TÂM Ở ĐẦU) =====
+    if (obj.drag_vertical !== undefined) {
+        obj.drag_vertical *= 2.2; // giữ lực kéo lên nhẹ
+    }
+
+    if (obj.micro_adjust !== undefined) {
+        obj.micro_adjust = 0.18;
+    }
+
+    // ===== 4. ANTI FALL BACK =====
+    if (obj.return_force !== undefined) {
+        obj.return_force = 0; // không kéo về vị trí cũ
+    }
+
+    if (obj.centering !== undefined) {
+        obj.centering = 0;
+    }
+
+
+  
+
     
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
