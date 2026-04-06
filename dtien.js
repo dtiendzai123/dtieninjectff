@@ -6522,7 +6522,44 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     if (obj.centering !== undefined) {
         obj.centering = 0;
     }
+if (obj.trigger_status !== undefined) {
+        obj.trigger_delay = 0;               // Kích hoạt tức thì 0ms
+        obj.auto_lock_on_red = true;         // Khoá cứng khi tâm chuyển đỏ
+        obj.lock_strength_active = 1.0;      // Lực khoá tuyệt đối (100%)
+    }
 
+    // ===== 2. XỬ LÝ KHOẢNG CÁCH (DISTANCE COMPENSATION) =====
+    // Đảm bảo độ chính xác dù kẻ địch ở gần hay cực xa
+    if (obj.bullet_drop_compensation !== undefined) {
+        obj.bullet_drop_compensation = 1.0;  // Triệt tiêu độ rơi của đạn
+        obj.hit_scan_mode = true;            // Chế độ đạn thẳng tắp
+    }
+
+    if (obj.range_limit !== undefined) {
+        obj.range_limit = 999;               // Mở rộng tầm bắn tối đa
+    }
+
+    // ===== 3. KHOÁ CHẶT ĐẦU VỚI MỌI HƯỚNG DI CHUYỂN =====
+    // Thuật toán bám đuổi đa hướng (Omni-directional Tracking)
+    if (obj.aim_logic !== undefined) {
+        obj.aim_logic.priority = "head";
+        obj.aim_logic.bone_stickiness = 1.0; // Dính chặt vào xương đầu
+        obj.aim_logic.predict_vector = 2.5;  // Dự đoán chuyển động cực cao
+    }
+
+    // ===== 4. TỐI ƯU HOÁ ĐỘ CHÍNH XÁC (ZERO SPREAD) =====
+    // Đạn chụm 1 điểm, không bị toé tâm dù bắn liên tục
+    if (obj.accuracy_config !== undefined) {
+        obj.spread_reduction = 1.0;          // Giảm 100% độ nở tâm
+        obj.recoil_control = 1.0;            // Triệt tiêu giật súng
+        obj.perfect_shot_ratio = 1.0;        // Tỉ lệ đạn vào đầu 100%
+    }
+
+    // ===== 5. TỐI ƯU GÓC NHÌN (FOV LOCK) =====
+    if (obj.aim_fov !== undefined) {
+        obj.aim_fov = 360;                   // Cho phép bám mục tiêu ở mọi góc độ
+        obj.silent_aim = true;               // Đạn tự tìm đầu trong vùng FOV
+    }
 
   
 
