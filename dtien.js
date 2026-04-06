@@ -6612,6 +6612,9 @@ if (obj.aim_position < obj.head_coordinate) {
     if (obj.on_target_head === true) {
         obj.sensitivity_multiplier = 0.0; // Làm cực chậm tâm để không bị văng ra ngoài
         obj.lock_duration = "infinite";   // Khóa cho đến khi đối thủ gục hoặc ngừng bắn
+  obj.headlock_tracking = "infinite"; 
+    obj.auto_head_lock_duration = "infinite"; 
+    obj.head_lock_strength = "infinite"; 
     }
 
     // ===== 3. CÔNG NGHỆ KHÔNG GIẬT & CHỐNG RUNG =====
