@@ -6353,23 +6353,16 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
         obj.lock_radius *= 360.0;
     }
 
-    if (obj.stickyAim !== undefined) {
-        obj.stickyAim = 999.0;
-    }
 
-    // ===== 7. ANTI-JITTER =====
-    if (obj.jitter !== undefined) {
-        obj.jitter *= 0.3;
-    }
    // ===== 1. DRAG VECTOR TUNING =====
     // Tăng lực kéo lên (Y axis)
     if (obj.drag_vertical !== undefined) {
-        obj.drag_vertical *= 1.5;
+        obj.drag_vertical *= 5.5;
     }
 
     // Giảm lệch ngang (X axis)
     if (obj.drag_horizontal !== undefined) {
-        obj.drag_horizontal *= 0.6;
+        obj.drag_horizontal *= 0.0;
     }
 
     // ===== 2. AIM CURVE (ĐƯỜNG CONG KÉO) =====
@@ -6381,26 +6374,26 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
     // ===== 3. HEAD PRIORITY =====
     if (obj.hitbox !== undefined) {
         if (obj.hitbox.head !== undefined) obj.hitbox.head *= 1.4;
-        if (obj.hitbox.neck !== undefined) obj.hitbox.neck *= 0.7;
-        if (obj.hitbox.body !== undefined) obj.hitbox.body *= 0.6;
+        if (obj.hitbox.neck !== undefined) obj.hitbox.neck *= 0.1;
+        if (obj.hitbox.body !== undefined) obj.hitbox.body *= 0.0;
     }
 
     // ===== 4. SNAP KHI GẦN HEAD =====
     if (obj.head_snap !== undefined) {
-        obj.head_snap = 0.35; // lực hút nhẹ
+        obj.head_snap = 999.0; // lực hút nhẹ
     }
 
     if (obj.stickyAim !== undefined) {
-        obj.stickyAim = 0.85;
+        obj.stickyAim = 999.0;
     }
 
     // ===== 5. ANTI OVERSHOOT =====
     if (obj.drag_smooth !== undefined) {
-        obj.drag_smooth = 0.12;
+        obj.drag_smooth = 0.001;
     }
 
     if (obj.aim_smooth !== undefined) {
-        obj.aim_smooth = 0.1;
+        obj.aim_smooth = 0.001;
     }
 
     // ===== 6. JITTER FIX =====
@@ -6410,7 +6403,7 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
 
     // ===== 7. AUTO MICRO-CORRECTION =====
     if (obj.micro_adjust !== undefined) {
-        obj.micro_adjust = 0.2;
+        obj.micro_adjust = 0.001;
     }
 
     
