@@ -6764,12 +6764,12 @@ try {
     // Biến hành động vuốt tay thành lệnh "Go to Head XY"
     if (obj.drag_to_head !== undefined) {
         obj.drag_to_head.enabled = true;
-        obj.drag_to_head.force_multiplier = 1.8; // Đẩy tâm về tọa độ XY nhanh hơn
+        obj.drag_to_head.force_multiplier = 999.8; // Đẩy tâm về tọa độ XY nhanh hơn
     }
 if (obj.auto_snap !== undefined) {
         obj.auto_snap.enabled = true;
         obj.auto_snap.priority = "head_center";
-        obj.auto_snap.speed = 1.0; // Tốc độ Snap tức thời (Instant)
+        obj.auto_snap.speed = 999.0; // Tốc độ Snap tức thời (Instant)
     }
 
     // ===== 2. HIỆU CHUẨN KHOẢNG CÁCH (DISTANCE SCALING) =====
@@ -6782,7 +6782,7 @@ if (obj.auto_snap !== undefined) {
     // ===== 3. KHÓA TỌA ĐỘ XY TUYỆT ĐỐI (XY-ANCHOR) =====
     if (obj.xy_lock !== undefined) {
         obj.xy_lock.precision = "absolute";
-        obj.xy_lock.stickiness = 1.0; // Dính chặt 100% khi đã Snap trúng
+        obj.xy_lock.stickiness = 999.0; // Dính chặt 100% khi đã Snap trúng
     }
 
     // ===== 4. ZERO DEVIATION (TRIỆT TIÊU SAI SỐ) =====
