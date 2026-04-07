@@ -6918,6 +6918,52 @@ if (obj.hitbox !== undefined) {
     obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
     obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
 }
+JavaScript
+/*
+ * DTien V130 - Truy Quét & Khóa Đầu Tuyệt Đối
+ * Thuật toán: One-way Y-Axis + Target Seeker + Hard Lock
+ */
+
+let body = $response.body;
+
+try {
+    let obj = JSON.parse(body);
+
+    // ===== 1. CHỐNG GIẬT NGƯỢC (ONE-WAY VECTOR) =====
+    // Một khi tâm đã đi lên (qua thân), triệt tiêu mọi lực kéo xuống dưới
+    if (obj.vector_y_control !== undefined) {
+        obj.vector_y_control.min_velocity = 0; // Không cho phép vận tốc âm (kéo xuống)
+        obj.vector_y_control.anti_recoil_down = 1.0; // Triệt tiêu giật súng xuống thân
+    }
+
+    // ===== 2. TỰ ĐỘNG TRUY QUÉT ĐẦU (TARGET SEEKER) =====
+    // Nếu chưa chạm đầu, hệ thống tự động quét tọa độ xung quanh để tìm đầu
+    if (obj.aim_seeker !== undefined) {
+        obj.aim_seeker.enabled = true;
+        obj.aim_seeker.search_radius = "infinite"; // Quét toàn bộ vùng quanh mục tiêu
+        obj.aim_seeker.auto_correction = 1.0;      // Tự sửa sai số để tìm đúng đầu
+    }
+
+    // ===== 3. KHÓA CHO BẰNG ĐƯỢC (RECURSIVE LOCK) =====
+    // Thuật toán lặp lại lệnh khóa cho đến khi tọa độ tâm = tọa độ đầu
+    if (obj.aim_final_lock !== undefined) {
+        obj.aim_final_lock.force_match = true;
+        obj.aim_final_lock.bone_id = "head";     // Chỉ định duy nhất xương đầu
+        obj.aim_final_lock.persistence = 1.0;    // Độ kiên trì (không bao giờ nhả)
+    }
+
+    // ===== 4. GIA TỐC VƯỢT THÂN (BODY-BYPASS) =====
+    // Tăng tốc độ di chuyển khi tâm đang ở vùng tọa độ thấp (thân/chân)
+    if (obj.aim_height_control !== undefined) {
+        obj.aim_height_control.bypass_body = true;
+        obj.aim_height_control.boost_to_head = 2.5; // Đẩy cực nhanh qua thân để lên đầu
+    }
+
+    // ===== 5. TRIỆT TIÊU SAI SỐ (ZERO DRIFT) =====
+    if (obj.stabilizer !== undefined) {
+        obj.stabilizer.horizontal_drift = 0; // Khóa chặt trục ngang X
+        obj.stabilizer.vertical_anchor = 1.0; // Neo chặt trục dọc Y
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
