@@ -6874,7 +6874,7 @@ if (obj.auto_snap !== undefined) {
     if (obj.aim_force_pull !== undefined) {
         obj.aim_force_pull.enabled = true;
         obj.aim_force_pull.min_distance = 0;   // Không giới hạn khoảng cách kích hoạt
-        obj.aim_force_pull.power = 10.0;         // Lực kéo cực đại để về đầu tức thì
+        obj.aim_force_pull.power = 15.0;         // Lực kéo cực đại để về đầu tức thì
     }
 
     // ===== 2. DUY TRÌ TRẠNG THÁI KHÓA (STATE INDEPENDENCE) =====
@@ -6903,7 +6903,21 @@ if (obj.auto_snap !== undefined) {
     if (obj.response_time !== undefined) {
         obj.response_time = "0.001ms"; // Thời gian phản hồi gần như bằng 0
     }
- 
+ // Đặt mức này để script hiểu rằng mọi điểm từ 0m đến 1.8m đều phải đẩy lên 2m.
+if (obj.target_height_threshold !== undefined) {
+    obj.target_height_threshold = 0.9; // Bỏ qua 90% phần thân dưới, chỉ bắt 10% phần đầu.
+}
+
+// 3. TỐI ƯU HÓA TRỤC Y (Y-AXIS BIAS)
+// Ép tâm ngắm luôn ưu tiên tọa độ cao nhất của nhân vật.
+if (obj.y_axis_bias !== undefined) {
+    obj.y_axis_bias = 2.0; // Nhân đôi lực đẩy theo chiều dọc.
+}
+if (obj.hitbox !== undefined) {
+    obj.hitbox.head = 2.5;  // Phóng đại đầu (điểm cao nhất 2m)
+    obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
+    obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
+}
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
