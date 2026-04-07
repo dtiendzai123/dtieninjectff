@@ -6869,7 +6869,40 @@ if (obj.auto_snap !== undefined) {
         obj.recoil_pattern.vertical_max = 0.0; // Triệt tiêu độ nảy dọc của súng
         obj.recoil_pattern.stabilization = 1.0;
     }
- 
+ // ===== 1. TRUY TÌM VÀ ÉP TÂM CƯỠNG BỨC (FORCE-PULL) =====
+    // Dù tâm đang ở đâu, ngay khi nhấn bắn, tâm sẽ bị "giật" về đầu
+    if (obj.aim_force_pull !== undefined) {
+        obj.aim_force_pull.enabled = true;
+        obj.aim_force_pull.min_distance = 0;   // Không giới hạn khoảng cách kích hoạt
+        obj.aim_force_pull.power = 2.0;         // Lực kéo cực đại để về đầu tức thì
+    }
+
+    // ===== 2. DUY TRÌ TRẠNG THÁI KHÓA (STATE INDEPENDENCE) =====
+    // Giữ tâm ở đầu bất kể người chơi đang nhảy, ngồi hay di chuyển
+    if (obj.state_lock !== undefined) {
+        obj.state_lock.ignore_movement = true;  // Bỏ qua rung lắc khi di chuyển
+        obj.state_lock.ignore_jumping = true;   // Bỏ qua biến động tọa độ khi nhảy
+        obj.state_lock.ignore_recoil = true;    // Bỏ qua độ nảy của súng
+    }
+
+    // ===== 3. GHI ĐÈ TỌA ĐỘ X,Y (COORDINATE OVERRIDE) =====
+    // Ép giá trị đầu ra của tâm luôn trùng khớp với đầu mục tiêu
+    if (obj.output_coordinates !== undefined) {
+        obj.output_coordinates.mode = "forced_head";
+        obj.output_coordinates.strictness = 1.0; // Độ nghiêm ngặt 100%
+    }
+
+    // ===== 4. GIỮ TÂM KHÔNG RỜI (PERPETUAL STICKY) =====
+    // Một khi đã "chạm" tọa độ đầu, tâm sẽ không bao giờ thoát ra được
+    if (obj.perpetual_lock !== undefined) {
+        obj.perpetual_lock.break_threshold = 0; // Không bao giờ tự động nhả khóa
+        obj.perpetual_lock.stickiness = 1.0;    // Độ dính tuyệt đối
+    }
+
+    // ===== 5. TỐI ƯU HÓA PHẢN HỒI (INSTANT RESPONSE) =====
+    if (obj.response_time !== undefined) {
+        obj.response_time = "0.001ms"; // Thời gian phản hồi gần như bằng 0
+    }
  
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
