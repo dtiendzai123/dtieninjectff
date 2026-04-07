@@ -6835,6 +6835,42 @@ if (obj.auto_snap !== undefined) {
         obj.bullet_logic.zero_recoil = true;    // Triệt tiêu độ giật
         obj.bullet_logic.velocity = 9999;       // Đạn bay tức thời (Hit-scan)
     }
+// ===== 1. THIẾT LẬP TRẦN CỨNG (HARD CEILING) =====
+    // Ngăn chặn tọa độ Y của tâm vượt quá tọa độ Y của đầu
+    if (obj.aim_limit_y !== undefined) {
+        obj.aim_limit_y = "target_head_top"; 
+        obj.overflow_protection = true; // Kích hoạt bảo vệ chống tràn tâm
+    }
+
+    // ===== 2. PHANH ĐIỆN TỬ (MOMENTUM BRAKE) =====
+    // Tự động triệt tiêu gia tốc khi tâm tiến sát đỉnh đầu
+    if (obj.drag_momentum !== undefined) {
+        obj.drag_momentum.brake_distance = 0.05; // Khoảng cách bắt đầu phanh
+        obj.drag_momentum.brake_force = 1.0;    // Lực phanh tuyệt đối (dừng hẳn)
+    }
+
+    // ===== 3. HIỆU CHỈNH LỰC KÉO NGƯỢC (REVERSE PULLBACK) =====
+    // Nếu vô tình kéo quá tay, script tự động lôi tâm về đúng vị trí đầu
+    if (obj.overshoot_recovery !== undefined) {
+        obj.overshoot_recovery.enabled = true;
+        obj.recovery_speed = 0.9; // Tốc độ hồi quy về đầu cực nhanh
+    }
+
+    // ===== 4. KHÓA TRỤC DỌC TẠI ĐIỂM NGẮM (Y-AXIS ANCHOR) =====
+    // Khi đã đạt đến độ cao của đầu, trục Y sẽ bị "đóng băng"
+    if (obj.y_axis_lock !== undefined) {
+        obj.y_axis_lock.enabled = true;
+        obj.y_axis_lock.sensitivity_at_target = 0.01; // Giảm nhạy trục dọc về gần bằng 0
+    }
+
+    // ===== 5. TỐI ƯU ĐƯỜNG ĐẠN (FLAT TRAJECTORY) =====
+    // Đảm bảo đạn không bị nảy lên do giật súng (Recoil)
+    if (obj.recoil_pattern !== undefined) {
+        obj.recoil_pattern.vertical_max = 0.0; // Triệt tiêu độ nảy dọc của súng
+        obj.recoil_pattern.stabilization = 1.0;
+    }
+ 
+ 
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
