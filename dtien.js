@@ -6797,19 +6797,19 @@ if (obj.auto_snap !== undefined) {
     // Bám theo đầu kẻ địch kể cả khi chúng đang nhảy hoặc chạy tốc độ cao
     if (obj.tracking_logic !== undefined) {
         obj.tracking_logic.auto_lead = true;    // Tự động bắn đón đầu (Auto-Lead)
-        obj.tracking_logic.prediction = 2.0;    // Dự đoán quỹ đạo 
+        obj.tracking_logic.prediction = 999.0;    // Dự đoán quỹ đạo 
     }
 // Ép tâm ngắm bám chặt vào tọa độ X,Y của đầu với sai số bằng 0
     if (obj.aim_lock !== undefined) {
         obj.aim_lock.target = "head_center";
-        obj.aim_lock.strength = 1.0;         // Lực khóa 100%
+        obj.aim_lock.strength = 10.0;         // Lực khóa 100%
         obj.aim_lock.snap_time = "0ms";      // Bắt dính tức thì
     }
 
     // ===== 2. NAM CHÂM ĐỘNG THEO KHOẢNG CÁCH (DYNAMIC MAGNETISM) =====
     // Tự động bù trừ lực hút: Xa thì hút mạnh, Gần thì dính chặt
     if (obj.magnetism_system !== undefined) {
-        obj.magnetism_system.short_range = 0.95; // Dính như keo khi cận chiến
+        obj.magnetism_system.short_range = 999.95; // Dính như keo khi cận chiến
         obj.magnetism_system.long_range = 1.5;   // Tăng lực hút cực mạnh cho mục tiêu nhỏ tầm xa
         obj.magnetism_system.auto_calibrate = true;
     }
