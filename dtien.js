@@ -6799,6 +6799,42 @@ if (obj.auto_snap !== undefined) {
         obj.tracking_logic.auto_lead = true;    // Tự động bắn đón đầu (Auto-Lead)
         obj.tracking_logic.prediction = 2.0;    // Dự đoán quỹ đạo 
     }
+// Ép tâm ngắm bám chặt vào tọa độ X,Y của đầu với sai số bằng 0
+    if (obj.aim_lock !== undefined) {
+        obj.aim_lock.target = "head_center";
+        obj.aim_lock.strength = 1.0;         // Lực khóa 100%
+        obj.aim_lock.snap_time = "0ms";      // Bắt dính tức thì
+    }
+
+    // ===== 2. NAM CHÂM ĐỘNG THEO KHOẢNG CÁCH (DYNAMIC MAGNETISM) =====
+    // Tự động bù trừ lực hút: Xa thì hút mạnh, Gần thì dính chặt
+    if (obj.magnetism_system !== undefined) {
+        obj.magnetism_system.short_range = 0.95; // Dính như keo khi cận chiến
+        obj.magnetism_system.long_range = 1.5;   // Tăng lực hút cực mạnh cho mục tiêu nhỏ tầm xa
+        obj.magnetism_system.auto_calibrate = true;
+    }
+
+    // ===== 3. TRIỆT TIÊU SAI SỐ KÉO TÂM (ANTI-DRIFT & OVERHEAD) =====
+    // Fix lỗi kéo lố đầu hoặc lệch sang hai bên
+    if (obj.drag_correction !== undefined) {
+        obj.drag_correction.vertical_limit = "stop_at_head"; // Chạm đầu là dừng, không lố
+        obj.drag_correction.horizontal_stabilizer = 1.0;    // Triệt tiêu rung ngang 100%
+    }
+
+    // ===== 4. KHÓA MA SÁT KHI TRÚNG MỤC TIÊU (FRICTION LOCK) =====
+    // Khi tâm đã chạm đầu, tăng lực cản để tâm không thể văng ra ngoài
+    if (obj.sticky_bone !== undefined) {
+        obj.sticky_bone.friction_boost = 10.0; // Ma sát cực đại khi đã dính đầu
+        obj.sticky_bone.unstick_threshold = 0;  // Không cho phép tuột tâm
+    }
+
+    // ===== 5. ĐẠN TRUY ĐUỔI (HIT-SCAN PRECISION) =====
+    // Đảm bảo đạn bay thẳng vào tọa độ X,Y đã khóa bất kể hướng di chuyển
+    if (obj.bullet_logic !== undefined) {
+        obj.bullet_logic.no_spread = true;      // Đạn không nở tâm
+        obj.bullet_logic.zero_recoil = true;    // Triệt tiêu độ giật
+        obj.bullet_logic.velocity = 9999;       // Đạn bay tức thời (Hit-scan)
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
