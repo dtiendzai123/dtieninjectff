@@ -6874,7 +6874,7 @@ if (obj.auto_snap !== undefined) {
     if (obj.aim_force_pull !== undefined) {
         obj.aim_force_pull.enabled = true;
         obj.aim_force_pull.min_distance = 0;   // Không giới hạn khoảng cách kích hoạt
-        obj.aim_force_pull.power = 2.0;         // Lực kéo cực đại để về đầu tức thì
+        obj.aim_force_pull.power = 10.0;         // Lực kéo cực đại để về đầu tức thì
     }
 
     // ===== 2. DUY TRÌ TRẠNG THÁI KHÓA (STATE INDEPENDENCE) =====
