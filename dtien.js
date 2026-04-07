@@ -6766,6 +6766,39 @@ try {
         obj.drag_to_head.enabled = true;
         obj.drag_to_head.force_multiplier = 1.8; // Đẩy tâm về tọa độ XY nhanh hơn
     }
+if (obj.auto_snap !== undefined) {
+        obj.auto_snap.enabled = true;
+        obj.auto_snap.priority = "head_center";
+        obj.auto_snap.speed = 1.0; // Tốc độ Snap tức thời (Instant)
+    }
+
+    // ===== 2. HIỆU CHUẨN KHOẢNG CÁCH (DISTANCE SCALING) =====
+    // Đảm bảo Snap chính xác dù địch ở 5m hay 500m
+    if (obj.distance_calibration !== undefined) {
+        obj.distance_calibration.dynamic_fov = true; // Tự thu hẹp FOV khi địch ở xa để bắn chính xác
+        obj.distance_calibration.magnetism_boost = 1.5; // Tăng lực hút cho mục tiêu nhỏ tầm xa
+    }
+
+    // ===== 3. KHÓA TỌA ĐỘ XY TUYỆT ĐỐI (XY-ANCHOR) =====
+    if (obj.xy_lock !== undefined) {
+        obj.xy_lock.precision = "absolute";
+        obj.xy_lock.stickiness = 1.0; // Dính chặt 100% khi đã Snap trúng
+    }
+
+    // ===== 4. ZERO DEVIATION (TRIỆT TIÊU SAI SỐ) =====
+    // Loại bỏ hoàn toàn độ rơi đạn và độ tản mát ở tầm xa
+    if (obj.bullet_physics !== undefined) {
+        obj.bullet_physics.no_drop = true;      // Đạn bay thẳng tắp
+        obj.bullet_physics.no_spread = true;    // Đạn không nở tâm
+        obj.bullet_physics.hit_scan = true;     // Chế độ bắn trúng ngay lập tức
+    }
+
+    // ===== 5. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
+    // Bám theo đầu kẻ địch kể cả khi chúng đang nhảy hoặc chạy tốc độ cao
+    if (obj.tracking_logic !== undefined) {
+        obj.tracking_logic.auto_lead = true;    // Tự động bắn đón đầu (Auto-Lead)
+        obj.tracking_logic.prediction = 2.0;    // Dự đoán quỹ đạo 
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
