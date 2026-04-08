@@ -7627,7 +7627,7 @@ const headHoldLock = (entity) => {
     } else {
         head = {
             x: entity.position.x,
-            y: entity.position.y - (entity.height || 65) * 0.8
+            y: entity.position.y - (entity.height || 60) * 0.8
         };
     }
 
@@ -7695,7 +7695,7 @@ const ultraLightHeadLock = (entity) => {
     if (entity.bones && entity.bones.head) {
         head = entity.bones.head;
     } else {
-        let height = entity.height || 70;
+        let height = entity.height || 60;
         head = {
             x: entity.position.x,
             y: entity.position.y - height * 0.8
