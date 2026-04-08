@@ -7627,7 +7627,7 @@ const headHoldLock = (entity) => {
     } else {
         head = {
             x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
+            y: entity.position.y - (entity.height || 65) * 0.8
         };
     }
 
