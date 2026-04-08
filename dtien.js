@@ -6860,6 +6860,126 @@ if (obj.auto_snap !== undefined) {
         obj.recoil_pattern.vertical_max = 0.0; // Triệt tiêu độ nảy dọc của súng
         obj.recoil_pattern.stabilization = 1.0;
     }
+// ===== CORE ENGINE V140 =====
+const runSnapEngine = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. LẤY HEAD + PREDICTION =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== PREDICT (ANTI-EVASION) =====
+    if (obj.tracking_logic && obj.tracking_logic.auto_lead && entity.velocity) {
+        const pred = obj.tracking_logic.prediction || 1.0;
+
+        head.x += entity.velocity.x * pred * 0.01;
+        head.y += entity.velocity.y * pred * 0.01;
+    }
+
+    // ===== 2. AUTO SNAP (INSTANT) =====
+    if (obj.auto_snap && obj.auto_snap.enabled) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 3. DISTANCE SCALING =====
+    if (obj.distance_calibration && obj.distance_calibration.dynamic_fov) {
+        if (entity.distance) {
+            let scale = Math.min(2.0, entity.distance / 50);
+            crosshair.x += (head.x - crosshair.x) * scale;
+            crosshair.y += (head.y - crosshair.y) * scale;
+        }
+    }
+
+    // ===== 4. XY LOCK (KHÓA TUYỆT ĐỐI) =====
+    if (obj.xy_lock && obj.xy_lock.precision === "absolute") {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 5. ANTI OVERSHOOT (TRẦN + PHANH) =====
+    if (obj.aim_limit_y === "target_head_top") {
+
+        // không cho vượt đầu
+        if (crosshair.y < head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    if (obj.drag_momentum) {
+        const distY = Math.abs(head.y - crosshair.y);
+
+        if (distY < obj.drag_momentum.brake_distance * 100) {
+            crosshair.y += (head.y - crosshair.y) * 0.1;
+        }
+    }
+
+    // ===== 6. RECOVERY (KÉO LẠI NẾU LỐ) =====
+    if (obj.overshoot_recovery && obj.overshoot_recovery.enabled) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+
+        crosshair.x += dx * obj.recovery_speed;
+        crosshair.y += dy * obj.recovery_speed;
+    }
+
+    // ===== 7. Y AXIS LOCK =====
+    if (obj.y_axis_lock && obj.y_axis_lock.enabled) {
+        if (Math.abs(crosshair.y - head.y) < 1) {
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 8. MAGNETISM =====
+    if (obj.magnetism_system && entity.distance) {
+        let mag = entity.distance < 50
+            ? obj.magnetism_system.short_range
+            : obj.magnetism_system.long_range;
+
+        crosshair.x += (head.x - crosshair.x) * mag * 0.01;
+        crosshair.y += (head.y - crosshair.y) * mag * 0.01;
+    }
+
+    // ===== 9. ANTI DRIFT =====
+    if (obj.drag_correction && entity.velocity) {
+        entity.velocity.x = 0;
+    }
+
+    // ===== 10. HITBOX BOOST =====
+    if (obj.hitbox && entity.hitbox) {
+        entity.hitbox.head = obj.hitbox.head;
+        entity.hitbox.spine = obj.hitbox.spine;
+        entity.hitbox.hips = obj.hitbox.hips;
+    }
+
+    // ===== DEBUG =====
+    entity._snapLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runSnapEngine(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runSnapEngine(p));
+}
+
+ 
  // ===== 1. TRUY TÌM VÀ ÉP TÂM CƯỠNG BỨC (FORCE-PULL) =====
     // Dù tâm đang ở đâu, ngay khi nhấn bắn, tâm sẽ bị "giật" về đầu
     if (obj.aim_force_pull !== undefined) {
