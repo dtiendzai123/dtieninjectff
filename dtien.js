@@ -7532,6 +7532,7 @@ if (obj.players && Array.isArray(obj.players)) {
             updateStabilizer(player);
         });
     }
+
 // ===== AUTO HEAD PULL CORE =====
 const autoHeadPull = (entity) => {
 
@@ -7546,23 +7547,33 @@ const autoHeadPull = (entity) => {
     // ===== 2. XÁC ĐỊNH HEAD =====
     let head = null;
 
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
+    const DEFAULT_HEIGHT = 200;      // 2m
+const HEAD_RATIO = 0.9;          // chuẩn vị trí đầu
+const HEAD_SIZE = 1;            // kích thước phần đầu (tùy chỉnh)
+
+if (entity.bones?.head) {
+    // Ưu tiên dùng bone thật (chuẩn nhất)
+    head = entity.bones.head;
+} else {
+    const height = entity.height || DEFAULT_HEIGHT;
+
+    // Công thức chuẩn hơn ratio (trừ headSize)
+    const headY = entity.position.y - (height - HEAD_SIZE);
+
+    head = {
+        x: entity.position.x,
+        y: headY
+    };
+}
 
     // ===== 3. TÍNH KHOẢNG CÁCH =====
-    let distance = entity.distance || 50;
+    let distance = entity.distance || 9999;
 
     // ===== 4. SCALE THEO KHOẢNG CÁCH =====
     // xa → kéo mạnh hơn, gần → mượt hơn
     let force = distance > 100 ? 1.2 :
-                distance > 50  ? 0.9 :
-                                 0.6;
+                distance > 1  ? 5.0 :
+                                 5.6;
 
     // ===== 5. KÉO TÂM LÊN ĐẦU =====
     let dx = head.x - crosshair.x;
@@ -7597,7 +7608,7 @@ autoHeadPull(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => autoHeadPull(p));
 }
-    // ===== 4. EXPORT =====
+ // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
     console.log("-----------------------------------------");
