@@ -6959,12 +6959,15 @@ try {
         obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
     }
 
-    // ===== 5. TRIỆT TIÊU SAI SỐ (ZERO DRIFT) =====
-    if (obj.stabilizer !== undefined) {
-        obj.stabilizer.horizontal_drift = 0; // Khóa chặt trục ngang X
-        obj.stabilizer.vertical_anchor = 1.0; // Neo chặt trục dọc Y
+if (obj.stabilizer === undefined) {
+        obj.stabilizer = {
+            horizontal_drift: 0,     // Sai số trục X
+            vertical_anchor: 1.0,    // Neo cứng trục Y
+            last_corrected_at: null
+        };
     }
-// ===== 2. XỬ LÝ VẬT LÝ & TRIỆT TIÊU SAI SỐ (CORE LOGIC) =====
+
+    // ===== 2. XỬ LÝ VẬT LÝ & TRIỆT TIÊU SAI SỐ (CORE LOGIC) =====
     // Hàm này mô phỏng việc can thiệp vào mỗi frame dữ liệu gửi về
     const updateStabilizer = (target) => {
         if (target.physics && target.stabilizer) {
