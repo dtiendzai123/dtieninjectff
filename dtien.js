@@ -6299,7 +6299,10 @@ if (obj.sensitivity) obj.sensitivity *= 1.4;
 
     // Smooth giảm overshoot
     if (obj.smooth) obj.smooth = 0.15;
-  // ===== 1. SENSITIVITY CONTROL =====
+
+ 
+ 
+ // ===== 1. SENSITIVITY CONTROL =====
     if (obj.sensitivity !== undefined) {
         obj.sensitivity = Math.min(obj.sensitivity * 1.4, 10);
     }
@@ -6623,7 +6626,146 @@ if (obj.aim_position < obj.head_coordinate) {
         obj.recoil_compensation = 1.0; 
         obj.jitter_suppression = 1.0;
     }
-   // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
+
+ // ===== CORE ENGINE V170 =====
+const runFullControl = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. PREDICTION 2.0 =====
+    if (entity.velocity && obj.prediction_multiplier) {
+        const p = obj.prediction_multiplier;
+
+        head.x += entity.velocity.x * p * 0.01;
+        head.y += entity.velocity.y * p * 0.01;
+    }
+
+    // ===== 3. KHOẢNG CÁCH (ADAPTIVE) =====
+    let distScale = 1.0;
+    if (entity.distance && obj.distance_adapter) {
+        distScale = entity.distance < 50
+            ? obj.distance_adapter.close_range
+            : obj.distance_adapter.long_range;
+    }
+
+    // ===== 4. DRAG VECTOR (CHỈNH HƯỚNG KÉO) =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ưu tiên trục dọc
+    if (obj.drag_vertical) {
+        dy *= obj.drag_vertical * 0.001;
+    }
+
+    if (obj.drag_horizontal !== undefined) {
+        dx *= obj.drag_horizontal;
+    }
+
+    // ===== 5. SNAP + MICRO ADJUST =====
+    if (obj.snap_acceleration) {
+        crosshair.x += dx * obj.snap_acceleration * distScale;
+        crosshair.y += dy * obj.snap_acceleration * distScale;
+    }
+
+    if (obj.micro_adjust) {
+        crosshair.x += dx * obj.micro_adjust;
+        crosshair.y += dy * obj.micro_adjust;
+    }
+
+    // ===== 6. ANTI OVERSHOOT =====
+    if (obj.drag_limit_y === "head_height") {
+        if (crosshair.y < head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    if (obj.recenter_speed) {
+        crosshair.y += (head.y - crosshair.y) * obj.recenter_speed;
+    }
+
+    // ===== 7. ZERO DRIFT =====
+    if (obj.horizontal_stabilizer && entity.velocity) {
+        entity.velocity.x = 0;
+    }
+
+    // ===== 8. STICKY LOCK =====
+    if (obj.sticky_force) {
+        crosshair.x += (head.x - crosshair.x) * obj.sticky_force;
+        crosshair.y += (head.y - crosshair.y) * obj.sticky_force;
+    }
+
+    // ===== 9. HARD HEAD LOCK =====
+    if (obj.lock_on_bone === "head" || obj.aim_anchor_point === "bone_head") {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. FRICTION LOCK =====
+    if (obj.on_head_target_friction) {
+        if (Math.abs(head.x - crosshair.x) < 1 && Math.abs(head.y - crosshair.y) < 1) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 11. INPUT FILTER =====
+    if (obj.deadzone !== undefined && entity.velocity) {
+        entity.velocity.x = 0;
+        entity.velocity.y = 0;
+    }
+
+    // ===== 12. ANTI JITTER =====
+    if (obj.jitter !== undefined) {
+        crosshair.x = Math.round(crosshair.x);
+        crosshair.y = Math.round(crosshair.y);
+    }
+
+    // ===== 13. HITBOX =====
+    if (obj.hitbox && entity.hitbox) {
+        entity.hitbox.head = obj.hitbox.head;
+        entity.hitbox.body = obj.hitbox.body;
+    }
+
+    // ===== 14. FINAL OVERRIDE (KHI ON HEAD) =====
+    if (obj.on_target_head === true) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== DEBUG =====
+    entity._v170 = {
+        head: head,
+        dx: dx,
+        dy: dy,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runFullControl(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runFullControl(p));
+}
+ 
+ 
+ // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
     if (obj.aim_head_stickiness !== undefined) {
         obj.aim_head_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
     }
