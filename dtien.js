@@ -6909,7 +6909,97 @@ if (obj.hitbox !== undefined) {
     obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
     obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
 }
+// ===== CORE EXECUTION ENGINE V130+ =====
+const runForceEngine = (entity) => {
 
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. FORCE PULL (GIẬT TÂM LÊN ĐẦU NGAY) =====
+    if (obj.aim_force_pull && obj.aim_force_pull.enabled) {
+        const power = obj.aim_force_pull.power || 10;
+
+        crosshair.x += (head.x - crosshair.x) * power * 0.1;
+        crosshair.y += (head.y - crosshair.y) * power * 0.1;
+    }
+
+    // ===== 3. STATE LOCK (BỎ QUA RUNG LẮC) =====
+    if (obj.state_lock) {
+        if (entity.velocity) {
+            entity.velocity.x = 0;
+            entity.velocity.y = 0;
+        }
+
+        if (entity.recoil) {
+            entity.recoil.x = 0;
+            entity.recoil.y = 0;
+        }
+    }
+
+    // ===== 4. BODY FILTER + Y BIAS =====
+    if (obj.target_height_threshold && obj.y_axis_bias) {
+        const bias = obj.y_axis_bias;
+
+        // ép luôn ưu tiên vùng cao (đầu)
+        if (crosshair.y > head.y) {
+            crosshair.y -= bias;
+        }
+    }
+
+    // ===== 5. HARD OVERRIDE COORDINATES =====
+    if (obj.output_coordinates && obj.output_coordinates.mode === "forced_head") {
+        if (obj.output_coordinates.strictness === 1.0) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 6. PERPETUAL STICKY LOCK =====
+    if (obj.perpetual_lock && obj.perpetual_lock.stickiness === 1.0) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+
+        crosshair.x += dx * 1.0;
+        crosshair.y += dy * 1.0;
+    }
+
+    // ===== 7. HITBOX MANIPULATION =====
+    if (obj.hitbox) {
+        if (entity.hitbox) {
+            entity.hitbox.head = obj.hitbox.head;
+            entity.hitbox.spine = obj.hitbox.spine;
+            entity.hitbox.hips = obj.hitbox.hips;
+        }
+    }
+
+    // ===== DEBUG =====
+    entity._forceLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runForceEngine(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runForceEngine(p));
+}
 
     // ===== 1. CHỐNG GIẬT NGƯỢC (ONE-WAY VECTOR) =====
     // Một khi tâm đã đi lên (qua thân), triệt tiêu mọi lực kéo xuống dưới
