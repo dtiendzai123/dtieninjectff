@@ -6918,16 +6918,7 @@ if (obj.hitbox !== undefined) {
     obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
     obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
 }
-JavaScript
-/*
- * DTien V130 - Truy Quét & Khóa Đầu Tuyệt Đối
- * Thuật toán: One-way Y-Axis + Target Seeker + Hard Lock
- */
 
-let body = $response.body;
-
-try {
-    let obj = JSON.parse(body);
 
     // ===== 1. CHỐNG GIẬT NGƯỢC (ONE-WAY VECTOR) =====
     // Một khi tâm đã đi lên (qua thân), triệt tiêu mọi lực kéo xuống dưới
