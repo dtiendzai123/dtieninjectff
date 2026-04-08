@@ -6905,13 +6905,13 @@ if (obj.auto_snap !== undefined) {
     }
  // Đặt mức này để script hiểu rằng mọi điểm từ 0m đến 1.8m đều phải đẩy lên 2m.
 if (obj.target_height_threshold !== undefined) {
-    obj.target_height_threshold = 0.9; // Bỏ qua 90% phần thân dưới, chỉ bắt 10% phần đầu.
+    obj.target_height_threshold = 1.0; // Bỏ qua 90% phần thân dưới, chỉ bắt 10% phần đầu.
 }
 
 // 3. TỐI ƯU HÓA TRỤC Y (Y-AXIS BIAS)
 // Ép tâm ngắm luôn ưu tiên tọa độ cao nhất của nhân vật.
 if (obj.y_axis_bias !== undefined) {
-    obj.y_axis_bias = 2.0; // Nhân đôi lực đẩy theo chiều dọc.
+    obj.y_axis_bias = 5.0; // Nhân đôi lực đẩy theo chiều dọc.
 }
 if (obj.hitbox !== undefined) {
     obj.hitbox.head = 2.5;  // Phóng đại đầu (điểm cao nhất 2m)
