@@ -7572,7 +7572,7 @@ if (entity.bones?.head) {
     // ===== 4. SCALE THEO KHOẢNG CÁCH =====
     // xa → kéo mạnh hơn, gần → mượt hơn
     let force = distance > 100 ? 1.2 :
-                distance > 1  ? 5.0 :
+                distance > 1  ? 10.0 :
                                  5.6;
 
     // ===== 5. KÉO TÂM LÊN ĐẦU =====
