@@ -7608,6 +7608,76 @@ autoHeadPull(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => autoHeadPull(p));
 }
+ // ===== HEAD HOLD LOCK CORE =====
+const headHoldLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ KHI ĐANG BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. KHI ĐÃ GẦN ĐẦU → KÍCH HOẠT HOLD =====
+    const isOnHead = Math.abs(dx) < 3 && Math.abs(dy) < 3;
+
+    if (isOnHead) {
+
+        // 💀 KHÓA CỨNG
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        // 💀 GIỮ CHẶT KHÔNG CHO LỆCH
+        entity._headLocked = true;
+
+    } else {
+
+        // ===== 5. KHI ĐANG KÉO → HỖ TRỢ LÊN ĐẦU =====
+        crosshair.x += dx * 0.35;
+        crosshair.y += dy * 0.8; // ưu tiên kéo lên đầu
+
+        entity._headLocked = false;
+    }
+
+    // ===== 6. ANTI FALL (KHÔNG TỤT XUỐNG THÂN) =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.3;
+    }
+
+    // ===== 7. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headHold = {
+        locked: entity._headLocked,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headHoldLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headHoldLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
