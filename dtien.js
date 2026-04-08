@@ -7709,7 +7709,7 @@ const ultraLightHeadLock = (entity) => {
     // ===== 4. TÂM CỰC NHẸ (LIGHT DRAG) =====
     // kéo nhẹ nhưng đi rất nhanh lên đầu
     crosshair.x += dx * 0.25;
-    crosshair.y += dy * 2.1; // ưu tiên kéo dọc cực mạnh
+    crosshair.y += dy * 3.1; // ưu tiên kéo dọc cực mạnh
 
     // ===== 5. SNAP NHANH KHI GẦN =====
     if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
