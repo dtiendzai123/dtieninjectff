@@ -7753,6 +7753,83 @@ ultraLightHeadLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => ultraLightHeadLock(p));
 }
+// ===== BODY BOOST → HEAD LOCK =====
+const bodyToHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const distY = Math.abs(dy);
+
+    // ===== 4. BODY ZONE (CHƯA LÊN ĐẦU) =====
+    if (distY > 5) {
+
+        // ⚡ tăng nhạy cực mạnh vùng thân
+        crosshair.x += dx * 0.3;
+        crosshair.y += dy * 1.3; // kéo lên rất nhanh
+
+        entity._mode = "BOOST_TO_HEAD";
+
+    } else {
+
+        // ===== 5. HEAD ZONE (ĐÃ CHẠM ĐẦU) =====
+
+        // 💀 tắt nhạy → khóa cứng
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        entity._mode = "HEAD_LOCK";
+
+    }
+
+    // ===== 6. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.5;
+    }
+
+    // ===== 7. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.25;
+
+    // ===== 8. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._bodyHeadLock = {
+        mode: entity._mode,
+        dy: dy,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+bodyToHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => bodyToHeadLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
