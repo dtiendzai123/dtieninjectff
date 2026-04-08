@@ -7532,7 +7532,71 @@ if (obj.players && Array.isArray(obj.players)) {
             updateStabilizer(player);
         });
     }
+// ===== AUTO HEAD PULL CORE =====
+const autoHeadPull = (entity) => {
 
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHECK ĐANG BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH KHOẢNG CÁCH =====
+    let distance = entity.distance || 50;
+
+    // ===== 4. SCALE THEO KHOẢNG CÁCH =====
+    // xa → kéo mạnh hơn, gần → mượt hơn
+    let force = distance > 100 ? 1.2 :
+                distance > 50  ? 0.9 :
+                                 0.6;
+
+    // ===== 5. KÉO TÂM LÊN ĐẦU =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ưu tiên kéo dọc (lên đầu)
+    crosshair.x += dx * 0.4 * force;
+    crosshair.y += dy * 0.9 * force;
+
+    // ===== 6. SNAP NHẸ KHI GẦN ĐẦU =====
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. CHỐNG TỤT TÂM =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.2;
+    }
+
+    // ===== DEBUG =====
+    entity._autoHeadPull = {
+        active: true,
+        distance: distance,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+autoHeadPull(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => autoHeadPull(p));
+}
     // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
