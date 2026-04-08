@@ -7830,6 +7830,93 @@ bodyToHeadLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => bodyToHeadLock(p));
 }
+// ===== HEAD POSITION + ROTATION LOCK =====
+const headRotationLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let headPos = null;
+    let headRot = null;
+
+    if (entity.bones && entity.bones.head) {
+        headPos = entity.bones.head.position || entity.bones.head;
+        headRot = entity.bones.head.rotation || { x: 0, y: 0 };
+    } else {
+        let height = entity.height || 60;
+        headPos = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+        headRot = { x: 0, y: 0 };
+    }
+
+    // ===== 3. PHÁT HIỆN KÉO TÂM (INPUT) =====
+    let inputX = entity.input?.dx || 0;
+    let inputY = entity.input?.dy || 0;
+
+    const isDragging = Math.abs(inputX) > 0.5 || Math.abs(inputY) > 0.5;
+
+    // ===== 4. KHI KHÔNG KÉO → KHÓA POSITION =====
+    if (!isDragging) {
+
+        // 🎯 aim chuẩn vào head
+        crosshair.x += (headPos.x - crosshair.x) * 0.6;
+        crosshair.y += (headPos.y - crosshair.y) * 0.9;
+
+    } else {
+
+        // ===== 5. KHI ĐANG KÉO → BÁM ROTATION =====
+
+        // mô phỏng offset theo rotation đầu
+        let rotOffsetX = headRot.y * 5; // quay trái/phải
+        let rotOffsetY = headRot.x * -3; // cúi/ngẩng
+
+        let targetX = headPos.x + rotOffsetX;
+        let targetY = headPos.y + rotOffsetY;
+
+        // bám theo rotation
+        crosshair.x += (targetX - crosshair.x) * 0.8;
+        crosshair.y += (targetY - crosshair.y) * 0.9;
+    }
+
+    // ===== 6. SNAP KHI GẦN =====
+    if (Math.abs(headPos.x - crosshair.x) < 2 &&
+        Math.abs(headPos.y - crosshair.y) < 2) {
+        crosshair.x = headPos.x;
+        crosshair.y = headPos.y;
+    }
+
+    // ===== 7. ANTI TỤT =====
+    if (crosshair.y > headPos.y) {
+        crosshair.y -= Math.abs(headPos.y - crosshair.y) * 0.3;
+    }
+
+    // ===== 8. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headRotLock = {
+        dragging: isDragging,
+        head: headPos,
+        rot: headRot,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headRotationLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headRotationLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
