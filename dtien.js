@@ -6956,7 +6956,7 @@ try {
     // Tăng tốc độ di chuyển khi tâm đang ở vùng tọa độ thấp (thân/chân)
     if (obj.aim_height_control !== undefined) {
         obj.aim_height_control.bypass_body = true;
-        obj.aim_height_control.boost_to_head = 2.5; // Đẩy cực nhanh qua thân để lên đầu
+        obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
     }
 
     // ===== 5. TRIỆT TIÊU SAI SỐ (ZERO DRIFT) =====
