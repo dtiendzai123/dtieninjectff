@@ -6964,6 +6964,37 @@ try {
         obj.stabilizer.horizontal_drift = 0; // Khóa chặt trục ngang X
         obj.stabilizer.vertical_anchor = 1.0; // Neo chặt trục dọc Y
     }
+// ===== 2. XỬ LÝ VẬT LÝ & TRIỆT TIÊU SAI SỐ (CORE LOGIC) =====
+    // Hàm này mô phỏng việc can thiệp vào mỗi frame dữ liệu gửi về
+    const updateStabilizer = (target) => {
+        if (target.physics && target.stabilizer) {
+            
+            // A. Triệt tiêu Horizontal Drift (Sai số ngang)
+            // Loại bỏ hoàn toàn sự lệch tâm do vận tốc hoặc rung tay tích lũy
+            target.physics.velocity_x = 0; // Đưa vận tốc lệch về 0
+            target.stabilizer.horizontal_drift = 0; // Reset sai số tích lũy
+
+            // B. Vertical Anchoring (Neo cứng trục dọc)
+            // Hệ số 1.0 đảm bảo tâm không bao giờ trôi khỏi cao độ mục tiêu
+            target.stabilizer.vertical_anchor = 1.0;
+            
+            // C. Đồng bộ tọa độ (Coordinate Alignment)
+            // Ép tọa độ vật lý phải khớp chính xác với điểm neo, không sai số pixel
+            target.physics.x = Math.round(target.physics.x); 
+            target.physics.y = Math.round(target.physics.y);
+
+            // D. Ghi lại dấu vết hiệu chỉnh
+            target.stabilizer.last_corrected_at = Date.now();
+        }
+    };
+
+    // ===== 3. THỰC THI TRÊN ĐỐI TƯỢNG CHÍNH =====
+    updateStabilizer(obj);
+
+    // Nếu có danh sách người chơi/mục tiêu xung quanh, áp dụng cho tất cả
+    if (obj.players && Array.isArray(obj.players)) {
+        obj.players.forEach(player => updateStabilizer(player));
+    }
  body = JSON.stringify(obj);
     // Inject toàn bộ Engine V6 vào Response của Host
     
