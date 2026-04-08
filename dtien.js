@@ -6940,92 +6940,87 @@ if (obj.hitbox !== undefined) {
         obj.aim_height_control.bypass_body = true;
         obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
     }
-// ===== CORE ENGINE =====
-const HeadLockCore = (obj) => {
+ const runCore = (entity) => {
 
-    if (!obj || !obj.target) return;
+        if (!entity || !entity.position) return;
 
-    const target = obj.target;
+        // 🎯 Lấy tâm ngắm
+        const crosshair = obj.crosshair || entity.crosshair;
+        if (!crosshair) return;
 
-    // ===== 1. ONE-WAY VECTOR (CHỐNG KÉO XUỐNG) =====
-    if (obj.vector_y_control && target.velocity) {
-        // Không cho phép kéo xuống
-        if (target.velocity.y < 0) {
-            target.velocity.y = 0;
+        // ===== A. ONE-WAY VECTOR =====
+        if (entity.velocity && obj.vector_y_control) {
+            if (entity.velocity.y < 0) {
+                entity.velocity.y = 0;
+            }
         }
 
-        // Triệt recoil kéo xuống
-        if (target.recoil && target.recoil.y < 0) {
-            target.recoil.y = 0;
-        }
-    }
+        // ===== B. SEEK HEAD =====
+        let head = null;
 
-    // ===== 2. TARGET SEEKER (TÌM ĐẦU) =====
-    let headPos = null;
+        if (obj.aim_seeker && obj.aim_seeker.enabled) {
+            if (entity.bones && entity.bones.head) {
+                head = entity.bones.head;
+            } else {
+                // fallback estimate
+                head = {
+                    x: entity.position.x,
+                    y: entity.position.y - (entity.height || 60) * 0.75
+                };
+            }
 
-    if (obj.aim_seeker && obj.aim_seeker.enabled) {
-
-        // Nếu có bone head → lấy trực tiếp
-        if (target.bones && target.bones.head) {
-            headPos = target.bones.head;
-        } 
-        else {
-            // fallback: scan vùng trên
-            const body = target.position;
-
-            headPos = {
-                x: body.x,
-                y: body.y - (target.height || 50) * 0.8 // ước lượng đầu
-            };
+            // auto fix lệch
+            head.x = Math.round(head.x);
+            head.y = Math.round(head.y);
         }
 
-        // Auto correction (fix lệch)
-        if (obj.aim_seeker.auto_correction) {
-            headPos.x = Math.round(headPos.x);
-            headPos.y = Math.round(headPos.y);
+        if (!head) return;
+
+        // ===== C. BODY BYPASS =====
+        if (obj.aim_height_control && obj.aim_height_control.bypass_body) {
+            if (crosshair.y > head.y) {
+                crosshair.y -= obj.aim_height_control.boost_to_head;
+            }
         }
-    }
 
-    // ===== 3. BODY BYPASS (VƯỢT THÂN) =====
-    if (obj.aim_height_control && headPos) {
-        const crosshair = obj.crosshair;
+        // ===== D. HARD LOCK =====
+        if (obj.aim_final_lock) {
+            const dx = head.x - crosshair.x;
+            const dy = head.y - crosshair.y;
 
-        if (crosshair && crosshair.y > headPos.y) {
-            // đang ở thân → tăng tốc kéo lên
-            const boost = obj.aim_height_control.boost_to_head || 3.0;
-
-            crosshair.y -= boost;
-        }
-    }
-
-    // ===== 4. FINAL LOCK (KHÓA ĐẦU) =====
-    if (obj.aim_final_lock && headPos) {
-        const crosshair = obj.crosshair;
-
-        if (crosshair) {
-            const dx = headPos.x - crosshair.x;
-            const dy = headPos.y - crosshair.y;
-
-            // persistence lock (đệ quy bám)
+            // kéo dần
             crosshair.x += dx * obj.aim_final_lock.persistence;
             crosshair.y += dy * obj.aim_final_lock.persistence;
 
-            // Force match (snap cứng)
+            // snap cứng
             if (obj.aim_final_lock.force_match) {
                 if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
-                    crosshair.x = headPos.x;
-                    crosshair.y = headPos.y;
+                    crosshair.x = head.x;
+                    crosshair.y = head.y;
                 }
             }
         }
+
+        // ===== E. ZERO DRIFT =====
+        if (obj.stabilizer && entity.velocity) {
+            entity.velocity.x = 0;
+        }
+
+        // debug
+        entity._headLock = {
+            target: head,
+            time: Date.now()
+        };
+    };
+
+    // ===== 3. APPLY =====
+    runCore(obj);
+
+    if (obj.players && Array.isArray(obj.players)) {
+        obj.players.forEach(p => runCore(p));
     }
 
-    // ===== DEBUG (OPTIONAL) =====
-    obj.debug = {
-        head_target: headPos,
-        timestamp: Date.now()
-    };
-};
+    
   if (obj.stabilizer === undefined) {
         obj.stabilizer = {
             horizontal_drift: 0,
