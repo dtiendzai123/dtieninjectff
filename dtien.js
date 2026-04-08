@@ -6757,6 +6757,133 @@ if (obj.aim_position < obj.head_coordinate) {
         obj.drag_to_head.enabled = true;
         obj.drag_to_head.force_multiplier = 999.8; // Đẩy tâm về tọa độ XY nhanh hơn
     }
+// ===== CORE ENGINE V150 =====
+const runAbsoluteHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. PREDICTION XY (TRACKING LOGIC) =====
+    if (obj.tracking_logic && entity.velocity) {
+        const pred = obj.tracking_logic.prediction_xy || 1.0;
+
+        head.x += entity.velocity.x * pred * 0.01;
+        head.y += entity.velocity.y * pred * 0.01;
+    }
+
+    // ===== 3. POINT CAPTURE (HỐ ĐEN) =====
+    if (obj.head_capture_radius) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < obj.head_capture_radius * 100) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 4. MAGNETIC PULL =====
+    if (obj.magnetic_pull) {
+        crosshair.x += (head.x - crosshair.x) * obj.magnetic_pull * 0.001;
+        crosshair.y += (head.y - crosshair.y) * obj.magnetic_pull * 0.001;
+    }
+
+    // ===== 5. AIM STICKINESS =====
+    if (obj.aim_head_stickiness) {
+        crosshair.x += (head.x - crosshair.x) * 0.9;
+        crosshair.y += (head.y - crosshair.y) * 0.9;
+    }
+
+    // ===== 6. BONE GLUE (DÁN CỨNG) =====
+    if (obj.bone_glue) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. ANTI-ORBIT =====
+    if (obj.aim_orbit_correction) {
+        // ép đi thẳng vào tâm, không xoay vòng
+        crosshair.x += (head.x - crosshair.x);
+        crosshair.y += (head.y - crosshair.y);
+    }
+
+    // ===== 8. FRICTION LOCK =====
+    if (obj.on_head_target_friction) {
+        const dx = Math.abs(head.x - crosshair.x);
+        const dy = Math.abs(head.y - crosshair.y);
+
+        if (dx < 1 && dy < 1) {
+            // đóng băng gần như hoàn toàn
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 9. ANTI DETACH =====
+    if (obj.detach_threshold === 0.0) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. XY ABSOLUTE LOCK =====
+    if (obj.aim_coordinate) {
+        crosshair.x = head.x + (obj.aim_coordinate.x_offset || 0);
+        crosshair.y = head.y + (obj.aim_coordinate.y_offset || 0);
+    }
+
+    // ===== 11. DRAG TO HEAD =====
+    if (obj.drag_to_head && obj.drag_to_head.enabled) {
+        const force = obj.drag_to_head.force_multiplier || 1;
+
+        crosshair.x += (head.x - crosshair.x) * force * 0.001;
+        crosshair.y += (head.y - crosshair.y) * force * 0.001;
+    }
+
+    // ===== 12. INPUT FILTER =====
+    if (obj.input_filter && entity.velocity) {
+        entity.velocity.x = 0;
+        entity.velocity.y = 0;
+    }
+
+    // ===== 13. ZERO SPREAD / BULLET =====
+    if (obj.bullet_trajectory && entity.bullet) {
+        entity.bullet.spread = 0;
+        entity.bullet.deviation = 0;
+    }
+
+    // ===== DEBUG =====
+    entity._absoluteLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runAbsoluteHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runAbsoluteHeadLock(p));
+}
+ 
+ 
+ 
+ 
 if (obj.auto_snap !== undefined) {
         obj.auto_snap.enabled = true;
         obj.auto_snap.priority = "head_center";
