@@ -7678,6 +7678,81 @@ headHoldLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => headHoldLock(p));
 }
+// ===== ULTRA LIGHT HEAD LOCK =====
+const ultraLightHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 70;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH ĐỘ LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. TÂM CỰC NHẸ (LIGHT DRAG) =====
+    // kéo nhẹ nhưng đi rất nhanh lên đầu
+    crosshair.x += dx * 0.25;
+    crosshair.y += dy * 1.1; // ưu tiên kéo dọc cực mạnh
+
+    // ===== 5. SNAP NHANH KHI GẦN =====
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 6. KHÓA CHẶT KHI ĐÃ VÀO ĐẦU =====
+    if (Math.abs(head.x - crosshair.x) < 1.5 && Math.abs(head.y - crosshair.y) < 1.5) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        // giữ cứng
+        entity._headLocked = true;
+    }
+
+    // ===== 7. ANTI TỤT (KHÔNG RƠI XUỐNG THÂN) =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.4;
+    }
+
+    // ===== 8. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+
+    // ===== 9. MICRO STABILIZE (MƯỢT) =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._ultraLight = {
+        locked: entity._headLocked || false,
+        dx,
+        dy,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+ultraLightHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => ultraLightHeadLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
