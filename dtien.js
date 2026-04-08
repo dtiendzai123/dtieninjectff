@@ -7917,6 +7917,105 @@ headRotationLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => headRotationLock(p));
 }
+// ===== HEAD PRIORITY + ANTI SNAP BACK =====
+const headPriorityLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 2. CHECK FIRE =====
+    const isFiring = obj.isFiring || entity.isFiring;
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. DETECT ĐÃ KÉO QUA VÙNG HEAD =====
+    const passedHeadZone = Math.abs(dy) < 15;
+
+    // ===== 5. LƯU TRẠNG THÁI HEAD LOCK =====
+    if (!entity._headPriority) {
+        entity._headPriority = false;
+    }
+
+    if (passedHeadZone) {
+        entity._headPriority = true; // đã vào vùng head → kích hoạt giữ
+    }
+
+    // ===== 6. ƯU TIÊN ĐẦU TUYỆT ĐỐI =====
+    if (isFiring) {
+
+        if (!entity._headPriority) {
+
+            // ⚡ chưa lên đầu → kéo cực mạnh lên
+            crosshair.x += dx * 0.3;
+            crosshair.y += dy * 1.2;
+
+        } else {
+
+            // 💀 đã vào vùng head → KHÓA KHÔNG CHO RƠI
+            crosshair.x += (head.x - crosshair.x) * 0.8;
+            crosshair.y += (head.y - crosshair.y) * 1.0;
+
+            // chặn game kéo xuống
+            if (crosshair.y > head.y) {
+                crosshair.y = head.y;
+            }
+        }
+    }
+
+    // ===== 7. ANTI SNAP BACK (QUAN TRỌNG) =====
+    // game thường kéo về ngực → triệt tiêu
+    if (entity._headPriority) {
+
+        // force giữ trục Y
+        crosshair.y += (head.y - crosshair.y) * 0.9;
+
+        // khóa không cho tụt
+        if (crosshair.y > head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 8. SNAP CHUẨN ĐẦU =====
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headPriorityDebug = {
+        active: entity._headPriority,
+        firing: isFiring,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headPriorityLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headPriorityLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
