@@ -6720,16 +6720,7 @@ if (obj.aim_position < obj.head_coordinate) {
     if (obj.snap_acceleration !== undefined) {
         obj.snap_acceleration = 0.15; // Nhích nhẹ là vào đúng điểm giữa đầu
     }
- JavaScript
-/*
- * DTien V90 - Tọa độ X,Y Tuyệt đối (Absolute Head Anchor)
- * Mục tiêu: Ghim chặt tâm vào tọa độ đầu, triệt tiêu mọi sai số X,Y
- */
 
-let body = $response.body;
-
-try {
-    let obj = JSON.parse(body);
 
     // ===== 1. ĐỊNH VỊ TỌA ĐỘ X,Y (XY-COORDINATE LOCK) =====
     // Ép tâm ngắm bám sát theo trục X (ngang) và Y (dọc) của đầu
@@ -6950,57 +6941,50 @@ if (obj.hitbox !== undefined) {
         obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
     }
 
-if (obj.stabilizer === undefined) {
+  if (obj.stabilizer === undefined) {
         obj.stabilizer = {
-            horizontal_drift: 0,     // Sai số trục X
-            vertical_anchor: 1.0,    // Neo cứng trục Y
+            horizontal_drift: 0,
+            vertical_anchor: 1.0,
             last_corrected_at: null
         };
     }
-// ===== 2. XỬ LÝ VẬT LÝ & TRIỆT TIÊU SAI SỐ (CORE LOGIC) =====
-const updateStabilizer = (target) => {
-    if (target.physics && target.stabilizer) {
-        
-        // A. Triệt tiêu Horizontal Drift
-        target.physics.velocity_x = 0;
-        target.stabilizer.horizontal_drift = 0;
 
-        // B. Vertical Anchoring
-        target.stabilizer.vertical_anchor = 1.0;
-        
-        // C. Đồng bộ tọa độ
-        target.physics.x = Math.round(target.physics.x); 
-        target.physics.y = Math.round(target.physics.y);
+    // ===== 2. CORE LOGIC =====
+    const updateStabilizer = (target) => {
+        if (target.physics && target.stabilizer) {
+            
+            target.physics.velocity_x = 0;
+            target.stabilizer.horizontal_drift = 0;
 
-        // D. Ghi lại dấu vết hiệu chỉnh
-        target.stabilizer.last_corrected_at = Date.now();
+            target.stabilizer.vertical_anchor = 1.0;
+            
+            target.physics.x = Math.round(target.physics.x); 
+            target.physics.y = Math.round(target.physics.y);
+
+            target.stabilizer.last_corrected_at = Date.now();
+        }
+    };
+
+    // ===== 3. APPLY =====
+    updateStabilizer(obj);
+
+    if (obj.players && Array.isArray(obj.players)) {
+        obj.players.forEach(player => {
+            updateStabilizer(player);
+        });
     }
-};
 
-// ===== 3. THỰC THI TRÊN ĐỐI TƯỢNG CHÍNH =====
-updateStabilizer(obj);
+    // ===== 4. EXPORT =====
+    body = JSON.stringify(obj);
 
-// Áp dụng cho tất cả player
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(player => {
-        updateStabilizer(player);
-    });
-}
-   
-    
- body = JSON.stringify(obj);
-    // Inject toàn bộ Engine V6 vào Response của Host
-    
     console.log("-----------------------------------------");
     console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
     console.log("Features: Aimbot, Neck Sync, Rotation Lock");
     console.log("-----------------------------------------");
+
 } catch (e) {
-    // Nếu dữ liệu không phải JSON (Binary), in log cảnh báo
     console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
-    // Tùy chọn: Bạn có thể cộng thêm chuỗi vào body nếu server chấp nhận chuỗi thô
-    // body += JSON.stringify(dtienConfig);
 }
 
-// --- 3. Trả kết quả về cho Game ---
+// ===== 5. RETURN =====
 $done({ body });
