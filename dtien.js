@@ -8089,6 +8089,84 @@ headTrackingLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => headTrackingLock(p));
 }
+// ===== ULTRA RECOIL CONTROL SYSTEM =====
+const recoilControl = (entity) => {
+
+    if (!entity) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. TRIỆT TIÊU RECOIL DỌC =====
+    if (entity.recoil_y !== undefined) {
+        entity.recoil_y = 0;
+    }
+
+    if (entity.vertical_recoil !== undefined) {
+        entity.vertical_recoil = 0;
+    }
+
+    // ===== 3. TRIỆT TIÊU RECOIL NGANG =====
+    if (entity.recoil_x !== undefined) {
+        entity.recoil_x = 0;
+    }
+
+    if (entity.horizontal_recoil !== undefined) {
+        entity.horizontal_recoil = 0;
+    }
+
+    // ===== 4. ANTI CAMERA SHAKE =====
+    if (entity.camera_shake !== undefined) {
+        entity.camera_shake = 0;
+    }
+
+    if (entity.view_punch !== undefined) {
+        entity.view_punch = 0;
+    }
+
+    // ===== 5. FORCE GIỮ TÂM ỔN ĐỊNH =====
+    if (!entity._stableAim) {
+        entity._stableAim = {
+            x: crosshair.x,
+            y: crosshair.y
+        };
+    }
+
+    // luôn giữ vị trí ổn định
+    crosshair.x += (entity._stableAim.x - crosshair.x) * 0.9;
+    crosshair.y += (entity._stableAim.y - crosshair.y) * 0.9;
+
+    // ===== 6. ANTI DRIFT =====
+    if (entity.velocity) {
+        crosshair.x -= entity.velocity.x * 0.1;
+        crosshair.y -= entity.velocity.y * 0.1;
+    }
+
+    // ===== 7. RESET TARGET LOCK (tránh lệch lâu) =====
+    entity._stableAim.x = crosshair.x;
+    entity._stableAim.y = crosshair.y;
+
+    // ===== 8. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._recoilDebug = {
+        recoil_removed: true,
+        stable: entity._stableAim,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+recoilControl(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => recoilControl(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
