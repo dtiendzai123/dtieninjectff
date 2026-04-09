@@ -8167,6 +8167,89 @@ recoilControl(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => recoilControl(p));
 }
+// ===== MICRO INPUT → FORCE HEAD =====
+const microToHead = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. LẤY INPUT (VUỐT TAY) =====
+    let inputX = entity.input?.dx || 0;
+    let inputY = entity.input?.dy || 0;
+
+    // ===== 2. GIẢM NHẠY GỐC (GẦN = 0 NHƯNG KHÔNG PHẢI 0) =====
+    const baseSensitivity = 0.02; // cực thấp nhưng vẫn có tín hiệu
+
+    inputX *= baseSensitivity;
+    inputY *= baseSensitivity;
+
+    // ===== 3. XÁC ĐỊNH HEAD =====
+    let head;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 4. PHÁT HIỆN CHỈ CẦN "NHÍCH NHẸ" =====
+    const isMicroMove = Math.abs(inputX) > 0.001 || Math.abs(inputY) > 0.001;
+
+    if (isMicroMove) {
+
+        // ===== 5. BIẾN VUỐT → LỆNH "ĐI TỚI ĐẦU" =====
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+
+        // ⚡ kéo cực mạnh bất kể khoảng cách
+        crosshair.x += dx * 0.7;
+        crosshair.y += dy * 1.4;
+
+    }
+
+    // ===== 6. SNAP KHI GẦN =====
+    if (Math.abs(head.x - crosshair.x) < 2 &&
+        Math.abs(head.y - crosshair.y) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. KHÓA KHI ĐÃ VÀO ĐẦU =====
+    if (!entity._headLocked) {
+        entity._headLocked = false;
+    }
+
+    if (Math.abs(head.y - crosshair.y) < 3) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 8. CHỐNG TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+};
+
+// ===== APPLY =====
+microToHead(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => microToHead(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
