@@ -8180,7 +8180,7 @@ const microToHead = (entity) => {
     let inputY = entity.input?.dy || 0;
 
     // ===== 2. GIẢM NHẠY GỐC (GẦN = 0 NHƯNG KHÔNG PHẢI 0) =====
-    const baseSensitivity = 0.02; // cực thấp nhưng vẫn có tín hiệu
+    const baseSensitivity = 10.0; // cực thấp nhưng vẫn có tín hiệu
 
     inputX *= baseSensitivity;
     inputY *= baseSensitivity;
