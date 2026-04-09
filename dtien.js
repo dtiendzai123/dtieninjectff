@@ -8250,6 +8250,116 @@ microToHead(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => microToHead(p));
 }
+// ===== SMART HEAD SYSTEM (AUTO DETECT + PREDICT + SNAP LOCK) =====
+const smartHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. AUTO DETECT HEAD BONE (CHUẨN SKIN) =====
+    let head = null;
+
+    if (entity.bones) {
+
+        // ưu tiên bone chuẩn
+        if (entity.bones.head) {
+            head = entity.bones.head;
+        }
+
+        // fallback theo tên bone khác nhau của từng skin
+        else {
+            const candidates = ["Head", "head", "Bone_Head", "Bip001-Head", "neck", "Neck"];
+            for (let key of candidates) {
+                if (entity.bones[key]) {
+                    head = entity.bones[key];
+                    break;
+                }
+            }
+        }
+    }
+
+    // fallback cuối cùng theo chiều cao
+    if (!head) {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.85
+        };
+    }
+
+    // ===== 2. PREDICTION (ĐUỔI THEO DI CHUYỂN) =====
+    if (entity.velocity) {
+        const predict = 0.15;
+
+        head = {
+            x: head.x + entity.velocity.x * predict,
+            y: head.y + entity.velocity.y * predict
+        };
+    }
+
+    // ===== 3. KHOẢNG CÁCH TÂM → ĐẦU =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 4. AUTO SNAP VÙNG GẦN =====
+    const SNAP_RADIUS = 25; // vùng hút đầu
+
+    if (distance < SNAP_RADIUS) {
+
+        // ⚡ snap cực nhanh vào head
+        crosshair.x += dx * 0.9;
+        crosshair.y += dy * 1.2;
+
+        entity._nearHead = true;
+
+    } else {
+        entity._nearHead = false;
+    }
+
+    // ===== 5. KHÓA CHẶT KHI ĐÃ CHẠM =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 5) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 6. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+
+    // ===== 8. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._smartHead = {
+        detected: true,
+        locked: entity._headLocked,
+        near: entity._nearHead,
+        dist: distance,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+smartHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => smartHeadLock(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
