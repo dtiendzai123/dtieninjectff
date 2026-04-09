@@ -8306,7 +8306,7 @@ const smartHeadLock = (entity) => {
     let distance = Math.sqrt(dx * dx + dy * dy);
 
     // ===== 4. AUTO SNAP VÙNG GẦN =====
-    const SNAP_RADIUS = 25; // vùng hút đầu
+    const SNAP_RADIUS = 360; // vùng hút đầu
 
     if (distance < SNAP_RADIUS) {
 
@@ -8323,7 +8323,7 @@ const smartHeadLock = (entity) => {
     // ===== 5. KHÓA CHẶT KHI ĐÃ CHẠM =====
     if (!entity._headLocked) entity._headLocked = false;
 
-    if (distance < 5) {
+    if (distance < 9999) {
         entity._headLocked = true;
     }
 
