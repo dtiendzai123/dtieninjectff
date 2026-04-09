@@ -8494,6 +8494,125 @@ const advancedAimbot = (entities) => {
 
 // ===== APPLY AIMBOT =====
 advancedAimbot(obj.players);
+ // ===== AIM CHASE SYSTEM (FOLLOW HAND DRAG TO HEAD) =====
+const aimChaseHead = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = entity.crosshair || obj.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. DETECT HEAD =====
+    let head = null;
+
+    if (entity.bones) {
+        const bones = ["head","Head","Bone_Head","Bip001-Head","neck"];
+        for (let b of bones) {
+            if (entity.bones[b]) {
+                head = entity.bones[b];
+                break;
+            }
+        }
+    }
+
+    if (!head) {
+        const height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.88
+        };
+    }
+
+    // ===== 2. PREDICTION =====
+    if (entity.velocity) {
+        const predict = 0.2;
+
+        head.x += entity.velocity.x * predict;
+        head.y += entity.velocity.y * predict;
+    }
+
+    // ===== 3. VECTOR =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 4. NHẬN DIỆN KÉO TAY =====
+    if (!entity._lastCrosshair) {
+        entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
+    }
+
+    let dragX = crosshair.x - entity._lastCrosshair.x;
+    let dragY = crosshair.y - entity._lastCrosshair.y;
+
+    let dragSpeed = Math.sqrt(dragX * dragX + dragY * dragY);
+
+    entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
+
+    // ===== 5. BOOST THEO KÉO =====
+    let chaseBoost = 1.0;
+
+    if (dragSpeed > 0.5) {
+        chaseBoost = 1.5; // kéo nhanh → boost mạnh
+    }
+
+    if (dragSpeed > 2) {
+        chaseBoost = 2.2; // kéo mạnh → hút cực nhanh
+    }
+
+    // ===== 6. AIM CHASE =====
+    crosshair.x += dx * 0.3 * chaseBoost;
+    crosshair.y += dy * 0.8 * chaseBoost; // ưu tiên kéo lên đầu
+
+    // ===== 7. SNAP GẦN HEAD =====
+    if (distance < 30) {
+        crosshair.x += dx * 0.8;
+        crosshair.y += dy * 1.4;
+        entity._nearHead = true;
+    } else {
+        entity._nearHead = false;
+    }
+
+    // ===== 8. HARD LOCK =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 4) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. STABILIZE =====
+    crosshair.x += (head.x - crosshair.x) * 0.35;
+
+    // ===== 11. FIX RUNG =====
+    crosshair.x = Math.round(crosshair.x * 10) / 10;
+    crosshair.y = Math.round(crosshair.y * 10) / 10;
+
+    // ===== DEBUG =====
+    entity._aimChase = {
+        dragSpeed,
+        boost: chaseBoost,
+        dist: distance,
+        locked: entity._headLocked
+    };
+};
+
+
+// ===== APPLY =====
+aimChaseHead(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => aimChaseHead(p));
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
