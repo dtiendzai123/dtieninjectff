@@ -8360,6 +8360,140 @@ smartHeadLock(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => smartHeadLock(p));
 }
+// ===== ADVANCED AIMBOT SYSTEM =====
+const advancedAimbot = (entities) => {
+
+    if (!entities || !Array.isArray(entities)) return;
+
+    const crosshair = obj.crosshair;
+    if (!crosshair) return;
+
+    let bestTarget = null;
+    let bestDist = Infinity;
+
+    // ===== 1. CHỌN MỤC TIÊU GẦN TÂM =====
+    entities.forEach(entity => {
+
+        if (!entity || !entity.position) return;
+
+        let head = null;
+
+        // ===== 2. AUTO DETECT HEAD BONE =====
+        if (entity.bones) {
+
+            const candidates = [
+                "head","Head","Bone_Head",
+                "Bip001-Head","b_head","neck","Neck"
+            ];
+
+            for (let key of candidates) {
+                if (entity.bones[key]) {
+                    head = entity.bones[key];
+                    break;
+                }
+            }
+        }
+
+        // fallback chiều cao
+        if (!head) {
+
+            const height = entity.height || 60;
+
+            head = {
+                x: entity.position.x,
+                y: entity.position.y - height * 0.88
+            };
+        }
+
+        // ===== 3. PREDICTION =====
+        if (entity.velocity) {
+
+            const predict = 0.18;
+
+            head.x += entity.velocity.x * predict;
+            head.y += entity.velocity.y * predict;
+        }
+
+        // ===== 4. TÍNH KHOẢNG CÁCH =====
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < bestDist) {
+
+            bestDist = dist;
+            bestTarget = { entity, head };
+        }
+    });
+
+    if (!bestTarget) return;
+
+    const entity = bestTarget.entity;
+    const head = bestTarget.head;
+
+    // ===== 5. VECTOR AIM =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 6. SNAP AIM =====
+    const SNAP_RADIUS = 9999;
+
+    if (distance < SNAP_RADIUS) {
+
+        crosshair.x += dx * 0.9;
+        crosshair.y += dy * 1.3;
+
+        entity._nearHead = true;
+
+    } else {
+
+        crosshair.x += dx * 0.25;
+        crosshair.y += dy * 0.55;
+
+        entity._nearHead = false;
+    }
+
+    // ===== 7. HARD LOCK =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 4) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 8. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x += (head.x - crosshair.x) * 0.35;
+
+    // ===== 10. MICRO FIX =====
+    crosshair.x = Math.round(crosshair.x * 10) / 10;
+    crosshair.y = Math.round(crosshair.y * 10) / 10;
+
+    // ===== DEBUG =====
+    entity._aimbot = {
+        locked: entity._headLocked,
+        near: entity._nearHead,
+        dist: distance,
+        target: true,
+        time: Date.now()
+    };
+};
+
+
+// ===== APPLY AIMBOT =====
+advancedAimbot(obj.players);
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
