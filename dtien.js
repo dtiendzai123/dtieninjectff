@@ -8874,8 +8874,71 @@ const createEntity = (rawGameData) => {
         }
     };
 };
+/**
+ * Chuyển đổi tọa độ 3D sang 2D màn hình
+ * @param {Vector3} worldPos - Tọa độ X, Y, Z của kẻ địch trong game
+ * @param {Array} matrix - Ma trận ViewProjection (thường gồm 16 phần tử)
+ * @param {number} width - Chiều rộng màn hình điện thoại
+ * @param {number} height - Chiều cao màn hình điện thoại
+ */
+const worldToScreen = (worldPos, matrix, width, height) => {
+    // Tính toán tọa độ Clip Space
+    const screenX = (matrix[0] * worldPos.x) + (matrix[4] * worldPos.y) + (matrix[8] * worldPos.z) + matrix[12];
+    const screenY = (matrix[1] * worldPos.x) + (matrix[5] * worldPos.y) + (matrix[9] * worldPos.z) + matrix[13];
+    const screenW = (matrix[3] * worldPos.x) + (matrix[7] * worldPos.y) + (matrix[11] * worldPos.z) + matrix[15];
 
-// ===== HÀM ĐIỀU KHIỂN CHÍNH (CONTROLLER) =====
+    // Nếu screenW < 0.1, mục tiêu đang nằm sau lưng người chơi
+    if (screenW < 0.1) return null;
+
+    // Chuyển đổi sang tọa độ chuẩn hóa (NDC)
+    const ndcX = screenX / screenW;
+    const ndcY = screenY / screenW;
+
+    // Chuyển sang tọa độ Pixel màn hình
+    const x = (width / 2 * ndcX) + (ndcX + width / 2);
+    const y = -(height / 2 * ndcY) + (ndcY + height / 2);
+
+    return { x, y, distance: screenW };
+};
+/**
+ * Giả lập thao tác vuốt để sửa hướng kéo tâm
+ * @param {Object} targetPos - Tọa độ 2D của đầu địch (từ W2S)
+ * @param {Object} currentCrosshair - Tọa độ tâm hiện tại
+ */
+const injectTouchCorrection = (targetPos, currentCrosshair) => {
+    // Tính khoảng cách cần di chuyển (Delta)
+    const deltaX = targetPos.x - currentCrosshair.x;
+    const deltaY = targetPos.y - currentCrosshair.y;
+
+    // Hệ số làm mượt (Smoothing) để tránh bị hệ thống quét hành vi robot
+    const sensitivity = 0.45; 
+    const moveX = deltaX * sensitivity;
+    const moveY = deltaY * sensitivity;
+
+    // Gửi sự kiện Touch/Mouse (Giả lập cấu trúc hệ thống)
+    const touchEvent = new MouseEvent('mousemove', {
+        clientX: currentCrosshair.x + moveX,
+        clientY: currentCrosshair.y + moveY,
+        bubbles: true
+    });
+
+    document.dispatchEvent(touchEvent);
+};
+// Hook vào phương thức vẽ của WebGL/Canvas
+const hookGameCanvas = () => {
+    const originalDraw = CanvasRenderingContext2D.prototype.drawImage;
+    
+    CanvasRenderingContext2D.prototype.drawImage = function(...args) {
+        // 'this' ở đây chính là Canvas đang vẽ các thực thể game
+        const context = this;
+        
+        // Thực hiện các logic can thiệp tại đây trước khi trả về hàm gốc
+        // Ví dụ: Lưu lại tọa độ của texture "kẻ địch"
+        
+        return originalDraw.apply(this, args);
+    };
+};
+ // ===== HÀM ĐIỀU KHIỂN CHÍNH (CONTROLLER) =====
 const processAimlock = (entities, localPlayer) => {
     const crosshair = localPlayer.crosshair; // Tâm giữa màn hình
     const canvasW = window.innerWidth;
@@ -8894,8 +8957,8 @@ const processAimlock = (entities, localPlayer) => {
             let dist2D = Math.sqrt(dx * dx + dy * dy);
 
             // LOGIC TỰ SỬA HƯỚNG (CORRECTION)
-            if (dist2D < 150) { // Nếu nằm trong FOV 150px
-                const smooth = 0.15;
+            if (dist2D < 9999) { // Nếu nằm trong FOV 150px
+                const smooth = 0.01;
                 
                 // Giả lập vuốt (Touch Injection)
                 // Thay vì gán cứng, ta đẩy dần tâm về phía mục tiêu
@@ -8905,7 +8968,7 @@ const processAimlock = (entities, localPlayer) => {
                 ent._isLocked = true;
                 
                 // Hard lock khi cực gần
-                if (dist2D < 5) {
+                if (dist2D < 9999) {
                     crosshair.x = ent.screen.head.x;
                     crosshair.y = ent.screen.head.y;
                 }
