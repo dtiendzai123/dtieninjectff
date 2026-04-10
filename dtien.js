@@ -8613,6 +8613,118 @@ aimChaseHead(obj);
 if (obj.players && Array.isArray(obj.players)) {
     obj.players.forEach(p => aimChaseHead(p));
 }
+// ===== ADVANCED AIMLOCK HEAD SYSTEM (PRO LOGIC) =====
+const aimlockHeadSystem = (target, config = {}) => {
+    // 1. Cấu hình mặc định (Có thể tùy chỉnh)
+    const settings = {
+        fov: config.fov || 360,           // Phạm vi hoạt động (pixels)
+        smooth: config.smooth || 0.0,    // Độ mượt (càng thấp càng dính)
+        prediction: config.predict || 0.01, // Dự đoán hướng di chuyển
+        yOffset: config.yOffset || 2.0,  // Tỉ lệ chiều cao để xác định đầu
+        ...config
+    };
+
+    if (!target || !target.position) return;
+
+    // Lấy tọa độ tâm ngắm hiện tại của người chơi (local player)
+    const view = target.crosshair || (window.gameObj && window.gameObj.crosshair);
+    if (!view) return;
+
+    // 2. XÁC ĐỊNH VỊ TRÍ ĐẦU (HEAD DETECTION)
+    let headPos = { x: 0, y: 0 };
+    let foundBone = false;
+
+    if (target.bones) {
+        const priorityBones = ["head", "Head", "Bone_Head", "Bip001-Head", "neck"];
+        for (let boneName of priorityBones) {
+            if (target.bones[boneName]) {
+                headPos.x = target.bones[boneName].x;
+                headPos.y = target.bones[boneName].y;
+                foundBone = true;
+                break;
+            }
+        }
+    }
+
+    // Fallback nếu không quét được xương (Dựa trên chiều cao entity)
+    if (!foundBone) {
+        const entHeight = target.height || 60;
+        headPos.x = target.position.x;
+        headPos.y = target.position.y - (entHeight * settings.yOffset);
+    }
+
+    // 3. DỰ ĐOÁN DI CHUYỂN (PREDICTION)
+    // Giúp tâm bám sát khi mục tiêu đang chạy nhanh
+    if (target.velocity) {
+        headPos.x += target.velocity.x * settings.prediction;
+        headPos.y += target.velocity.y * settings.prediction;
+    }
+
+    // 4. TÍNH TOÁN KHOẢNG CÁCH VÀ FOV
+    const dx = headPos.x - view.x;
+    const dy = headPos.y - view.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Kiểm tra nếu mục tiêu nằm ngoài vòng FOV thì bỏ qua
+    if (distance > settings.fov) return;
+
+    // 5. NHẬN DIỆN HÀNH VI KÉO TAY (DRAG DETECTION)
+    if (!target._lastView) target._lastView = { x: view.x, y: view.y };
+    
+    const dragX = view.x - target._lastView.x;
+    const dragY = view.y - target._lastView.y;
+    const dragSpeed = Math.sqrt(dragX * dragX + dragY * dragY);
+    
+    target._lastView = { x: view.x, y: view.y };
+
+    // 6. LOGIC AIMLOCK DYNAMIC (KHÓA MỤC TIÊU ĐỘNG)
+    // Tự động điều chỉnh độ nhạy dựa trên việc người dùng có đang chủ động kéo tâm hay không
+    let dynamicSmooth = settings.smooth;
+    
+    if (dragSpeed > 1.5) {
+        // Nếu người dùng đang kéo tay mạnh, hỗ trợ "hút" tâm nhanh hơn
+        dynamicSmooth *= 0.5; 
+    }
+
+    // 7. XỬ LÝ CHỐNG RUNG VÀ GIỮ TÂM (ANTI-RECOIL / STABILIZATION)
+    // Sử dụng Lerp (Linear Interpolation) để di chuyển tâm mượt mà
+    const moveX = dx * (1 - dynamicSmooth);
+    const moveY = dy * (1 - (dynamicSmooth * 0.7)); // Ưu tiên chiều Y để khóa đầu (Aimlock Head)
+
+    // Khóa chặt nếu đã rất gần (Hard Lock)
+    if (distance < 5) {
+        view.x = headPos.x;
+        view.y = headPos.y;
+    } else {
+        view.x += moveX;
+        view.y += moveY;
+    }
+
+    // 8. ANTI-DRAG DOWN (CHỐNG TỤT TÂM)
+    // Đảm bảo tâm không bao giờ rơi xuống thấp hơn vùng đầu khi đang lock
+    if (view.y > headPos.y + 2) {
+        view.y -= (view.y - headPos.y) * 0.5;
+    }
+
+    // Làm tròn để tối ưu hóa hiệu suất và tránh rung nhẹ (jitter)
+    view.x = Math.round(view.x * 100) / 100;
+    view.y = Math.round(view.y * 100) / 100;
+};
+
+// ===== EXECUTION =====
+// Chạy vòng lặp trên danh sách các mục tiêu
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(player => {
+        // Chỉ lock những mục tiêu còn sống và không phải đồng đội (nếu có logic team)
+        if (player.alive !== false) {
+            aimlockHeadSystem(player, {
+                fov: 360,      // Vòng tròn quét 120px xung quanh tâm
+                smooth: 0.001,   // Càng nhỏ càng dính chặt
+                predict: 0.001   // Dự đoán trước 0.3 giây di chuyển
+            });
+        }
+    });
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
