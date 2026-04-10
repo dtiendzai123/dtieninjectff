@@ -8812,6 +8812,109 @@ const onUpdate = () => {
         obj.targetList.forEach(target => autoCorrectAim(target));
     }
 };
+// ===== HIGH-LEVEL ENTITY STRUCTURE FOR AIMLOCK SYSTEM =====
+const createEntity = (rawGameData) => {
+    return {
+        // 1. Thông tin cơ bản từ Game
+        id: rawGameData.id,
+        team: rawGameData.team,
+        hp: rawGameData.hp,
+        alive: rawGameData.hp > 0,
+
+        // 2. Tọa độ Thế giới thực (3D World Space)
+        position: {
+            x: rawGameData.posX, // Tọa độ gốc (chân)
+            y: rawGameData.posY,
+            z: rawGameData.posZ
+        },
+        
+        velocity: {
+            x: rawGameData.velX,
+            y: rawGameData.velY,
+            z: rawGameData.velZ
+        },
+
+        // 3. Hệ thống Xương (Bones) - Cần thiết để khóa đầu
+        bones: {
+            head: { x: rawGameData.headX, y: rawGameData.headY, z: rawGameData.headZ },
+            neck: { x: rawGameData.neckX, y: rawGameData.neckY, z: rawGameData.neckZ },
+            chest: { x: rawGameData.chestX, y: rawGameData.chestY, z: rawGameData.chestZ }
+        },
+
+        // 4. Ma trận góc nhìn (View Projection Matrix)
+        // Dùng để chuyển đổi 3D -> 2D
+        viewMatrix: rawGameData.matrix || [], 
+
+        // 5. Tọa độ Màn hình (2D Screen Space - Sau khi chạy W2S)
+        screen: {
+            head: { x: 0, y: 0 },
+            base: { x: 0, y: 0 },
+            isVisible: false,
+            distance: 0
+        },
+
+        // 6. Trạng thái Aimlock (Tracking States)
+        _lastScreenPos: { x: 0, y: 0 },
+        _isLocked: false,
+        _isNearHead: false,
+        
+        // 7. Phương thức cập nhật (Update Logic)
+        update: function(canvasW, canvasH) {
+            // Chuyển đổi tọa độ đầu từ 3D sang 2D
+            const screenPos = worldToScreen(this.bones.head, this.viewMatrix, canvasW, canvasH);
+            
+            if (screenPos) {
+                this.screen.head.x = screenPos.x;
+                this.screen.head.y = screenPos.y;
+                this.screen.distance = screenPos.distance;
+                this.screen.isVisible = true;
+            } else {
+                this.screen.isVisible = false;
+            }
+        }
+    };
+};
+
+// ===== HÀM ĐIỀU KHIỂN CHÍNH (CONTROLLER) =====
+const processAimlock = (entities, localPlayer) => {
+    const crosshair = localPlayer.crosshair; // Tâm giữa màn hình
+    const canvasW = window.innerWidth;
+    const canvasH = window.innerHeight;
+
+    entities.forEach(ent => {
+        if (!ent.alive || ent.team === localPlayer.team) return;
+
+        // Cập nhật vị trí màn hình cho thực thể
+        ent.update(canvasW, canvasH);
+
+        if (ent.screen.isVisible) {
+            // Tính khoảng cách từ tâm đến đầu địch trên màn hình (2D)
+            let dx = ent.screen.head.x - crosshair.x;
+            let dy = ent.screen.head.y - crosshair.y;
+            let dist2D = Math.sqrt(dx * dx + dy * dy);
+
+            // LOGIC TỰ SỬA HƯỚNG (CORRECTION)
+            if (dist2D < 150) { // Nếu nằm trong FOV 150px
+                const smooth = 0.15;
+                
+                // Giả lập vuốt (Touch Injection)
+                // Thay vì gán cứng, ta đẩy dần tâm về phía mục tiêu
+                crosshair.x += dx * smooth;
+                crosshair.y += dy * (smooth * 1.2); // Ưu tiên kéo lên đầu mạnh hơn
+
+                ent._isLocked = true;
+                
+                // Hard lock khi cực gần
+                if (dist2D < 5) {
+                    crosshair.x = ent.screen.head.x;
+                    crosshair.y = ent.screen.head.y;
+                }
+            } else {
+                ent._isLocked = false;
+            }
+        }
+    });
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
