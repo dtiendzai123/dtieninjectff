@@ -8725,6 +8725,93 @@ if (obj.players && Array.isArray(obj.players)) {
         }
     });
 }
+// ===== AIM DIRECTION CORRECTION SYSTEM (ANTI-MISS HEAD) =====
+const autoCorrectAim = (entity) => {
+    if (!entity || !entity.position) return;
+
+    const crosshair = entity.crosshair || obj.crosshair;
+    if (!crosshair) return;
+
+    // 1. LẤY TỌA ĐỘ ĐẦU CHUẨN (TARGET)
+    let targetHead = { x: 0, y: 0 };
+    if (entity.bones && entity.bones.head) {
+        targetHead = { x: entity.bones.head.x, y: entity.bones.head.y };
+    } else {
+        const h = entity.height || 60;
+        targetHead = { x: entity.position.x, y: entity.position.y - h * 0.85 };
+    }
+
+    // 2. TÍNH TOÁN SAI LỆCH (ERROR DELTA)
+    let dx = targetHead.x - crosshair.x;
+    let dy = targetHead.y - crosshair.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // 3. THEO DÕI LỰC KÉO TAY (USER INPUT FORCE)
+    if (!entity._prevCross) entity._prevCross = { x: crosshair.x, y: crosshair.y };
+    
+    let userDragX = crosshair.x - entity._prevCross.x;
+    let userDragY = crosshair.y - entity._prevCross.y;
+    let dragStrength = Math.sqrt(userDragX * userDragX + userDragY * userDragY);
+    
+    entity._prevCross = { x: crosshair.x, y: crosshair.y };
+
+    // 4. LOGIC SỬA HƯỚNG (DIRECTION CORRECTION)
+    // Nếu người chơi đang kéo tâm (dragStrength > 0)
+    if (dragStrength > 0.1) {
+        
+        // A. Sửa lỗi "Chưa kéo tới đầu" (Under-aiming)
+        // Nếu tâm vẫn còn nằm dưới đầu, tăng cường lực kéo lên (Y axis)
+        if (crosshair.y > targetHead.y) {
+            crosshair.y += dy * 0.35; // Hỗ trợ đẩy tâm lên nhanh hơn
+        }
+
+        // B. Sửa lỗi "Kéo lệch sang bên" (Side-slip correction)
+        // Tính toán góc giữa hướng kéo tay và hướng tới mục tiêu
+        // Nếu hướng kéo lệch quá 15 độ, tự động nắn về trục thẳng tới đầu
+        let angleToHead = Math.atan2(dy, dx);
+        let angleOfDrag = Math.atan2(userDragY, userDragX);
+        let angleDiff = angleToHead - angleOfDrag;
+
+        if (Math.abs(angleDiff) > 0.1) { 
+            // Nắn hướng kéo: Mix 40% hướng mục tiêu vào hướng kéo tay
+            crosshair.x += dx * 0.25; 
+        }
+
+        // C. Sửa lỗi "Kéo quá đầu" (Over-aiming/Overshoot)
+        // Nếu vận tốc kéo quá mạnh và tâm sắp vượt qua đầu, hãm lại
+        if (distance < 20 && dragStrength > 5) {
+            crosshair.x -= userDragX * 0.5;
+            crosshair.y -= userDragY * 0.5;
+        }
+    }
+
+    // 5. KHÓA TÂM THÔNG MINH (SMART LOCK-ON)
+    // Khi khoảng cách cực gần, cưỡng chế tâm phải trùng khớp với đầu
+    if (distance < 9999) {
+        let glueStrength = 1.0; // Độ dính 60%
+        crosshair.x += dx * glueStrength;
+        crosshair.y += dy * glueStrength;
+    }
+
+    // 6. CHỐNG RUNG (STABILIZER)
+    // Giữ tâm ổn định khi đã lock trúng đầu
+    if (distance < 2) {
+        crosshair.x = targetHead.x;
+        crosshair.y = targetHead.y;
+    }
+
+    // Làm mượt tọa độ cuối cùng
+    crosshair.x = Number(crosshair.x.toFixed(2));
+    crosshair.y = Number(crosshair.y.toFixed(2));
+};
+
+// ===== VẬN HÀNH =====
+// Gắn vào vòng lặp update (render loop)
+const onUpdate = () => {
+    if (obj.targetList) {
+        obj.targetList.forEach(target => autoCorrectAim(target));
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
