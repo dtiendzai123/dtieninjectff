@@ -9165,6 +9165,90 @@ function updateTick() {
 
     requestAnimationFrame(updateTick);
 }
+// ===== SYSTEM: ANTI-RECOIL & STABILIZATION (ACTIVE ON DRAG) =====
+const recoilSystem = {
+    // Cấu hình bù trừ
+    settings: {
+        recoilWeightY: 1.85, // Lực ghì tâm xuống (để bù độ nảy lên)
+        recoilWeightX: 0.45, // Lực cân bằng ngang (giảm rung trái phải)
+        jitterReduction: 0.15 // Khử rung pixel
+    },
+
+    // Lưu trữ dữ liệu frame trước để tính toán độ giật
+    _lastOffset: { x: 0, y: 0 },
+
+    /**
+     * Hàm tính toán và triệt tiêu độ giật
+     * @param {Object} crosshair - Tâm ngắm hiện tại
+     * @param {Object} headPos - Tọa độ đầu mục tiêu (đã qua W2S)
+     */
+    applyFixRecoil: function(crosshair, headPos) {
+        if (!headPos) return;
+
+        // 1. TÍNH TOÁN ĐỘ LỆCH DO GIẬT (RECOIL DELTA)
+        // Nếu tâm ngắm cao hơn đầu do súng nảy lên, dy sẽ âm
+        let dx = headPos.x - crosshair.x;
+        let dy = headPos.y - crosshair.y;
+
+        // 2. LOGIC COUNTER-DRAG (GHÌ TÂM)
+        // Khi súng giật lên, chúng ta ép thêm một lực kéo xuống
+        let compensationY = 0;
+        if (crosshair.y < headPos.y) {
+            // Tâm đang nảy lên trên đầu -> Ghì mạnh xuống
+            compensationY = Math.abs(dy) * this.settings.recoilWeightY;
+        }
+
+        // 3. KHỬ RUNG NGANG (HORIZONTAL STABILIZER)
+        let compensationX = dx * this.settings.recoilWeightX;
+
+        // 4. TOUCH INJECTION: Gửi lực bù trừ vào hệ thống vuốt
+        // Thay vì chỉ gán tọa độ, ta cộng thêm "Lực ghì" vào lệnh Inject
+        const targetCorrectionX = crosshair.x + compensationX;
+        const targetCorrectionY = crosshair.y + compensationY;
+
+        // 5. ANTI-JITTER (CHỐNG RUNG TÂM)
+        // Nếu sự thay đổi quá nhỏ, chúng ta bỏ qua để tránh việc tâm bị "giật giật"
+        if (Math.abs(dx) < this.settings.jitterReduction) compensationX = 0;
+        if (Math.abs(dy) < this.settings.jitterReduction) compensationY = 0;
+
+        // Thực thi hiệu chỉnh
+        this.executeRecoilTouch(targetCorrectionX, targetCorrectionY, crosshair);
+    },
+
+    /**
+     * Giả lập thao tác tay ghì tâm xuống
+     */
+    executeRecoilTouch: function(tx, ty, current) {
+        const smooth = 0.2; // Độ mượt của lực ghì
+        
+        const finalX = current.x + (tx - current.x) * smooth;
+        const finalY = current.y + (ty - current.y) * (smooth * 1.5); // Ưu tiên chiều dọc
+
+        const recoilEvent = new PointerEvent('pointermove', {
+            clientX: finalX,
+            clientY: finalY,
+            pointerType: 'touch',
+            pressure: 0.8 // Tăng áp lực chạm để game nhận diện kéo mạnh
+        });
+
+        document.dispatchEvent(recoilEvent);
+        
+        // Cập nhật lại tọa độ tâm ngắm thực tế trong bộ nhớ
+        current.x = finalX;
+        current.y = finalY;
+    }
+};
+
+// ===== CÁCH TÍCH HỢP VÀO HÀM AIMLOCK ĐÃ CÓ =====
+const processProAim = (entity, localPlayer) => {
+    if (localPlayer.isFiring && localPlayer.isDragging) {
+        // Lấy tọa độ đầu từ hệ thống W2S
+        const head2D = AimSystem.worldToScreen(entity.bones.head, viewMatrix, w, h);
+        
+        // Gọi hệ thống Fix Recoil
+        recoilSystem.applyFixRecoil(localPlayer.crosshair, head2D);
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
