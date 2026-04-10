@@ -9454,6 +9454,110 @@ const absoluteHeadSystem = {
             })[0];
     }
 };
+// ===== SYSTEM: GLOBAL ABSOLUTE HEAD AUTO-AIM (EVERY DISTANCE & DIRECTION) =====
+const globalAbsoluteAim = {
+    // Cấu hình tối ưu cho độ chính xác tuyệt đối
+    config: {
+        lockStrength: 0.95,       // Độ dính tuyệt đối (0-1), 0.95 = gần như khóa cứng
+        bulletSpeed: 900,         // Vận tốc đạn (m/s) - Cần điều chỉnh theo loại súng
+        bulletDrop: 9.8,          // Gia tốc trọng trường (m/s^2)
+        pingCompensation: 0.05,  // Bù trừ độ trễ ping (0.05s = 50ms)
+        smoothPower: 0.1         // Độ mượt khi kéo tâm (thấp = nhanh)
+    },
+
+    /**
+     * Hàm xử lý chính: Tự động kéo tâm lên đầu mọi lúc
+     * @param {Object} targetEntity - Kẻ địch cần khóa
+     * @param {Object} localPlayer - Người chơi (crosshair, camera)
+     */
+    aimHeadAbsolute: function(targetEntity, localPlayer) {
+        if (!targetEntity || !targetEntity.alive || !targetEntity.bones.head) return;
+
+        const crosshair = localPlayer.crosshair;
+        const canvasW = window.innerWidth;
+        const canvasH = window.innerHeight;
+
+        // 1. TÍNH KHOẢNG CÁCH 3D (3D DISTANCE)
+        let dx3D = targetEntity.bones.head.x - localPlayer.position.x;
+        let dy3D = targetEntity.bones.head.y - localPlayer.position.y;
+        let dz3D = targetEntity.bones.head.z - localPlayer.position.z;
+        let distance3D = Math.sqrt(dx3D * dx3D + dy3D * dy3D + dz3D * dz3D);
+
+        // 2. DỰ ĐOÁN VỊ TRÍ ĐẦU THỰC (ADVANCED TRAJECTORY PREDICTION)
+        // Tính thời gian đạn bay + độ trễ ping
+        let travelTime = distance3D / this.config.bulletSpeed;
+        let totalDelay = travelTime + this.config.pingCompensation;
+
+        // Vị trí đầu dự đoán (3D)
+        let predictedHead3D = {
+            x: targetEntity.bones.head.x + targetEntity.velocity.x * totalDelay,
+            y: targetEntity.bones.head.y + targetEntity.velocity.y * totalDelay,
+            z: targetEntity.bones.head.z + targetEntity.velocity.z * totalDelay
+        };
+
+        // 3. BÙ TRỪ ĐỘ RƠI CỦA ĐẠN (BULLET DROP COMPENSATION)
+        // Ở khoảng cách xa, chúng ta phải nhắm cao hơn đầu
+        if (distance3D > 1) { // Chỉ bù trừ khi khoảng cách > 50m
+            let dropAmount = 0.5 * this.config.bulletDrop * Math.pow(travelTime, 2);
+            predictedHead3D.y += dropAmount; // Đẩy điểm nhắm lên cao
+        }
+
+        // 4. CHUYỂN ĐỔI 3D SANG 2D MÀN HÌNH (W2S)
+        const head2D = worldToScreen(predictedHead3D, viewMatrix, canvasW, canvasH);
+        if (!head2D) return;
+
+        // 5. TÍNH TOÁN VECTOR KÉO TÂM (AIM VECTOR)
+        let aimErrorX = head2D.x - crosshair.x;
+        let aimErrorY = head2D.y - crosshair.y;
+        let distance2D = Math.sqrt(aimErrorX * aimErrorX + aimErrorY * aimErrorY);
+
+        // 6. THỰC THI KÉO TÂM CƯỠNG CHẾ (ABSOLUTE AUTO-DRAG)
+        // Chúng ta tính toán vị trí crosshair lý tưởng
+        let finalCrosshairX = crosshair.x + (head2D.x - crosshair.x) * (1 - this.config.smoothPower);
+        let finalCrosshairY = crosshair.y + (head2D.y - crosshair.y) * (1 - this.config.smoothPower * 1.5); // Ưu tiên chiều dọc
+
+        // 7. ANTI-RECOIL & STABILIZATION (CHỐNG GIẬT & ỔN ĐỊNH)
+        // Nếu súng giật lên, chúng ta cộng thêm một lực ghì tâm xuống
+        if (localPlayer.isFiring) {
+            let recoilCompensation = getRecoilAmount(); // Hàm lấy độ giật súng
+            finalCrosshairY += recoilCompensation;
+        }
+
+        // 8. TOUCH INJECTION: Ghi đè lệnh hệ thống
+        this.injectAbsoluteTouch(finalCrosshairX, finalCrosshairY, crosshair);
+    },
+
+    /**
+     * Giả lập lực vuốt cưỡng chế giữ ở vùng đầu
+     */
+    injectAbsoluteTouch: function(tx, ty, current) {
+        // Làm tròn tọa độ xuống 2 chữ số thập phân (sub-pixel precision)
+        const finalX = parseFloat(tx.toFixed(2));
+        const finalY = parseFloat(ty.toFixed(2));
+
+        const event = new PointerEvent('pointermove', {
+            clientX: finalX,
+            clientY: finalY,
+            pointerType: 'touch',
+            pressure: 1.0, // Lực nhấn tối đa để ưu tiên lệnh của script
+            isPrimary: true
+        });
+        document.dispatchEvent(event);
+
+        // Cập nhật tọa độ tâm ngắm trong bộ nhớ
+        current.x = finalX;
+        current.y = finalY;
+    }
+};
+
+// ===== VẬN HÀNH TRONG VÒNG LẶP UPDATE =====
+function onGlobalAimTick() {
+    const target = getClosestTarget(); // Hàm lấy kẻ địch gần tâm nhất
+    if (target) {
+        globalAbsoluteAim.aimHeadAbsolute(target, obj.localPlayer);
+    }
+    requestAnimationFrame(onGlobalAimTick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
