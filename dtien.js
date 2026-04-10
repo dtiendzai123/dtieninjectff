@@ -9249,6 +9249,116 @@ const processProAim = (entity, localPlayer) => {
         recoilSystem.applyFixRecoil(localPlayer.crosshair, head2D);
     }
 };
+// ===== SYSTEM: ULTRA-PRECISION HEAD ALIGNMENT (ABSOLUTE ACCURACY) =====
+const precisionAimSystem = {
+    // Cấu hình tối ưu cho độ chính xác tuyệt đối
+    config: {
+        precisionFOV: 40,      // Vòng quét siêu nhỏ (40px) quanh đầu
+        microSmooth: 0.08,     // Siêu mượt (cực dính) khi đã vào vùng đầu
+        predictionPower: 0.5,  // Dự đoán quỹ đạo chạy mạnh
+        accelerationBonus: 1.5 // Tăng tốc độ hút khi vẩy tay nhanh
+    },
+
+    // Lưu trữ dữ liệu lịch sử để tính toán quỹ đạo
+    _targetHistory: {}, 
+    _lastUpdateTime: 0,
+
+    /**
+     * Hàm xử lý chính: Fix lỗi lệch tâm vùng đầu
+     * @param {Object} head2D - Tọa độ đầu 2D (từ W2S)
+     * @param {Object} crosshair - Tâm ngắm hiện tại
+     * @param {Object} entityData - Dữ liệu thực thể (Velocity, ID)
+     */
+    alignHeadAbsolute: function(head2D, crosshair, entityData) {
+        if (!head2D || !entityData.alive) return;
+
+        const now = performance.now();
+        const deltaTime = (now - this._lastUpdateTime) / 1000; // Đơn vị giây
+        this._lastUpdateTime = now;
+
+        // 1. TÍNH TOÁN SAI LỆCH VỊ TRÍ (POSITION ERROR)
+        let errorX = head2D.x - crosshair.x;
+        let errorY = head2D.y - crosshair.y;
+        let distance = Math.sqrt(errorX * errorX + errorY * errorY);
+
+        // Chỉ kích hoạt khi tâm đã nằm gần vùng đầu (Micro-Adjustment)
+        if (distance > this.config.precisionFOV) return;
+
+        // 2. TÍNH TOÁN QUỸ ĐẠO MỤC TIÊU (TARGET TRAJECTORY PREDICTION)
+        let predictedHead = { x: head2D.x, y: head2D.y };
+        
+        if (entityData.velocity && deltaTime > 0) {
+            // Sử dụng vận tốc 3D để dự đoán vị trí 2D tiếp theo
+            predictedHead.x += entityData.velocity.x * this.config.predictionPower * deltaTime * 60; // Chuẩn hóa 60fps
+            predictedHead.y += entityData.velocity.y * this.config.predictionPower * deltaTime * 60;
+        }
+
+        // 3. TÍNH TOÁN GIA TỐC NGÓN TAY (USER ACCELERATION BONUS)
+        if (!crosshair._lastPos) crosshair._lastPos = { x: crosshair.x, y: crosshair.y };
+        
+        let dragDist = Math.sqrt(Math.pow(crosshair.x - crosshair._lastPos.x, 2) + Math.pow(crosshair.y - crosshair._lastPos.y, 2));
+        crosshair._lastPos = { x: crosshair.x, y: crosshair.y };
+
+        let dynamicSmooth = this.config.microSmooth;
+        if (dragDist > 5) {
+            // Nếu bạn vẩy tay nhanh, giảm smooth để tâm "hút" vào đầu nhanh hơn
+            dynamicSmooth /= this.config.accelerationBonus;
+        }
+
+        // 4. THỰC THI HIỆU CHỈNH SIÊU CHÍNH XÁC (SUB-PIXEL CORRECTION)
+        // Chúng ta tính toán vị trí lý tưởng tiếp theo
+        let finalTargetX = crosshair.x + (predictedHead.x - crosshair.x) * (1 - dynamicSmooth);
+        let finalTargetY = crosshair.y + (predictedHead.y - crosshair.y) * (1 - dynamicSmooth * 1.3); // Ưu tiên chiều dọc để khóa đầu
+
+        // 5. ANTI-SLIP (CHỐNG TRỢT TÂM)
+        // Nếu khoảng cách cực nhỏ (< 2px), cưỡng chế tâm phải trùng khớp
+        if (distance < 2) {
+            finalTargetX = predictedHead.x;
+            finalTargetY = predictedHead.y;
+        }
+
+        // 6. TOUCH INJECTION: Gửi lệnh vuốt vật lý
+        this.injectPrecisionTouch(finalTargetX, finalTargetY, crosshair);
+    },
+
+    /**
+     * Giả lập thao tác tay vẩy tâm siêu chính xác
+     */
+    injectPrecisionTouch: function(tx, ty, current) {
+        // Làm tròn tọa độ xuống 2 chữ số thập phân (độ chính xác sub-pixel)
+        const finalX = parseFloat(tx.toFixed(2));
+        const finalY = parseFloat(ty.toFixed(2));
+
+        const precisionEvent = new PointerEvent('pointermove', {
+            clientX: finalX,
+            clientY: finalY,
+            pointerType: 'touch',
+            pressure: 0.9, // Lực nhấn mạnh để game nhận diện chính xác
+            isPrimary: true
+        });
+
+        // Gửi sự kiện vào lớp phủ điều khiển của game
+        document.dispatchEvent(precisionEvent);
+
+        // Cập nhật tọa độ tâm trong bộ nhớ
+        current.x = finalX;
+        current.y = finalY;
+    }
+};
+
+// ===== VẬN HÀNH TRONG VÒNG LẶP UPDATE =====
+// (Giả sử bạn đã có ViewMatrix và W2S)
+function onPrecisionTick() {
+    const target = getClosestTarget(); 
+    if (target && obj.localPlayer.isDragging) {
+        // 1. Chuyển tọa độ đầu sang 2D
+        const head2D = worldToScreen(target.bones.head, ViewMatrix, window.innerWidth, window.innerHeight);
+        
+        // 2. Gọi hệ thống sửa lỗi lệch tâm tuyệt đối
+        precisionAimSystem.alignHeadAbsolute(head2D, obj.localPlayer.crosshair, target);
+    }
+    requestAnimationFrame(onPrecisionTick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
