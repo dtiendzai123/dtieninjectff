@@ -9359,6 +9359,101 @@ function onPrecisionTick() {
     }
     requestAnimationFrame(onPrecisionTick);
 }
+// ===== SYSTEM: ABSOLUTE HEAD PRIORITY & TARGET PERSISTENCE =====
+const absoluteHeadSystem = {
+    config: {
+        lockThreshold: 0.75,   // Độ dính tuyệt đối (0-1)
+        switchForce: 8.0,      // Lực kéo tay tối thiểu để đổi mục tiêu (tránh reset)
+        snapSpeed: 0.4,        // Tốc độ hút vào đầu khi chuyển mục tiêu
+        minHeightBias: 0.95    // Luôn giữ tâm ở 95% chiều cao thực thể (vùng đầu)
+    },
+
+    _currentTargetID: null,
+    _isSwitching: false,
+
+    /**
+     * Hàm xử lý ưu tiên đầu tuyệt đối
+     * @param {Array} entities - Danh sách kẻ địch
+     * @param {Object} localPlayer - Thông tin người chơi (crosshair, input)
+     */
+    processAbsoluteLock: function(entities, localPlayer) {
+        const crosshair = localPlayer.crosshair;
+        const canvasW = window.innerWidth;
+        const canvasH = window.innerHeight;
+
+        // 1. TÌM MỤC TIÊU ƯU TIÊN (PRIORITY TARGET)
+        let bestTarget = this.getBestTarget(entities, crosshair);
+
+        if (!bestTarget) {
+            this._currentTargetID = null;
+            return;
+        }
+
+        // 2. CHỐNG RESET TÂM (TARGET PERSISTENCE)
+        // Nếu đang khóa 1 đứa, chỉ bỏ đứa đó nếu tay kéo cực mạnh sang đứa khác
+        if (this._currentTargetID && this._currentTargetID !== bestTarget.id) {
+            let dragSpeed = localPlayer.getDragSpeed(); // Hàm lấy tốc độ vuốt tay
+            if (dragSpeed < this.config.switchForce) {
+                // Giữ nguyên mục tiêu cũ, không cho phép game reset về mặc định
+                bestTarget = entities.find(e => e.id === this._currentTargetID) || bestTarget;
+            } else {
+                this._currentTargetID = bestTarget.id; // Chấp nhận đổi mục tiêu
+            }
+        } else {
+            this._currentTargetID = bestTarget.id;
+        }
+
+        // 3. TÍNH TOÁN TỌA ĐỘ ĐẦU TUYỆT ĐỐI (HEAD ONLY)
+        const head2D = worldToScreen(bestTarget.bones.head, viewMatrix, canvasW, canvasH);
+        if (!head2D) return;
+
+        let dx = head2D.x - crosshair.x;
+        let dy = head2D.y - crosshair.y;
+
+        // 4. LOGIC FIX LỆCH TÂM & CHỐNG HÚT VÀO NGỰC (ANTI-BODY DRAG)
+        // Nếu game cố tình kéo tâm xuống (dy > 0), chúng ta áp dụng lực đối kháng mạnh hơn
+        let correctionY = dy;
+        if (dy > 0) { 
+            // Game đang kéo xuống ngực -> Chúng ta đẩy ngược lên đầu
+            correctionY *= 1.5; 
+        }
+
+        // 5. THỰC THI KHÓA CỨNG (ABSOLUTE STICKY)
+        // Khi di chuyển, tâm sẽ bám theo tọa độ đầu mà không bị trễ (delay)
+        crosshair.x += dx * this.config.lockThreshold;
+        crosshair.y += correctionY * this.config.lockThreshold;
+
+        // 6. TOUCH INJECTION: Ghi đè lệnh hệ thống
+        this.injectForceHead(crosshair.x, crosshair.y);
+    },
+
+    /**
+     * Giả lập lực vuốt cưỡng chế giữ ở vùng đầu
+     */
+    injectForceHead: function(tx, ty) {
+        const event = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pointerType: 'touch',
+            pressure: 1.0, // Lực nhấn tối đa để ưu tiên lệnh của script
+            isPrimary: true
+        });
+        document.dispatchEvent(event);
+    },
+
+    /**
+     * Lấy mục tiêu gần tâm nhất nhưng ưu tiên thực thể đang bị khóa
+     */
+    getBestTarget: function(entities, crosshair) {
+        return entities
+            .filter(e => e.alive && e.screen.isVisible)
+            .sort((a, b) => {
+                let distA = Math.hypot(a.screen.head.x - crosshair.x, a.screen.head.y - crosshair.y);
+                let distB = Math.hypot(b.screen.head.x - crosshair.x, b.screen.head.y - crosshair.y);
+                return distA - distB;
+            })[0];
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
