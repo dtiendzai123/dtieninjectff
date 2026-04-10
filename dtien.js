@@ -8978,6 +8978,193 @@ const processAimlock = (entities, localPlayer) => {
         }
     });
 };
+// ===== PRO STICKY AIMLOCK SYSTEM (ACTIVE ON DRAG) =====
+const stickyHeadSystem = (entity, localPlayer) => {
+    if (!entity || !entity.alive || !entity.screen.isVisible) return;
+
+    const crosshair = localPlayer.crosshair;
+    const head = entity.screen.head;
+
+    // 1. TÍNH TOÁN VECTOR ĐẾN MỤC TIÊU
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // 2. NHẬN DIỆN TRẠNG THÁI KÉO TÂM (USER INPUT DETECTION)
+    // Hệ thống chỉ kích hoạt mạnh khi người dùng bắt đầu vuốt màn hình
+    if (!localPlayer._lastTouch) localPlayer._lastTouch = { x: crosshair.x, y: crosshair.y };
+    
+    let dragDeltaX = Math.abs(crosshair.x - localPlayer._lastTouch.x);
+    let dragDeltaY = Math.abs(crosshair.y - localPlayer._lastTouch.y);
+    let isDragging = (dragDeltaX > 0.2 || dragDeltaY > 0.2); // Ngưỡng nhận diện vuốt
+
+    localPlayer._lastTouch = { x: crosshair.x, y: crosshair.y };
+
+    // 3. LOGIC GIỮ TÂM (STICKY LOGIC)
+    if (isDragging && distance < 120) { // Kích hoạt trong FOV 120px khi đang kéo
+        
+        // A. Bù trừ di chuyển (Movement Compensation)
+        // Nếu mục tiêu di chuyển, tâm sẽ tự động trôi theo vận tốc của mục tiêu
+        if (entity.velocity) {
+            const predictionPower = 0.4; 
+            crosshair.x += entity.velocity.x * predictionPower;
+            crosshair.y += entity.velocity.y * predictionPower;
+        }
+
+        // B. Lực hút "Keo dính" (Magnet Strength)
+        // Khi đang kéo tay, chúng ta thêm một lực hút để tâm không thể rời khỏi đầu
+        let magnetForce = 0.9; 
+        
+        if (distance < 9999) {
+            magnetForce = 2.0; // Càng gần đầu, lực dính càng mạnh
+        }
+
+        crosshair.x += dx * magnetForce;
+        crosshair.y += dy * magnetForce;
+
+        // C. Khóa cứng trục Y (Head Level Lock)
+        // Chống tình trạng tâm bị văng xuống ngực khi di chuyển
+        if (Math.abs(dy) > 2) {
+            crosshair.y += dy * 0.2; 
+        }
+
+        entity._isStickyLocked = true;
+    } else {
+        entity._isStickyLocked = false;
+    }
+
+    // 4. CHỐNG RUNG KHI DI CHUYỂN (INTERPOLATION STABILIZER)
+    if (entity._isStickyLocked && distance < 5) {
+        // Nếu đã khớp mục tiêu, triệt tiêu mọi dao động nhỏ
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // Làm tròn tọa độ để tránh lỗi khử răng cưa của game
+    crosshair.x = Math.round(crosshair.x * 100) / 100;
+    crosshair.y = Math.round(crosshair.y * 100) / 100;
+};
+
+// ===== VẬN HÀNH TRONG VÒNG LẶP GAME =====
+const onRenderFrame = () => {
+    const target = getClosestTargetToCrosshair(); // Hàm lấy địch gần tâm nhất
+    if (target) {
+        stickyHeadSystem(target, obj.localPlayer);
+    }
+};
+// ===== HỆ THỐNG AIMLOCK HEAD + TOUCH INJECTION + CANVAS HOOKING =====
+
+const AimSystem = {
+    // Cấu hình hệ thống
+    config: {
+        fov: 120,          // Vòng quét (pixel)
+        smooth: 0.25,      // Độ mượt Touch (thấp = nhanh, cao = chậm)
+        prediction: 0.35,  // Dự đoán mục tiêu di chuyển
+        stickiness: 0.6,   // Độ dính khi đã trúng đầu
+    },
+
+    // 1. CANVAS HOOKING: Chặn lệnh vẽ để lấy thông tin màn hình
+    hookCanvas: function() {
+        const self = this;
+        const orgDrawImage = CanvasRenderingContext2D.prototype.drawImage;
+        
+        CanvasRenderingContext2D.prototype.drawImage = function(...args) {
+            // Tại đây có thể lấy Matrix hoặc thông tin vị trí các Texture địch
+            // Giả sử chúng ta cập nhật Matrix góc nhìn từ đây
+            self.currentMatrix = window.ViewMatrix; 
+            return orgDrawImage.apply(this, args);
+        };
+    },
+
+    // 2. WORLD-TO-SCREEN (W2S): Chuyển tọa độ 3D sang Pixel màn hình
+    worldToScreen: function(pos3D, matrix, width, height) {
+        if (!matrix) return null;
+        let x = pos3D.x, y = pos3D.y, z = pos3D.z;
+
+        let w = matrix[3] * x + matrix[7] * y + matrix[11] * z + matrix[15];
+        if (w < 0.1) return null; // Địch ở sau lưng
+
+        let sx = matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12];
+        let sy = matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13];
+
+        return {
+            x: (width / 2) * (1 + sx / w),
+            y: (height / 2) * (1 - sy / w)
+        };
+    },
+
+    // 3. TOUCH INJECTION: Giả lập thao tác vuốt tay vật lý
+    injectTouch: function(targetX, targetY, currentX, currentY) {
+        const dx = (targetX - currentX) * this.config.smooth;
+        const dy = (targetY - currentY) * this.config.smooth;
+
+        // Tạo sự kiện di chuyển chuột/tay giả lập
+        const moveEvent = new PointerEvent('pointermove', {
+            bubbles: true,
+            cancelable: true,
+            clientX: currentX + dx,
+            clientY: currentY + dy,
+            pointerType: 'touch',
+            pressure: 0.5
+        });
+
+        document.getElementById('gameCanvas').dispatchEvent(moveEvent);
+    },
+
+    // 4. MAIN LOGIC: Xử lý thực thể và khóa mục tiêu
+    processEntity: function(entity, localPlayer) {
+        if (!entity.alive || !this.currentMatrix) return;
+
+        const canvasW = window.innerWidth;
+        const canvasH = window.innerHeight;
+        const crosshair = localPlayer.crosshair;
+
+        // Chuyển tọa độ xương đầu sang màn hình
+        const head2D = this.worldToScreen(entity.bones.head, this.currentMatrix, canvasW, canvasH);
+
+        if (head2D) {
+            // Tính khoảng cách 2D
+            const dist = Math.sqrt(Math.pow(head2D.x - crosshair.x, 2) + Math.pow(head2D.y - crosshair.y, 2));
+
+            // Kiểm tra điều kiện: Trong FOV và người chơi đang kéo tâm (Dragging)
+            if (dist < this.config.fov && localPlayer.isDragging) {
+                
+                // Dự đoán vị trí đầu dựa trên vận tốc
+                let targetX = head2D.x;
+                let targetY = head2D.y;
+
+                if (entity.velocity) {
+                    targetX += entity.velocity.x * this.config.prediction;
+                    targetY += entity.velocity.y * this.config.prediction;
+                }
+
+                // Kích hoạt Touch Injection để sửa hướng kéo
+                this.injectTouch(targetX, targetY, crosshair.x, crosshair.y);
+
+                // Nếu cực gần, dính chặt tâm (Sticky)
+                if (dist < 20) {
+                    crosshair.x += (targetX - crosshair.x) * this.config.stickiness;
+                    crosshair.y += (targetY - crosshair.y) * this.config.stickiness;
+                }
+            }
+        }
+    }
+};
+
+// ===== KHỞI CHẠY =====
+AimSystem.hookCanvas();
+
+// Vòng lặp cập nhật (thường chạy trong requestAnimationFrame)
+function updateTick() {
+    const enemies = Game.getEnemies(); 
+    const player = Game.getLocalPlayer();
+
+    enemies.forEach(enemy => {
+        AimSystem.processEntity(enemy, player);
+    });
+
+    requestAnimationFrame(updateTick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
