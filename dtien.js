@@ -9619,7 +9619,7 @@ let internalState = {
     target_bone: "bone_Head",
     target_pos_y: 0,
     crosshair_screen_y: window.innerHeight / 2, // Tâm giữa màn hình
-    sensitivity_y: 1.0,  // Độ nhạy trục Y
+    sensitivity_y: 2.0,  // Độ nhạy trục Y
     recoil_y: 0.0,       // Lực giật súng đang nảy lên (giả định)
     aim_offset_y: 0,
     headshot_confirmed: false
@@ -9632,6 +9632,95 @@ function aimLoop() {
         updateAimLockLogic(currentEnemy, internalState);
     }
     requestAnimationFrame(aimLoop);
+}
+// ===== ADVANCED AIMLOCK TICK SYSTEM (FRAME-BY-FRAME) =====
+
+const AimLockSystem = {
+    // Khởi tạo trạng thái ban đầu
+    state: {
+        crosshair_y: window.innerHeight / 2, // Vị trí tâm hiện tại (Y)
+        aim_offset_y: 0,
+        target_head_y: 0,
+        delta_y: 0,
+        smooth_step: 0,
+        smooth_factor: 5.0,      // Chỉ số mượt (càng cao càng chậm)
+        recoil_comp: 2.5,        // Lực ghì tâm chống giật
+        sensitivity_y: 1.0,      // Độ nhạy trục Y của người dùng
+        head_threshold: 8.0,     // Bán kính vùng đầu (pixel)
+        locked_on_head: false,
+        headshot_zone: "miss"
+    },
+
+    /**
+     * Hàm chạy mỗi Tick (Frame)
+     * @param {Object} enemy - Dữ liệu thực thể địch
+     */
+    updateAimLock: function(enemy) {
+        if (!enemy || !enemy.alive) {
+            this.state.locked_on_head = false;
+            return;
+        }
+
+        const s = this.state;
+
+        // 1. LẤY VỊ TRÍ ĐẦU ĐỊCH (SCREEN SPACE)
+        // Chuyển từ tọa độ 3D game sang 2D màn hình
+        s["target_head_y"] = worldToScreen(enemy.bones.head).y;
+
+        // 2. TÍNH KHOẢNG CÁCH CẦN DI CHUYỂN (DELTA)
+        s["delta_y"] = s["target_head_y"] - s["crosshair_y"];
+
+        // 3. CHIA NHỎ CHUYỂN ĐỘNG (SMOOTHING)
+        // Chia delta cho factor để tâm di chuyển mượt mà, không bị Snap-lock (dễ lộ)
+        s["smooth_step"] = s["delta_y"] / s["smooth_factor"];
+
+        // 4. BÙ RECOIL (RECOIL COMPENSATION)
+        // Nếu súng giật lên (recoil_comp dương), ta cộng thêm vào lực kéo xuống
+        let move = s["smooth_step"] - s["recoil_comp"];
+
+        // 5. CẬP NHẬT AIM OFFSET (THỰC THI LỰC KÉO)
+        // Cập nhật giá trị offset để gửi tới trình điều khiển
+        s["aim_offset_y"] -= move / s["sensitivity_y"];
+
+        // 6. CẬP NHẬT CROSSHAIR_Y THỰC TẾ
+        // Đồng bộ hóa vị trí ảo của tâm với logic để tính toán cho frame sau
+        s["crosshair_y"] += move / s["sensitivity_y"];
+
+        // 7. KIỂM TRA TRẠNG THÁI KHÓA (LOCK CHECK)
+        s["locked_on_head"] = Math.abs(s["delta_y"]) < s["head_threshold"];
+        s["headshot_zone"] = s["locked_on_head"] ? "hit" : "miss";
+
+        // 8. TOUCH INJECTION (EXECUTION)
+        // Đẩy lệnh kéo tâm vật lý ra màn hình
+        this.injectTouch(s["aim_offset_y"]);
+    },
+
+    /**
+     * Giả lập thao tác vuốt tay vật lý
+     */
+    injectTouch: function(offsetY) {
+        const touchX = window.innerWidth / 2;
+        const touchY = this.state.crosshair_y;
+
+        const pointerEv = new PointerEvent('pointermove', {
+            clientX: touchX,
+            clientY: touchY,
+            pointerType: 'touch',
+            pressure: 0.9,
+            isPrimary: true
+        });
+
+        document.dispatchEvent(pointerEv);
+    }
+};
+
+// ===== VẬN HÀNH TRONG VÒNG LẶP RENDER =====
+function tick() {
+    const target = getEnemyInRange(); // Hàm lấy mục tiêu trong FOV
+    if (target) {
+        AimLockSystem.updateAimLock(target);
+    }
+    requestAnimationFrame(tick);
 }
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
