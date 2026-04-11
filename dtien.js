@@ -9645,8 +9645,8 @@ const AimLockSystem = {
         smooth_step: 0,
         smooth_factor: 0.0,      // Chỉ số mượt (càng cao càng chậm)
         recoil_comp: 2.5,        // Lực ghì tâm chống giật
-        sensitivity_y: 2.0,      // Độ nhạy trục Y của người dùng
-        head_threshold: 8.0,     // Bán kính vùng đầu (pixel)
+        sensitivity_y: 4.0,      // Độ nhạy trục Y của người dùng
+        head_threshold: 999.0,     // Bán kính vùng đầu (pixel)
         locked_on_head: true,
         headshot_zone: "infinity"
     },
@@ -9740,7 +9740,7 @@ const OmniAimSystem = {
         predict_factor: 0.001,   // Thời gian dự đoán (giây hoặc frame)
         smooth_factor: 0.0,     // Độ mượt (thấp = dính nhanh)
         sensitivity_xy: 4.0,    // Độ nhạy chung
-        head_threshold: 12.0,   // Vùng headshot (pixels)
+        head_threshold: 9999.0,   // Vùng headshot (pixels)
         
         // Trạng thái đầu ra
         move_angle_deg: 0,
