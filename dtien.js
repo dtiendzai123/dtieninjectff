@@ -9722,6 +9722,94 @@ function tick() {
     }
     requestAnimationFrame(tick);
 }
+// ===== SYSTEM: OMNI-DIRECTIONAL PREDICTIVE AIMLOCK =====
+
+const OmniAimSystem = {
+    state: {
+        // Tọa độ & Vận tốc
+        prev_head_x: 0, prev_head_y: 0,
+        target_head_x: 0, target_head_y: 0,
+        target_vel_x: 0, target_vel_y: 0,
+        predict_head_x: 0, predict_head_y: 0,
+        
+        // Cấu hình
+        crosshair_x: window.innerWidth / 2,
+        crosshair_y: window.innerHeight / 2,
+        aim_offset_x: 0, aim_offset_y: 0,
+        
+        predict_factor: 0.001,   // Thời gian dự đoán (giây hoặc frame)
+        smooth_factor: 0.0,     // Độ mượt (thấp = dính nhanh)
+        sensitivity_xy: 2.0,    // Độ nhạy chung
+        head_threshold: 12.0,   // Vùng headshot (pixels)
+        
+        // Trạng thái đầu ra
+        move_angle_deg: 0,
+        locked_on_head: true
+    },
+
+    /**
+     * Hàm Omni Update gọi mỗi Frame
+     */
+    updateOmniAimLock: function(enemyHeadPos) {
+        const s = this.state;
+
+        // Cập nhật tọa độ đầu hiện tại từ W2S
+        s.target_head_x = enemyHeadPos.x;
+        s.target_head_y = enemyHeadPos.y;
+
+        // 1. TÍNH VẬN TỐC ĐỊCH (DELTA VỊ TRÍ)
+        s.target_vel_x = s.target_head_x - s.prev_head_x;
+        s.target_vel_y = s.target_head_y - s.prev_head_y;
+
+        // 2. DỰ ĐOÁN VỊ TRÍ ĐẦU TƯƠNG LAI (LEAD TARGET)
+        // Tâm sẽ nhắm vào điểm địch "sắp" đi tới
+        s.predict_head_x = s.target_head_x + (s.target_vel_x * s.predict_factor);
+        s.predict_head_y = s.target_head_y + (s.target_vel_y * s.predict_factor);
+
+        // 3. VECTOR SAI LỆCH TÂM (DELTA X-Y)
+        s.delta_x = s.predict_head_x - s.crosshair_x;
+        s.delta_y = s.predict_head_y - s.crosshair_y;
+
+        // 4. SMOOTHING (CHIA NHỎ BƯỚC DI CHUYỂN)
+        let smooth_x = s.delta_x / s.smooth_factor;
+        let smooth_y = s.delta_y / s.smooth_factor;
+
+        // 5. CẬP NHẬT TỌA ĐỘ VÀ OFFSET (2D ABSOLUTE)
+        const sens = s.sensitivity_xy;
+        
+        s.crosshair_x += smooth_x / sens;
+        s.crosshair_y += smooth_y / sens;
+        
+        s.aim_offset_x -= smooth_x / sens;
+        s.aim_offset_y -= smooth_y / sens;
+
+        // 6. TÍNH GÓC DI CHUYỂN ĐỊCH (ORIENTATION)
+        // Giúp xác định địch đang chạy ngang, chạy tới hay chạy lùi
+        s.move_angle_deg = Math.atan2(s.target_vel_y, s.target_vel_x) * (180 / Math.PI);
+
+        // 7. KIỂM TRA LOCK (EUROCLIDEAN DISTANCE)
+        const dist = Math.sqrt(s.delta_x ** 2 + s.delta_y ** 2);
+        s.locked_on_head = dist < s.head_threshold;
+
+        // LƯU LẠI TỌA ĐỘ CHO FRAME SAU
+        s.prev_head_x = s.target_head_x;
+        s.prev_head_y = s.target_head_y;
+
+        // THỰC THI TOUCH INJECTION
+        this.executeOmniTouch(s.crosshair_x, s.crosshair_y);
+    },
+
+    executeOmniTouch: function(tx, ty) {
+        const touch = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pointerType: 'touch',
+            pressure: 1.0,
+            isPrimary: true
+        });
+        document.dispatchEvent(touch);
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
