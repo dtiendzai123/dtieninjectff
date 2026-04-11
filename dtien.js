@@ -9810,6 +9810,142 @@ const OmniAimSystem = {
         document.dispatchEvent(touch);
     }
 };
+// ===== OMNI-DIRECTIONAL AIMLOCK SYSTEM (V3 - DYNAMIC PRECISION) =====
+
+const OmniAimlock = {
+    // 1. Cấu hình hệ thống (Tùy chỉnh theo loại súng/máy)
+    settings: {
+        sensitivity: 3.0,      // Độ nhạy X/Y
+        basePredict: 0.001,      // Dự đoán cơ bản
+        speedPredict: 0.9,     // Tỉ lệ dự đoán theo tốc độ
+        snapThreshold: 9999.0,   // Khoảng cách để Snap cứng vào đầu
+        magnetForce: 1.4,      // Lực đẩy tâm lên đầu (chống tụt ngực)
+        nearBoost: 1.2         // Tăng lực hút khi gần mục tiêu
+    },
+
+    /**
+     * Hàm xử lý chính cho từng thực thể (Entity)
+     */
+    process: function(entity, localPlayer) {
+        if (!entity || !entity.alive || !entity.bones.head) return;
+
+        const state = entity._aimState || this.initState(entity);
+        const crosshair = localPlayer.crosshair;
+
+        // Cập nhật tọa độ đầu hiện tại (từ W2S)
+        state.target_head_x = entity.bones.head.x;
+        state.target_head_y = entity.bones.head.y;
+
+        // --- 1. VELOCITY (EMA Filter - Chống rung vận tốc) ---
+        // Công thức lọc nhiễu: 70% mới + 30% cũ
+        state.target_vel_x = (state.target_head_x - state.prev_head_x) * 0.7 + (state.target_vel_x || 0) * 0.3;
+        state.target_vel_y = (state.target_head_y - state.prev_head_y) * 0.7 + (state.target_vel_y || 0) * 0.3;
+
+        // --- 2. SPEED & DYNAMIC PREDICTION ---
+        state.target_speed = Math.sqrt(state.target_vel_x ** 2 + state.target_vel_y ** 2);
+        
+        // Dự đoán vị trí địch sẽ di chuyển tới
+        let predictFactor = this.settings.basePredict + (state.target_speed * this.settings.speedPredict);
+        state.predict_head_x = state.target_head_x + (state.target_vel_x * predictFactor);
+        state.predict_head_y = state.target_head_y + (state.target_vel_y * predictFactor);
+
+        // --- 3. DELTA & DISTANCE ---
+        state.delta_x = state.predict_head_x - crosshair.x;
+        state.delta_y = state.predict_head_y - crosshair.y;
+        state.dist = Math.sqrt(state.delta_x ** 2 + state.delta_y ** 2);
+
+        // --- 4. HEAD MAGNET (Ưu tiên đầu tuyệt đối) ---
+        // Nếu tâm đang nằm dưới đầu, tăng lực kéo Y để cưỡng chế lên đầu
+        if (crosshair.y > state.target_head_y) {
+            state.delta_y *= this.settings.magnetForce;
+        }
+
+        // Tăng độ dính khi tâm đã ở gần vùng đầu
+        if (state.dist < 80) {
+            state.delta_x *= this.settings.nearBoost;
+            state.delta_y *= this.settings.nearBoost;
+        }
+
+        // --- 5. DYNAMIC SMOOTHING (Độ mượt động) ---
+        if (state.dist > 120) {
+            state.smooth_factor = 3.0; // Kéo cực nhanh để bắt kịp
+        } else if (state.dist > 60) {
+            state.smooth_factor = 4.5; // Trung bình
+        } else {
+            state.smooth_factor = 6.5; // Kéo mượt để dính chặt đầu
+        }
+
+        // --- 6. CALCULATE MOVEMENT ---
+        state.move_x = (state.delta_x / state.smooth_factor) / this.settings.sensitivity;
+        state.move_y = (state.delta_y / state.smooth_factor) / this.settings.sensitivity;
+
+        // --- 7. SNAP LOCK & APPLY ---
+        if (state.dist < this.settings.snapThreshold) {
+            // Khóa cứng (Hard Lock)
+            crosshair.x = state.predict_head_x;
+            crosshair.y = state.predict_head_y;
+            state.locked_on_head = true;
+        } else {
+            // Kéo mượt (Smooth Aim)
+            crosshair.x += state.move_x;
+            crosshair.y += state.move_y;
+            state.locked_on_head = false;
+        }
+
+        // --- 8. FINAL OFFSET & SAVE ---
+        state.aim_offset_x -= state.move_x;
+        state.aim_offset_y -= state.move_y;
+        
+        state.prev_head_x = state.target_head_x;
+        state.prev_head_y = state.target_head_y;
+
+        // Lưu trạng thái vào entity để frame sau xử lý tiếp
+        entity._aimState = state;
+
+        // Thực thi Touch Injection nếu cần
+        this.injectTouch(crosshair.x, crosshair.y);
+    },
+
+    /**
+     * Khởi tạo trạng thái cho thực thể mới
+     */
+    initState: function(entity) {
+        return {
+            prev_head_x: entity.bones.head.x,
+            prev_head_y: entity.bones.head.y,
+            target_vel_x: 0,
+            target_vel_y: 0,
+            aim_offset_x: 0,
+            aim_offset_y: 0,
+            locked_on_head: false
+        };
+    },
+
+    /**
+     * Giả lập thao tác tay vuốt màn hình
+     */
+    injectTouch: function(tx, ty) {
+        const ev = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pointerType: 'touch',
+            pressure: 1.0
+        });
+        document.dispatchEvent(ev);
+    }
+};
+
+// ===== VẬN HÀNH =====
+// Chạy trong vòng lặp game
+function onTick() {
+    const enemy = getClosestEnemy(); // Hàm lấy địch gần nhất
+    const me = getLocalPlayer();    // Hàm lấy thông tin bản thân
+
+    if (enemy && me.isDragging) {
+        OmniAimlock.process(enemy, me);
+    }
+    requestAnimationFrame(onTick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
