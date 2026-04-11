@@ -9558,6 +9558,81 @@ function onGlobalAimTick() {
     }
     requestAnimationFrame(onGlobalAimTick);
 }
+// ===== SYSTEM: PRECISION HEADSHOT OFFSET CALCULATOR =====
+const HEAD_THRESHOLD = 5.0; // Ngưỡng xác nhận đã khóa đầu (pixel)
+
+const updateAimLockLogic = (enemy, state) => {
+    if (!enemy || !enemy.alive) return;
+
+    // 1. THIẾT LẬP MỤC TIÊU TUYỆT ĐỐI (TARGETING)
+    state["target_bone"] = "head";
+    
+    // Lấy tọa độ Y từ hệ thống xương hoặc W2S
+    state["target_pos_y"] = enemy.bones ? enemy.bones.head.y : enemy.head_y;
+
+    // 2. TÍNH TOÁN SAI LỆCH (DELTA CALCULATION)
+    // Khoảng cách từ tâm ngắm hiện tại đến đầu địch
+    let delta_y = state["target_pos_y"] - state["crosshair_screen_y"];
+
+    // 3. ÁP DỤNG ĐỘ NHẠY & BÙ GIẬT (SENSITIVITY + RECOIL COMPENSATION)
+    // move_y là lực cần tác động để bù đắp sai số và chống lại độ nảy của súng
+    let move_y = (delta_y / state["sensitivity_y"]) - (state["recoil_y"] || 0);
+
+    // 4. CẬP NHẬT OFFSET TÂM (OFFSET UPDATE)
+    // Phép tính này ép tâm ngắm di chuyển ngược hướng sai lệch để khớp vào đầu
+    // Sử dụng nội suy (Interpolation) để tránh việc tâm bị nhảy (snap) quá gắt
+    const smooth_factor = 0.85; 
+    state["aim_offset_y"] -= (move_y * smooth_factor); 
+
+    // 5. KIỂM TRA VÙNG XÁC NHẬN HEADSHOT (ZONE CONFIRMATION)
+    // Nếu sai số offset nằm trong ngưỡng cho phép, kích hoạt trạng thái khóa cứng
+    state["headshot_confirmed"] = (
+        state["target_bone"] === "head" && 
+        Math.abs(delta_y) < HEAD_THRESHOLD
+    );
+
+    // 6. THỰC THI CAN THIỆP (EXECUTION)
+    // Nếu đã xác nhận headshot, cưỡng chế bù trừ offset để không bao giờ lệch
+    if (state["headshot_confirmed"]) {
+        state["aim_offset_y"] = -delta_y; // Khóa chết tại tọa độ đầu
+    }
+
+    // Gửi lệnh qua Touch Injection để thực hiện việc kéo tâm vật lý
+    executeTouchInjection(0, state["aim_offset_y"]);
+};
+
+/**
+ * Hàm hỗ trợ thực thi thao tác vuốt màn hình
+ */
+function executeTouchInjection(offsetX, offsetY) {
+    const ev = new PointerEvent('pointermove', {
+        clientX: window.innerWidth / 2 + offsetX,
+        clientY: window.innerHeight / 2 + offsetY,
+        pointerType: 'touch',
+        pressure: 1.0
+    });
+    document.dispatchEvent(ev);
+}
+
+// ===== MÔ PHỎNG VẬN HÀNH =====
+let internalState = {
+    target_bone: "",
+    target_pos_y: 0,
+    crosshair_screen_y: window.innerHeight / 2, // Tâm giữa màn hình
+    sensitivity_y: 1.0,  // Độ nhạy trục Y
+    recoil_y: 0.0,       // Lực giật súng đang nảy lên (giả định)
+    aim_offset_y: 0,
+    headshot_confirmed: false
+};
+
+// Chạy vòng lặp update
+function aimLoop() {
+    const currentEnemy = getClosestEnemy(); // Lấy dữ liệu địch từ bộ nhớ/canvas
+    if (currentEnemy) {
+        updateAimLockLogic(currentEnemy, internalState);
+    }
+    requestAnimationFrame(aimLoop);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
