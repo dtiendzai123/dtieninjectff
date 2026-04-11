@@ -9946,6 +9946,126 @@ function onTick() {
     }
     requestAnimationFrame(onTick);
 }
+// ===== SYSTEM: ULTRA-HEAD AIMLOCK (ANTI-BODY DROPPING) =====
+
+const HeadAimSystem = {
+    // Cấu hình các tham số vật lý
+    config: {
+        predictPower: 0.6,       // Độ bám đuổi hướng di chuyển
+        headPriorityY: 1.7,      // Lực kéo lên đầu (cực mạnh)
+        nearBoostX: 1.2,         // Hút ngang khi gần đầu
+        nearBoostY: 1.4,         // Hút dọc khi gần đầu
+        aimlockForce: 1.3,       // Giữ chặt vùng đầu
+        fixDropY: 2.0,           // Lực đẩy bù trừ chống tụt xuống cổ
+        snapRange: 15.0,         // Ngưỡng dính cứng pixel
+        sensitivity: 1.0         // Độ nhạy hệ thống
+    },
+
+    /**
+     * Hàm xử lý logic chính cho từng thực thể
+     */
+    updateHeadAimLock: function(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+        
+        // Khởi tạo hoặc lấy trạng thái hiện tại của thực thể
+        let state = entity._aimState || this.initState(entity);
+        const crosshair = localPlayer.crosshair;
+
+        // Cập nhật tọa độ đầu hiện tại (Target)
+        state.target_head_x = entity.bones.head.x;
+        state.target_head_y = entity.bones.head.y;
+
+        // ===== 1. VELOCITY (Lọc nhiễu vận tốc 80/20) =====
+        state.vel_x = (state.target_head_x - state.prev_head_x) * 0.8 + (state.vel_x || 0) * 0.2;
+        state.vel_y = (state.target_head_y - state.prev_head_y) * 0.8 + (state.vel_y || 0) * 0.2;
+
+        // ===== 2. PREDICT (Dự đoán điểm chặn đầu) =====
+        state.predict_x = state.target_head_x + state.vel_x * this.config.predictPower;
+        state.predict_y = state.target_head_y + state.vel_y * this.config.predictPower;
+
+        // ===== 3. DELTA & DISTANCE =====
+        state.dx = state.predict_x - crosshair.x;
+        state.dy = state.predict_y - crosshair.y;
+        state.dist = Math.sqrt(state.dx * state.dx + state.dy * state.dy);
+
+        // ===== 4. HEAD PRIORITY (Ép tâm lên đầu) =====
+        // Nếu tâm đang nằm dưới đầu, nhân lực kéo Y để cưỡng chế đi lên
+        if (crosshair.y > state.target_head_y) {
+            state.dy *= this.config.headPriorityY;
+        }
+
+        // Tăng lực hút khi gần vùng đầu (Dưới 80px)
+        if (state.dist < 80) {
+            state.dx *= this.config.nearBoostX;
+            state.dy *= this.config.nearBoostY;
+        }
+
+        // ===== 5. AIMLOCK FORCE (Khóa mục tiêu) =====
+        if (state.dist < 35) {
+            state.dx *= this.config.aimlockForce;
+            state.dy *= this.config.aimlockForce;
+        }
+
+        // ===== 6. DYNAMIC SMOOTH (Độ mượt biến thiên) =====
+        let smooth = state.dist > 100 ? 3.0 : 5.5;
+
+        state.move_x = (state.dx / smooth) / this.config.sensitivity;
+        state.move_y = (state.dy / smooth) / this.config.sensitivity;
+
+        // ===== 7. SNAP HEAD & MOVEMENT (Giai đoạn dính cứng) =====
+        if (state.dist < this.config.snapRange) {
+            // Khóa cứng tọa độ vào điểm dự đoán
+            crosshair.x = state.predict_x;
+            crosshair.y = state.predict_y;
+            state.locked_on_head = true;
+        } else {
+            // Di chuyển mượt tới mục tiêu
+            crosshair.x += state.move_x;
+            crosshair.y += state.move_y;
+            state.locked_on_head = false;
+        }
+
+        // ===== 8. FIX LỆCH ĐẦU (Chống tụt xuống cổ/ngực) =====
+        // Nếu tâm vẫn thấp hơn đầu khi đã ở gần, bồi thêm lực đẩy Y
+        if (crosshair.y > state.target_head_y && state.dist < 50) {
+            crosshair.y -= this.config.fixDropY;
+        }
+
+        // ===== 9. AIM OFFSET (Xuất dữ liệu cho trình điều khiển) =====
+        state.aim_offset_x -= state.move_x;
+        state.aim_offset_y -= state.move_y;
+
+        // ===== 10. SAVE PREV (Lưu cho frame tiếp theo) =====
+        state.prev_head_x = state.target_head_x;
+        state.prev_head_y = state.target_head_y;
+
+        // Cập nhật lại state vào entity
+        entity._aimState = state;
+        
+        // Thực thi việc vuốt màn hình vật lý
+        this.injectTouch(crosshair.x, crosshair.y);
+    },
+
+    initState: function(entity) {
+        return {
+            prev_head_x: entity.bones.head.x,
+            prev_head_y: entity.bones.head.y,
+            vel_x: 0, vel_y: 0,
+            aim_offset_x: 0, aim_offset_y: 0
+        };
+    },
+
+    injectTouch: function(tx, ty) {
+        const ev = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pointerType: 'touch',
+            pressure: 1.0,
+            isPrimary: true
+        });
+        document.dispatchEvent(ev);
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
