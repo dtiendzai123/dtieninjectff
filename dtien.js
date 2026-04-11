@@ -9616,7 +9616,7 @@ function executeTouchInjection(offsetX, offsetY) {
 
 // ===== MÔ PHỎNG VẬN HÀNH =====
 let internalState = {
-    target_bone: "",
+    target_bone: "bone_Head",
     target_pos_y: 0,
     crosshair_screen_y: window.innerHeight / 2, // Tâm giữa màn hình
     sensitivity_y: 1.0,  // Độ nhạy trục Y
