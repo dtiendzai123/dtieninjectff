@@ -9739,8 +9739,8 @@ const OmniAimSystem = {
         
         predict_factor: 0.001,   // Thời gian dự đoán (giây hoặc frame)
         smooth_factor: 0.0,     // Độ mượt (thấp = dính nhanh)
-        sensitivity_xy: 3.0,    // Độ nhạy chung
-        head_threshold: 12.0,   // Vùng headshot (pixels)
+        sensitivity_xy: 4.0,    // Độ nhạy chung
+        head_threshold: 999.0,   // Vùng headshot (pixels)
         
         // Trạng thái đầu ra
         move_angle_deg: 0,
@@ -9815,7 +9815,7 @@ const OmniAimSystem = {
 const OmniAimlock = {
     // 1. Cấu hình hệ thống (Tùy chỉnh theo loại súng/máy)
     settings: {
-        sensitivity: 3.0,      // Độ nhạy X/Y
+        sensitivity: 4.0,      // Độ nhạy X/Y
         basePredict: 0.001,      // Dự đoán cơ bản
         speedPredict: 0.9,     // Tỉ lệ dự đoán theo tốc độ
         snapThreshold: 9999.0,   // Khoảng cách để Snap cứng vào đầu
@@ -9958,7 +9958,7 @@ const HeadAimSystem = {
         aimlockForce: 4.3,       // Giữ chặt vùng đầu
         fixDropY: 2.0,           // Lực đẩy bù trừ chống tụt xuống cổ
         snapRange: 9999.0,         // Ngưỡng dính cứng pixel
-        sensitivity: 3.0         // Độ nhạy hệ thống
+        sensitivity: 4.0         // Độ nhạy hệ thống
     },
 
     /**
