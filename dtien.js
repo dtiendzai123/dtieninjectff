@@ -9643,12 +9643,12 @@ const AimLockSystem = {
         target_head_y: 0,
         delta_y: 0,
         smooth_step: 0,
-        smooth_factor: 5.0,      // Chỉ số mượt (càng cao càng chậm)
+        smooth_factor: 0.0,      // Chỉ số mượt (càng cao càng chậm)
         recoil_comp: 2.5,        // Lực ghì tâm chống giật
-        sensitivity_y: 1.0,      // Độ nhạy trục Y của người dùng
+        sensitivity_y: 2.0,      // Độ nhạy trục Y của người dùng
         head_threshold: 8.0,     // Bán kính vùng đầu (pixel)
-        locked_on_head: false,
-        headshot_zone: "miss"
+        locked_on_head: true,
+        headshot_zone: "infinity"
     },
 
     /**
