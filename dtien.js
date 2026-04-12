@@ -10311,6 +10311,70 @@ const SmartAimSystem = {
         };
     }
 };
+// ===== SYSTEM: SUB-PIXEL PRECISION INPUT PROCESSOR =====
+
+const InputProcessor = {
+    /**
+     * Xử lý đầu vào và cộng dồn Sub-pixel
+     * Giúp tâm di chuyển cực mượt ở khoảng cách xa (khi delta cực nhỏ)
+     */
+    processInput: function(state) {
+        // 1. Nhân input thô với hệ số DPI (Scaled Input)
+        // raw_input thường là giá trị move_x/move_y từ logic Aimlock
+        let scaled_x = state.raw_input_x * state.dpi_scale;
+        let scaled_y = state.raw_input_y * state.dpi_scale;
+
+        // 2. Cộng dồn Sub-pixel (Accumulation)
+        // Tránh việc bị mất các chuyển động nhỏ hơn 1 pixel
+        state.subpixel_acc_x = (state.subpixel_acc_x || 0) + scaled_x;
+        state.subpixel_acc_y = (state.subpixel_acc_y || 0) + scaled_y;
+
+        // 3. Phân tách phần nguyên và phần lẻ (Integer vs Fraction)
+        // Chỉ xuất ra phần nguyên (output) để hệ thống Touch/Mouse xử lý
+        state.output_x = Math.floor(state.subpixel_acc_x);
+        state.output_y = Math.floor(state.subpixel_acc_y);
+
+        // Giữ lại phần dư (phần lẻ) cho frame kế tiếp
+        state.subpixel_acc_x -= state.output_x;
+        state.subpixel_acc_y -= state.output_y;
+
+        // 4. Cập nhật mật độ điểm ảnh thực tế (Pixel Density)
+        state.pixel_density = state.base_ppi * state.dpi_scale;
+
+        // Trả về kết quả di chuyển thực tế cho PointerEvent
+        return {
+            x: state.output_x,
+            y: state.output_y
+        };
+    }
+};
+
+/**
+ * CÁCH TÍCH HỢP VÀO HÀM OMNI AIMLOCK
+ */
+function onTick() {
+    // Giả sử logic Aimlock tính ra lực cần kéo là:
+    // state.move_x = 0.45;
+    // state.move_y = 1.25;
+
+    state.raw_input_x = state.move_x;
+    state.raw_input_y = state.move_y;
+
+    const actualMove = InputProcessor.processInput(state);
+
+    // actualMove.x sẽ là 0 (vì 0.45 < 1), phần 0.45 được giữ lại.
+    // Frame sau nếu thêm 0.45 nữa, tổng là 0.9. Vẫn chưa di chuyển.
+    // Frame thứ 3 thêm 0.45, tổng là 1.35. Lúc này output_x = 1. 
+    // => Tâm nhích 1 pixel cực kỳ mượt mà.
+
+    if (actualMove.x !== 0 || actualMove.y !== 0) {
+        state.crosshair_x += actualMove.x;
+        state.crosshair_y += actualMove.y;
+        
+        // Inject lệnh vuốt với tọa độ đã qua xử lý Sub-pixel
+        injectTouch(state.crosshair_x, state.crosshair_y);
+    }
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
