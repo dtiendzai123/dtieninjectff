@@ -10742,6 +10742,90 @@ function fastTick() {
     // Sử dụng setImmediate hoặc requestAnimationFrame tùy môi trường
     requestAnimationFrame(fastTick);
 }
+// ===== [HYPER_SENS_HEADSHOT_ENGINE_V8] =====
+// Logic: Fast-Pass Torso (Lướt qua thân) & Head-Lock Precision
+
+class HyperAimEntity {
+    constructor(config) {
+        this.config = config;
+        this.accel_y = 2.2;         // Gia tốc trục Y cực cao để vẩy qua thân
+        this.snap_time = 0.001;     // Thời gian phản hồi 1ms
+    }
+
+    process(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+
+        const crosshair = localPlayer.crosshair;
+        const head = entity.bones.head;
+        const neck = entity.bones.neck; // Điểm mốc để tính vùng lướt
+
+        // 1. TÍNH TOÁN KHOẢNG CÁCH (DELTA)
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        // 2. LOGIC "LƯỚT THÂN" (FAST-PASS TORSO)
+        // Nếu tâm đang nằm từ cổ trở xuống, nhân thêm gia tốc để trôi nhanh lên đầu
+        if (crosshair.y > neck.y) {
+            dy *= this.accel_y; // Tăng lực kéo Y gấp 2.2 lần
+        }
+
+        // 3. LOGIC "DỪNG TỨC THỜI" (HEAD-MAGNET)
+        // Khi tâm đã chạm vào vùng Head (Epsilon < 10px), triệt tiêu mọi quán tính
+        let head_radius = 10.0;
+        if (dist < head_radius) {
+            // Khóa cứng (Hard Lock) - Không cho trôi quá đầu (Anti-Overshoot)
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+            this.isLocked = true;
+        } else {
+            // Kéo tâm siêu tốc (Instant Snap)
+            // Bỏ qua Smooth để đạt 0.001s
+            crosshair.x += dx * 0.95; 
+            crosshair.y += dy * 0.95;
+            this.isLocked = false;
+        }
+
+        // 4. KHỬ RUNG (STABILIZER)
+        // Nếu đã ở trong đầu, giữ nguyên tọa độ kể cả khi địch di chuyển nhẹ
+        if (this.isLocked) {
+            this.applyStickyMicroMove(entity, crosshair);
+        }
+
+        // 5. INJECT TÍN HIỆU VẬT LÝ
+        this.sendRawInput(crosshair.x, crosshair.y);
+    }
+
+    applyStickyMicroMove(entity, crosshair) {
+        // Bám đuổi theo vận tốc địch để tâm không bao giờ rời khỏi đầu
+        if (entity.velocity) {
+            crosshair.x += entity.velocity.x;
+            crosshair.y += entity.velocity.y;
+        }
+    }
+
+    sendRawInput(tx, ty) {
+        const ev = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pressure: 1.0, 
+            pointerId: 1,
+            isPrimary: true
+        });
+        document.dispatchEvent(ev);
+    }
+}
+
+// ===== VẬN HÀNH CHẾ ĐỘ NHẸ TÂM =====
+const engine = new HyperAimEntity();
+
+function loop() {
+    const target = getTargetInField();
+    if (target && isPressingAimButton()) {
+        engine.process(target, localPlayer);
+    }
+    requestAnimationFrame(loop);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
