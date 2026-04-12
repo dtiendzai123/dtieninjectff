@@ -11061,9 +11061,9 @@ const CHEST_HEAD_BOOST_CONFIG = {
     // ===== BOOST KÉO LÊN =====
     BOOST: {
         ENABLE: true,
-        FORCE_Y: 5.5,          // lực kéo lên cực mạnh
+        FORCE_Y: 5.0,          // lực kéo lên cực mạnh
         FORCE_X: 0.6,          // giữ ngang ổn định
-        ACCELERATION: 3.8      // tăng tốc khi kéo
+        ACCELERATION: 3.3      // tăng tốc khi kéo
     },
 
     // ===== NHẠY TÂM =====
@@ -11076,6 +11076,29 @@ const CHEST_HEAD_BOOST_CONFIG = {
     SNAP: {
         ENABLE: true,
         THRESHOLD: 0.015       // gần head là snap luôn
+    }
+};
+const HEAD_LOCK_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== VÙNG KÍCH HOẠT =====
+    LOCK_ZONE: {
+        RADIUS: 0.02,        // vừa chạm đầu là kích hoạt
+        STICK_RADIUS: 0.01   // vào sâu thì khóa cứng
+    },
+
+    // ===== LỰC GHIM =====
+    LOCK: {
+        STRENGTH: 5.0,       // lực hút cực mạnh
+        INSTANT: true,       // snap ngay
+        HOLD: true           // giữ không rời
+    },
+
+    // ===== CHỐNG TRÔI =====
+    STABLE: {
+        ZERO_SHAKE: true,
+        MAX_DRIFT: 0.0001
     }
 };
  const AimLockHeadEngine = (() => {
@@ -11109,7 +11132,46 @@ const CHEST_HEAD_BOOST_CONFIG = {
 
         return best;
     }
+function headMagnetLock(state, target) {
 
+    if (!HEAD_LOCK_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+    const dist = Math.hypot(dx, dy);
+
+    // ===== 1. CHẠM VÙNG ĐẦU → SNAP =====
+    if (dist < HEAD_LOCK_CONFIG.LOCK_ZONE.RADIUS) {
+
+        if (HEAD_LOCK_CONFIG.LOCK.INSTANT) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+
+        // ===== 2. GHIM CỨNG =====
+        if (HEAD_LOCK_CONFIG.LOCK.HOLD) {
+
+            crosshair.x += dx * HEAD_LOCK_CONFIG.LOCK.STRENGTH;
+            crosshair.y += dy * HEAD_LOCK_CONFIG.LOCK.STRENGTH;
+        }
+    }
+
+    // ===== 3. KHÓA TUYỆT ĐỐI =====
+    if (dist < HEAD_LOCK_CONFIG.LOCK_ZONE.STICK_RADIUS) {
+
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        // ===== chống rung =====
+        if (HEAD_LOCK_CONFIG.STABLE.ZERO_SHAKE) {
+            if (Math.abs(dx) < HEAD_LOCK_CONFIG.STABLE.MAX_DRIFT) crosshair.x = head.x;
+            if (Math.abs(dy) < HEAD_LOCK_CONFIG.STABLE.MAX_DRIFT) crosshair.y = head.y;
+        }
+    }
+}
     function predictPosition(target, dt) {
         if (!AIMLOCK_CONFIG.PREDICT.ENABLE) return target.head;
 
@@ -11223,6 +11285,8 @@ const CHEST_HEAD_BOOST_CONFIG = {
 
     try {
         AimLockEngine.aim(state);
+  headMagnetLock(state, target);
+  
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
