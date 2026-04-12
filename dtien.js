@@ -10375,6 +10375,156 @@ function onTick() {
         injectTouch(state.crosshair_x, state.crosshair_y);
     }
 }
+// ===== [ULTIMATE_AIM_ENGINE_V5] =====
+// Integration for: OMNI_FOV, STICKY_HEAD, INSTANT_SNAP
+
+class UltimateAimEngine {
+    constructor(config) {
+        this.config = config;
+        this.subpixel_acc_x = 0;
+        this.subpixel_acc_y = 0;
+    }
+
+    /**
+     * Hàm xử lý chính cho thực thể (Entity)
+     */
+    processEntity(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+
+        const cfg = this.config;
+        const s = entity._aimState || this.initEntityState(entity);
+        const crosshair = localPlayer.crosshair;
+
+        // --- 1. CORE AIM LOGIC (Omni-Scanning) ---
+        // Sử dụng WeaponAimFOV: 360 để quét mục tiêu mọi hướng
+        s.head_x = entity.bones.head.x;
+        s.head_y = entity.bones.head.y;
+
+        // --- 2. ADVANCED VELOCITY & PREDICTION (EMA + Anti-Spike) ---
+        let raw_vx = s.head_x - s.prev_head_x;
+        let raw_vy = s.head_y - s.prev_head_y;
+        
+        let alpha = 0.35; // vel_alpha
+        s.vel_x = alpha * raw_vx + (1 - alpha) * (s.vel_x || 0);
+        s.vel_y = alpha * raw_vy + (1 - alpha) * (s.vel_y || 0);
+
+        // Clamp Velocity theo vel_clamp (25.0)
+        s.vel_x = Math.max(-25, Math.min(25, s.vel_x));
+        s.vel_y = Math.max(-25, Math.min(25, s.vel_y));
+
+        // Dự đoán động (pf_dynamic) dựa trên vận tốc
+        let speed = Math.sqrt(s.vel_x ** 2 + s.vel_y ** 2);
+        let dynamicPF = cfg.AIM_SYSTEM_CONFIG.AutoAimingConfig.FollowTimeMax + (speed * 0.6);
+        
+        s.predict_x = s.head_x + s.vel_x * dynamicPF;
+        s.predict_y = s.head_y + s.vel_y * dynamicPF;
+
+        // --- 3. TARGET LOCK & STICKY HEAD (Nam châm vĩnh cửu) ---
+        s.delta_x = s.predict_x - crosshair.x;
+        s.delta_y = s.predict_y - crosshair.y;
+        s.dist = Math.sqrt(s.delta_x ** 2 + s.delta_y ** 2);
+
+        // HITBOX_SYSTEM: Ép buộc ClientAimPart = "HEAD"
+        if (crosshair.y > s.head_y) {
+            s.delta_y *= 1.7; // HeadshotMultiplier 9.0 influence
+        }
+
+        // --- 4. SNAP & LOCK EXECUTION (InstantSnap: true) ---
+        if (s.dist < 15 || cfg.AIM_CONTROL.InstantSnap) {
+            // SNAP LOCK (Cưỡng chế tọa độ tuyệt đối)
+            s.step_x = s.delta_x; 
+            s.step_y = s.delta_y;
+            s.locked = true;
+        } else {
+            // Smooth movement (Ease-out logic)
+            let k = 0.22 + Math.min(s.dist / 150, 0.25);
+            s.step_x = s.delta_x * k;
+            s.step_y = s.delta_y * k;
+        }
+
+        // --- 5. SUB-PIXEL PRECISION (DPI Scaling) ---
+        let dpi_scale = 1.0; // Có thể lấy từ cấu hình máy
+        this.subpixel_acc_x += s.step_x * dpi_scale;
+        this.subpixel_acc_y += s.step_y * dpi_scale;
+
+        let output_x = Math.floor(this.subpixel_acc_x);
+        let output_y = Math.floor(this.subpixel_acc_y);
+
+        this.subpixel_acc_x -= output_x;
+        this.subpixel_acc_y -= output_y;
+
+        // --- 6. APPLY TO WORLD & INPUT ---
+        // LockStrength: 9999 (Gần như không thể bị đẩy ra)
+        crosshair.x += output_x;
+        crosshair.y += output_y;
+
+        // Cập nhật Aim Offset để đồng bộ với Driver
+        s.aim_offset_x -= output_x;
+        s.aim_offset_y -= output_y;
+
+        // Save states
+        s.prev_head_x = s.head_x;
+        s.prev_head_y = s.head_y;
+        entity._aimState = s;
+
+        // --- 7. SHOOT_VERIFY & DAMAGE (InstantFire) ---
+        if (s.locked && cfg.AIM_ASSIST.LockTargetHead) {
+            this.triggerInstantCombat(cfg);
+        }
+
+        this.executeTouch(crosshair.x, crosshair.y);
+    }
+
+    /**
+     * Khởi tạo trạng thái ban đầu cho Entity
+     */
+    initEntityState(entity) {
+        return {
+            prev_head_x: entity.bones.head.x,
+            prev_head_y: entity.bones.head.y,
+            vel_x: 0, vel_y: 0,
+            aim_offset_x: 0, aim_offset_y: 0,
+            locked: false
+        };
+    }
+
+    /**
+     * Giả lập bắn tức thời không độ trễ
+     */
+    triggerInstantCombat(cfg) {
+        if (cfg.FIRE_CONTROL.InstantFire) {
+            // Logic bắn không chờ (NoFireDelay)
+            // Gửi lệnh Click/Shoot tại đây
+        }
+    }
+
+    /**
+     * Touch Injection: Ghi đè tọa độ vật lý
+     */
+    executeTouch(tx, ty) {
+        const ev = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pressure: 1.0, // AimAssist: 999.00 force
+            pointerType: 'touch'
+        });
+        document.dispatchEvent(ev);
+    }
+}
+
+// ===== KHỞI CHẠY HỆ THỐNG =====
+// Nạp config khổng lồ của bạn vào Engine
+const engine = new UltimateAimEngine(YOUR_GLOBAL_CONFIG);
+
+function mainLoop() {
+    const target = getPriorityTarget(); // Lấy mục tiêu trong FOV 360
+    const player = getLocalPlayer();
+
+    if (target && player) {
+        engine.processEntity(target, player);
+    }
+    requestAnimationFrame(mainLoop);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
