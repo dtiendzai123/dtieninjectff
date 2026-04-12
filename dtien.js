@@ -11055,15 +11055,15 @@ const CHEST_HEAD_BOOST_CONFIG = {
     // ===== VÙNG KÍCH HOẠT (CHEST ZONE) =====
     CHEST_ZONE: {
         RADIUS: 0.08,          // vùng quanh thân
-        PRIORITY_Y_OFFSET: 0.5 // độ cao từ thân lên đầu
+        PRIORITY_Y_OFFSET: 0.75 // độ cao từ thân lên đầu
     },
 
     // ===== BOOST KÉO LÊN =====
     BOOST: {
         ENABLE: true,
-        FORCE_Y: 4.5,          // lực kéo lên cực mạnh
+        FORCE_Y: 5.5,          // lực kéo lên cực mạnh
         FORCE_X: 0.6,          // giữ ngang ổn định
-        ACCELERATION: 2.8      // tăng tốc khi kéo
+        ACCELERATION: 3.8      // tăng tốc khi kéo
     },
 
     // ===== NHẠY TÂM =====
