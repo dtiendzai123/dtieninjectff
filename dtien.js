@@ -10073,7 +10073,7 @@ const PreciseAimSystem = {
         vel_alpha: 1.35,       // Hệ số EMA (càng nhỏ càng mượt, càng lớn càng nhạy)
         predict_factor: 1.0,   // Tầm nhìn xa của dự đoán
         arrival_eps: 4.0,       // Ngưỡng "đã đến nơi" (pixels)
-        ease_k: 0.22,           // Tỉ lệ giảm tốc (Ease-out)
+        ease_k: 0.01,           // Tỉ lệ giảm tốc (Ease-out)
         clamp_max_px: 50.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
         noise_mag: 0.0,        // Cường độ rung tay giả lập
     },
