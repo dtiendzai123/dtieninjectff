@@ -11055,7 +11055,7 @@ const CHEST_HEAD_BOOST_CONFIG = {
     // ===== VÙNG KÍCH HOẠT (CHEST ZONE) =====
     CHEST_ZONE: {
         RADIUS: 0.08,          // vùng quanh thân
-        PRIORITY_Y_OFFSET: 0.75 // độ cao từ thân lên đầu
+        PRIORITY_Y_OFFSET: 0.65 // độ cao từ thân lên đầu
     },
 
     // ===== BOOST KÉO LÊN =====
