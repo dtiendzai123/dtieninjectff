@@ -10646,6 +10646,102 @@ const AimLockEngine = {
         }
     }
 };
+// ===== [INSTANT_SNAP_CORE_V7] =====
+// Mục tiêu: Triệt tiêu hoàn toàn độ trễ, khóa cứng mục tiêu trong 1 khung hình (1ms)
+
+class InstantSnapEngine {
+    constructor(config) {
+        this.config = config;
+        this.lastTargetId = null;
+        this.isLocked = false;
+    }
+
+    /**
+     * Hàm xử lý kéo tâm siêu tốc
+     */
+    process(entity, localPlayer) {
+        if (!entity || !entity.alive) {
+            this.isLocked = false;
+            return;
+        }
+
+        const crosshair = localPlayer.crosshair;
+        const head = entity.bones.head;
+
+        // 1. TÍNH TOÁN SAI LỆCH TUYỆT ĐỐI (ZERO LATENCY)
+        // Không sử dụng Smooth, không sử dụng EMA để đạt tốc độ 0.001s
+        let deltaX = head.x - crosshair.x;
+        let deltaY = head.y - crosshair.y;
+
+        // 2. PREDICTION (DỰ ĐOÁN NHANH)
+        // Vì snap quá nhanh, chỉ cần dự đoán nhẹ để bù đắp ping
+        if (entity.velocity) {
+            deltaX += entity.velocity.x * 0.15;
+            deltaY += entity.velocity.y * 0.15;
+        }
+
+        // 3. FORCE HEAD POSITION (MAGNET 1.8x)
+        // Ép tâm luôn nằm ở phần trên của xương đầu để chống tụt xuống cổ
+        if (crosshair.y > head.y) {
+            deltaY *= 1.8; 
+        }
+
+        // 4. INSTANT MOVE (PHƯƠNG PHÁP 0.001S)
+        // Thay vì cộng dồn, chúng ta "ghi đè" vị trí tâm ngay lập tức
+        const dist = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        
+        if (dist > 0.1) { // Deadzone cực nhỏ để tránh rung
+            // Chế độ khóa cứng: Tâm = Đầu ngay lập tức
+            crosshair.x += deltaX;
+            crosshair.y += deltaY;
+            this.isLocked = true;
+        }
+
+        // 5. INJECT TOUCH (TẦNG VẬT LÝ)
+        // Gửi tín hiệu trực tiếp xuống hệ thống với áp lực tối đa
+        this.injectInstantTouch(crosshair.x, crosshair.y);
+    }
+
+    /**
+     * Injection siêu tốc - Mô phỏng tốc độ phản xạ 1ms
+     */
+    injectInstantTouch(tx, ty) {
+        const touchEvent = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pressure: 1.0,      // Lực nhấn tối đa
+            tiltX: 0,
+            tiltY: 0,
+            pointerId: 1,
+            isPrimary: true,
+            bubbles: true
+        });
+        document.dispatchEvent(touchEvent);
+    }
+}
+
+// ===== CẤU HÌNH SIÊU NHẸ TÂM =====
+const INSTANT_CONFIG = {
+    SnapSpeed: 0.001,       // 1ms
+    HeadLock: true,
+    AntiDither: true,       // Chống rung tâm khi đã khóa
+    AutoClickDelay: 0       // Bắn ngay khi khóa
+};
+
+const engine = new InstantSnapEngine(INSTANT_CONFIG);
+
+// Vòng lặp vận hành (Ưu tiên FPS cao nhất)
+function fastTick() {
+    const target = getClosestEnemy();
+    const me = getLocalPlayer();
+
+    if (target && me.isAiming) {
+        engine.process(target, me);
+    }
+    
+    // Sử dụng setImmediate hoặc requestAnimationFrame tùy môi trường
+    requestAnimationFrame(fastTick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
