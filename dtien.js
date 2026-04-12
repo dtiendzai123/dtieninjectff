@@ -10066,6 +10066,119 @@ const HeadAimSystem = {
         document.dispatchEvent(ev);
     }
 };
+// ===== SYSTEM: HUMANIZED PRECISE AIMLOCK (ANTI-OVERSHOOT) =====
+
+const PreciseAimSystem = {
+    config: {
+        vel_alpha: 0.35,       // Hệ số EMA (càng nhỏ càng mượt, càng lớn càng nhạy)
+        predict_factor: 0.45,   // Tầm nhìn xa của dự đoán
+        arrival_eps: 4.0,       // Ngưỡng "đã đến nơi" (pixels)
+        ease_k: 0.22,           // Tỉ lệ giảm tốc (Ease-out)
+        clamp_max_px: 25.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
+        noise_mag: 0.15,        // Cường độ rung tay giả lập
+    },
+
+    /**
+     * Cập nhật logic Aimlock chính xác
+     */
+    updatePreciseAimLock: function(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+
+        const s = entity._aimState || this.initState(entity);
+        const crosshair = localPlayer.crosshair;
+        const cfg = this.config;
+
+        // Cập nhật tọa độ đầu hiện tại
+        s.head_x = entity.bones.head.x;
+        s.head_y = entity.bones.head.y;
+
+        // ── 1. VẬN TỐC ĐỊCH (EMA Filter)
+        let raw_vx = s.head_x - s.prev_head_x;
+        let raw_vy = s.head_y - s.prev_head_y;
+        
+        s.vel_x = cfg.vel_alpha * raw_vx + (1 - cfg.vel_alpha) * (s.vel_x || 0);
+        s.vel_y = cfg.vel_alpha * raw_vy + (1 - cfg.vel_alpha) * (s.vel_y || 0);
+
+        // ── 2. LEAD TARGET (Dự đoán tương lai)
+        s.predict_head_x = s.head_x + s.vel_x * cfg.predict_factor;
+        s.predict_head_y = s.head_y + s.vel_y * cfg.predict_factor;
+
+        // ── 3. DELTA & DISTANCE
+        s.delta_x = s.predict_head_x - crosshair.x;
+        s.delta_y = s.predict_head_y - crosshair.y;
+        s.dist = Math.sqrt(s.delta_x ** 2 + s.delta_y ** 2);
+
+        // ── 4. ARRIVAL CHECK (Chống Overshoot)
+        if (s.dist < cfg.arrival_eps) {
+            s.locked_on_head = true;
+            s.step_x = 0;
+            s.step_y = 0;
+            
+            // Duy trì bám đuổi nhẹ theo vận tốc địch khi đã khóa
+            crosshair.x += s.vel_x * cfg.predict_factor * 0.08;
+            crosshair.y += s.vel_y * cfg.predict_factor * 0.08;
+        } else {
+            s.locked_on_head = false;
+
+            // ── 5. EASE-OUT (Giảm tốc động)
+            s.step_x = s.delta_x * cfg.ease_k;
+            s.step_y = s.delta_y * cfg.ease_k;
+
+            // ── 6. CLAMP (Giới hạn tốc độ vẩy)
+            let step_mag = Math.sqrt(s.step_x ** 2 + s.step_y ** 2);
+            if (step_mag > cfg.clamp_max_px) {
+                let ratio = cfg.clamp_max_px / step_mag;
+                s.step_x *= ratio;
+                s.step_y *= ratio;
+            }
+
+            // ── 7. MICRO-JITTER (Rung tay sinh học)
+            s.noise_x = (Math.random() - 0.5) * 2 * cfg.noise_mag;
+            s.noise_y = (Math.random() - 0.5) * 2 * cfg.noise_mag;
+            s.step_x += s.noise_x;
+            s.step_y += s.noise_y;
+        }
+
+        // ── 8. APPLY (Cập nhật tọa độ)
+        crosshair.x += s.step_x;
+        crosshair.y += s.step_y;
+        s.aim_offset_x -= s.step_x;
+        s.aim_offset_y -= s.step_y;
+
+        // ── 9. MOVE ANGLE (Debug)
+        s.move_angle_deg = Math.atan2(s.vel_y, s.vel_x) * (180 / Math.PI);
+
+        // ── 10. SAVE PREV
+        s.prev_head_x = s.head_x;
+        s.prev_head_y = s.head_y;
+
+        // Lưu state vào thực thể
+        entity._aimState = s;
+
+        // Thực thi vuốt màn hình
+        this.injectHumanizedTouch(crosshair.x, crosshair.y);
+    },
+
+    initState: function(entity) {
+        return {
+            prev_head_x: entity.bones.head.x,
+            prev_head_y: entity.bones.head.y,
+            vel_x: 0, vel_y: 0,
+            aim_offset_x: 0, aim_offset_y: 0,
+            locked_on_head: false
+        };
+    },
+
+    injectHumanizedTouch: function(tx, ty) {
+        const ev = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pointerType: 'touch',
+            pressure: 0.85 // Áp lực vừa phải
+        });
+        document.dispatchEvent(ev);
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
