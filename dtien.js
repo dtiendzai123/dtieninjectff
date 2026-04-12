@@ -10179,6 +10179,138 @@ const PreciseAimSystem = {
         document.dispatchEvent(ev);
     }
 };
+// ===== SYSTEM: ADAPTIVE OMNI-DIRECTIONAL AIMLOCK (V4 - SMART HUMANIZED) =====
+
+const SmartAimSystem = {
+    config: {
+        vel_alpha: 0.35,        // EMA mượt
+        vel_clamp: 25.0,       // Chống giật lag tọa độ
+        predict_factor: 0.5,   // PF cơ bản
+        arrival_eps: 4.5,      // Ngưỡng bám đầu
+        ease_k: 0.22,          // Ease-out cơ bản
+        clamp_max_px: 100.0,    // Tốc độ kéo cơ bản
+        noise_mag: 0.2,        // Độ rung tối đa
+        sensitivity: 4.0       // Hệ số nhạy
+    },
+
+    process: function(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+
+        const s = entity._aimState || this.initState(entity);
+        const crosshair = localPlayer.crosshair;
+        const cfg = this.config;
+
+        // Cập nhật tọa độ từ game
+        s.head_x = entity.bones.head.x;
+        s.head_y = entity.bones.head.y;
+
+        // ── 1. VELOCITY (EMA + Chống Spike) ──
+        let raw_vx = s.head_x - s.prev_head_x;
+        let raw_vy = s.head_y - s.prev_head_y;
+
+        s.vel_x = cfg.vel_alpha * raw_vx + (1 - cfg.vel_alpha) * (s.vel_x || 0);
+        s.vel_y = cfg.vel_alpha * raw_vy + (1 - cfg.vel_alpha) * (s.vel_y || 0);
+
+        // Giới hạn vận tốc để tránh "teleport" khi lag
+        s.vel_x = Math.max(-cfg.vel_clamp, Math.min(cfg.vel_clamp, s.vel_x));
+        s.vel_y = Math.max(-cfg.vel_clamp, Math.min(cfg.vel_clamp, s.vel_y));
+
+        // ── 2. DYNAMIC PREDICTION ──
+        let speed = Math.sqrt(s.vel_x * s.vel_x + s.vel_y * s.vel_y);
+        s.pf_dynamic = cfg.predict_factor + (speed * 0.6);
+
+        s.predict_head_x = s.head_x + s.vel_x * s.pf_dynamic;
+        s.predict_head_y = s.head_y + s.vel_y * s.pf_dynamic;
+
+        // ── 3. DELTA ──
+        s.delta_x = (s.predict_head_x - crosshair.x) / cfg.sensitivity;
+        s.delta_y = (s.predict_head_y - crosshair.y) / cfg.sensitivity;
+        s.dist = Math.sqrt(s.delta_x * s.delta_x + s.delta_y * s.delta_y);
+
+        // ── 4. HEAD MAGNET (Fix ưu tiên vùng đầu) ──
+        if (crosshair.y > s.head_y) {
+            s.delta_y *= 1.5; // Kéo lên cực mạnh khi tâm nằm dưới đầu
+        }
+        
+        // Nếu chạy ngang, ưu tiên giữ độ cao đầu (Anti- tụt ngực khi địch chạy)
+        if (Math.abs(s.vel_x) > Math.abs(s.vel_y)) {
+            s.delta_y *= 1.2;
+        }
+
+        // Càng gần mục tiêu lực hút càng tăng
+        if (s.dist < 70) {
+            s.delta_x *= 1.2;
+            s.delta_y *= 1.3;
+        }
+
+        // ── 5. ARRIVAL LOCK (Bám mục tiêu & Chống Overshoot) ──
+        if (s.dist < cfg.arrival_eps) {
+            s.locked_on_head = true;
+
+            let follow = 0.12;
+            s.step_x = s.vel_x * s.pf_dynamic * follow;
+            s.step_y = s.vel_y * s.pf_dynamic * follow;
+
+            // Lực đẩy micro-adjustment chống tụt đầu khi đã khóa
+            if (crosshair.y > s.head_y) {
+                s.step_y -= 1.5;
+            }
+            
+            this.apply(s, crosshair);
+            return; // Nhảy thẳng tới frame kế tiếp
+        }
+
+        s.locked_on_head = false;
+
+        // ── 6. EASE-OUT + DYNAMIC GAIN ──
+        // Ở xa tăng tốc độ kéo (gain), ở gần giảm dần để dừng chính xác
+        let k = cfg.ease_k + Math.min(s.dist / 150, 0.25);
+        s.step_x = s.delta_x * k;
+        s.step_y = s.delta_y * k;
+
+        // ── 7. CLAMP STEP (Tỷ lệ thuận với tốc độ địch) ──
+        let step_mag = Math.sqrt(s.step_x * s.step_x + s.step_y * s.step_y);
+        let max_step = cfg.clamp_max_px * (1 + Math.min(speed / 10, 1));
+
+        if (step_mag > max_step) {
+            let ratio = max_step / step_mag;
+            s.step_x *= ratio;
+            s.step_y *= ratio;
+        }
+
+        // ── 8. MICRO JITTER THÔNG MINH ──
+        // Rung tay giảm dần về 0 khi tâm đã sát đầu để đạt độ chính xác tuyệt đối
+        let noise_scale = cfg.noise_mag * (s.dist / 120);
+        s.step_x += (Math.random() - 0.5) * 2 * noise_scale;
+        s.step_y += (Math.random() - 0.5) * 2 * noise_scale;
+
+        this.apply(s, crosshair);
+    },
+
+    apply: function(s, crosshair) {
+        // ── 9. APPLY TO CROSSHAIR & OFFSET ──
+        crosshair.x += s.step_x;
+        crosshair.y += s.step_y;
+
+        s.aim_offset_x -= s.step_x;
+        s.aim_offset_y -= s.step_y;
+
+        // ── 10. DEBUG/SAVE ──
+        s.move_angle_deg = Math.atan2(s.vel_y, s.vel_x) * 180 / Math.PI;
+        s.prev_head_x = s.head_x;
+        s.prev_head_y = s.head_y;
+    },
+
+    initState: function(entity) {
+        return {
+            prev_head_x: entity.bones.head.x,
+            prev_head_y: entity.bones.head.y,
+            vel_x: 0, vel_y: 0,
+            aim_offset_x: 0, aim_offset_y: 0,
+            locked_on_head: false
+        };
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
