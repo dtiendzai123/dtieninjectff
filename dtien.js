@@ -11004,7 +11004,7 @@ const AIMLOCK_CONFIG = {
     PREDICT: {
         ENABLE: true,
         VELOCITY_SCALE: 1.0,
-        LEAD_TIME: 0.12,        // thời gian dự đoán trước
+        LEAD_TIME: 0.001,        // thời gian dự đoán trước
         ADAPTIVE: true
     },
 
