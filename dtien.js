@@ -10826,6 +10826,91 @@ function loop() {
     }
     requestAnimationFrame(loop);
 }
+// ===== [ABSOLUTE_HEAD_DRAG_ENGINE_V9] =====
+// Chiến lược: Bypass Torso (Bỏ qua thân) & Absolute Lock (Khóa chết đầu)
+
+class AbsoluteHeadEngine {
+    constructor() {
+        this.force_y_boost = 2.5;    // Lực đẩy siêu cấp để vượt qua ngực/cổ
+        this.snap_precision = 0.98;  // 98% khoảng cách được lấp đầy trong 0.001s
+        this.sticky_threshold = 15;  // Bán kính hố đen (pixel)
+    }
+
+    process(entity, localPlayer) {
+        if (!entity || !entity.alive) return;
+
+        const crosshair = localPlayer.crosshair;
+        const head = entity.bones.head;
+        const chest = entity.bones.chest;
+
+        // 1. TÍNH TOÁN KHOẢNG CÁCH THỰC (PIXEL DELTA)
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        // 2. LOGIC ƯU TIÊN ĐẦU TUYỆT ĐỐI (VERTICAL BIAS)
+        // Nếu tâm đang nằm ở bất kỳ đâu DƯỚI đầu, áp dụng lực đẩy cưỡng chế
+        if (crosshair.y > head.y) {
+            // Càng ở xa đầu (vùng chân/bụng), lực đẩy càng mạnh
+            let distance_bias = Math.min((crosshair.y - head.y) / 50, 2.0);
+            dy *= (this.force_y_boost + distance_bias);
+        }
+
+        // 3. XỬ LÝ TRÔI NHANH QUA VÙNG THÂN
+        // Triệt tiêu ma sát ảo khi tâm đi qua tọa độ Chest
+        if (Math.abs(crosshair.y - chest.y) < 30) {
+            dy *= 1.5; // Tăng tốc gấp rưỡi khi đi ngang qua ngực
+            dx *= 1.2;
+        }
+
+        // 4. CHẾ ĐỘ "HỐ ĐEN" (ABSOLUTE SNAP)
+        if (dist < this.sticky_threshold) {
+            // Khi đã chạm vùng đầu, dính chặt 100% không cho sai lệch
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+            this.hard_locked = true;
+        } else {
+            // Kéo siêu tốc 0.001s
+            crosshair.x += dx * this.snap_precision;
+            crosshair.y += dy * this.snap_precision;
+            this.hard_locked = false;
+        }
+
+        // 5. ANTI-RECOIL & STABILIZER DYNAMICS
+        if (this.hard_locked && entity.velocity) {
+            // Bám đuổi tuyệt đối theo vận tốc của đầu địch
+            crosshair.x += entity.velocity.x;
+            crosshair.y += entity.velocity.y;
+        }
+
+        // 6. RAW INPUT INJECTION
+        this.directMove(crosshair.x, crosshair.y);
+    }
+
+    directMove(tx, ty) {
+        // Ghi đè tọa độ vật lý ngay lập tức
+        const moveEvent = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pressure: 1.0,
+            pointerId: 1,
+            isPrimary: true,
+            bubbles: true
+        });
+        document.dispatchEvent(moveEvent);
+    }
+}
+
+// ===== VẬN HÀNH CƯỠNG CHẾ =====
+const headEngine = new AbsoluteHeadEngine();
+
+function tick() {
+    const target = getPriorityEntity(); // Luôn lấy thực thể gần tâm nhất
+    if (target) {
+        headEngine.process(target, localPlayer);
+    }
+    requestAnimationFrame(tick);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
