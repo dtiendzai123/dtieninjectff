@@ -11048,6 +11048,36 @@ const AIMLOCK_CONFIG = {
         DRAW_FOV: false
     }
 };
+const CHEST_HEAD_BOOST_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== VÙNG KÍCH HOẠT (CHEST ZONE) =====
+    CHEST_ZONE: {
+        RADIUS: 0.08,          // vùng quanh thân
+        PRIORITY_Y_OFFSET: 0.25 // độ cao từ thân lên đầu
+    },
+
+    // ===== BOOST KÉO LÊN =====
+    BOOST: {
+        ENABLE: true,
+        FORCE_Y: 4.5,          // lực kéo lên cực mạnh
+        FORCE_X: 0.6,          // giữ ngang ổn định
+        ACCELERATION: 1.8      // tăng tốc khi kéo
+    },
+
+    // ===== NHẠY TÂM =====
+    SENS: {
+        CHEST_MULTIPLIER: 2.2, // nhạy hơn khi aim vào thân
+        HEAD_LOCK_MULTIPLIER: 3.0
+    },
+
+    // ===== SNAP HEAD =====
+    SNAP: {
+        ENABLE: true,
+        THRESHOLD: 0.015       // gần head là snap luôn
+    }
+};
  const AimLockHeadEngine = (() => {
 
     let lastTarget = null;
@@ -11100,7 +11130,51 @@ const AIMLOCK_CONFIG = {
         };
     }
 
-    function stabilize(delta) {
+ function chestToHeadBoost(state, target) {
+
+    if (!CHEST_HEAD_BOOST_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+
+    // ===== POSITIONS =====
+    const head = target.head;
+    const chest = {
+        x: target.head.x,
+        y: target.head.y + CHEST_HEAD_BOOST_CONFIG.CHEST_ZONE.PRIORITY_Y_OFFSET
+    };
+
+    // ===== DIST TO CHEST =====
+    const dx = chest.x - crosshair.x;
+    const dy = chest.y - crosshair.y;
+    const dist = Math.hypot(dx, dy);
+
+    // ===== TRIGGER CHEST ZONE =====
+    if (dist < CHEST_HEAD_BOOST_CONFIG.CHEST_ZONE.RADIUS) {
+
+        // ===== APPLY SENS BOOST =====
+        crosshair.x += dx * CHEST_HEAD_BOOST_CONFIG.SENS.CHEST_MULTIPLIER;
+
+        // ===== KÉO LÊN ĐẦU (QUAN TRỌNG) =====
+        const headDeltaY = head.y - crosshair.y;
+
+        crosshair.y += headDeltaY * CHEST_HEAD_BOOST_CONFIG.BOOST.FORCE_Y;
+        crosshair.x += (head.x - crosshair.x) * CHEST_HEAD_BOOST_CONFIG.BOOST.FORCE_X;
+
+        // ===== SNAP HEAD =====
+        const headDist = Math.hypot(
+            head.x - crosshair.x,
+            head.y - crosshair.y
+        );
+
+        if (CHEST_HEAD_BOOST_CONFIG.SNAP.ENABLE &&
+            headDist < CHEST_HEAD_BOOST_CONFIG.SNAP.THRESHOLD) {
+
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+}
+  function stabilize(delta) {
         if (!AIMLOCK_CONFIG.STABILIZER.ENABLE) return delta;
 
         if (Math.abs(delta.x) < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION)
@@ -11154,6 +11228,7 @@ const AIMLOCK_CONFIG = {
     setTimeout(() => gameLoop(state), 8);
 }
  
+
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
