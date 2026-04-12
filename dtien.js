@@ -11048,7 +11048,7 @@ const AIMLOCK_CONFIG = {
         DRAW_FOV: false
     }
 };
- const AimLockEngine = (() => {
+ const AimLockEngine2 = (() => {
 
     let lastTarget = null;
     let lastTime = Date.now();
