@@ -10070,12 +10070,12 @@ const HeadAimSystem = {
 
 const PreciseAimSystem = {
     config: {
-        vel_alpha: 0.35,       // Hệ số EMA (càng nhỏ càng mượt, càng lớn càng nhạy)
-        predict_factor: 0.45,   // Tầm nhìn xa của dự đoán
+        vel_alpha: 1.35,       // Hệ số EMA (càng nhỏ càng mượt, càng lớn càng nhạy)
+        predict_factor: 1.0,   // Tầm nhìn xa của dự đoán
         arrival_eps: 4.0,       // Ngưỡng "đã đến nơi" (pixels)
         ease_k: 0.22,           // Tỉ lệ giảm tốc (Ease-out)
-        clamp_max_px: 25.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
-        noise_mag: 0.15,        // Cường độ rung tay giả lập
+        clamp_max_px: 50.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
+        noise_mag: 0.0,        // Cường độ rung tay giả lập
     },
 
     /**
