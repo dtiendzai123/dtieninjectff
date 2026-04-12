@@ -10183,13 +10183,13 @@ const PreciseAimSystem = {
 
 const SmartAimSystem = {
     config: {
-        vel_alpha: 0.35,        // EMA mượt
+        vel_alpha: 1.35,        // EMA mượt
         vel_clamp: 25.0,       // Chống giật lag tọa độ
         predict_factor: 0.5,   // PF cơ bản
         arrival_eps: 4.5,      // Ngưỡng bám đầu
         ease_k: 0.22,          // Ease-out cơ bản
         clamp_max_px: 100.0,    // Tốc độ kéo cơ bản
-        noise_mag: 0.2,        // Độ rung tối đa
+        noise_mag: 0.0,        // Độ rung tối đa
         sensitivity: 4.0       // Hệ số nhạy
     },
 
@@ -10229,7 +10229,7 @@ const SmartAimSystem = {
 
         // ── 4. HEAD MAGNET (Fix ưu tiên vùng đầu) ──
         if (crosshair.y > s.head_y) {
-            s.delta_y *= 1.5; // Kéo lên cực mạnh khi tâm nằm dưới đầu
+            s.delta_y *= 2.5; // Kéo lên cực mạnh khi tâm nằm dưới đầu
         }
         
         // Nếu chạy ngang, ưu tiên giữ độ cao đầu (Anti- tụt ngực khi địch chạy)
@@ -10238,7 +10238,7 @@ const SmartAimSystem = {
         }
 
         // Càng gần mục tiêu lực hút càng tăng
-        if (s.dist < 70) {
+        if (s.dist < 9999) {
             s.delta_x *= 1.2;
             s.delta_y *= 1.3;
         }
