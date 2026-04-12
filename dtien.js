@@ -10728,7 +10728,7 @@ const INSTANT_CONFIG = {
     AutoClickDelay: 0       // Bắn ngay khi khóa
 };
 
-const engine = new InstantSnapEngine(INSTANT_CONFIG);
+
 
 // Vòng lặp vận hành (Ưu tiên FPS cao nhất)
 function fastTick() {
