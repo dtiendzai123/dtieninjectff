@@ -10816,8 +10816,7 @@ class HyperAimEntity {
     }
 }
 
-// ===== VẬN HÀNH CHẾ ĐỘ NHẸ TÂM =====
-const engine = new HyperAimEntity();
+
 
 function loop() {
     const target = getTargetInField();
@@ -10902,7 +10901,7 @@ class AbsoluteHeadEngine {
 }
 
 // ===== VẬN HÀNH CƯỠNG CHẾ =====
-const headEngine = new AbsoluteHeadEngine();
+
 
 function tick() {
     const target = getPriorityEntity(); // Luôn lấy thực thể gần tâm nhất
@@ -10977,7 +10976,183 @@ class HeadHuggerEngine {
         document.dispatchEvent(move);
     }
 }
+const AIMLOCK_CONFIG = {
 
+    // ===== CORE =====
+    ENABLE: true,
+    MODE: "AGGRESSIVE",
+
+    // ===== TARGET =====
+    TARGET: {
+        BONE: "HEAD",
+        SWITCH_DELAY: 0,              // chuyển mục tiêu ngay lập tức
+        MAX_DISTANCE: 999999,
+        FOV: 9999,                   // bắt toàn màn
+        PRIORITY: "CLOSEST_TO_CROSSHAIR"
+    },
+
+    // ===== TRACKING =====
+    TRACK: {
+        SMOOTH: 0.01,                // gần như snap tức thì
+        HARD_LOCK: true,
+        LOCK_STRENGTH: 3.0,          // lực ghim cực mạnh
+        DEADZONE: 0                  // không cho lệch
+    },
+
+    // ===== PREDICTION =====
+    PREDICT: {
+        ENABLE: true,
+        VELOCITY_SCALE: 2.5,         // bù chuyển động mạnh
+        LEAD_TIME: 0.25,             // dự đoán xa hơn
+        ADAPTIVE: true
+    },
+
+    // ===== KALMAN =====
+    KALMAN: {
+        ENABLE: true,
+        PROCESS_NOISE: 0.0001,       // cực mượt
+        MEASURE_NOISE: 0.01
+    },
+
+    // ===== RECOIL =====
+    RECOIL: {
+        CONTROL: true,
+        VERTICAL: 1.5,               // kéo xuống mạnh
+        HORIZONTAL: 0.6
+    },
+
+    // ===== AUTO FIRE =====
+    AUTO_FIRE: {
+        ENABLE: true,
+        DELAY: 0,
+        TRIGGER_RADIUS: 0.0005       // gần như chạm là bắn
+    },
+
+    // ===== SENS =====
+    SENS: {
+        BASE: 2.5,                   // tốc độ cực cao
+        ADS_MULTIPLIER: 2.0,
+        DYNAMIC_BY_DISTANCE: false   // giữ max luôn
+    },
+
+    // ===== STABILIZER =====
+    STABILIZER: {
+        ENABLE: true,
+        MICRO_CORRECTION: 0,         // không rung
+        MAX_DELTA: 999               // không giới hạn
+    },
+
+    // ===== DEBUG =====
+    DEBUG: {
+        LOG: false,
+        DRAW_FOV: false
+    }
+};
+ const AimLockEngine = (() => {
+
+    let lastTarget = null;
+    let lastTime = Date.now();
+
+    function getDeltaTime() {
+        const now = Date.now();
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+        return dt;
+    }
+
+    function getTarget(enemies, crosshair) {
+        let best = null;
+        let minDist = Infinity;
+
+        for (let e of enemies) {
+            if (!e || !e.head) continue;
+
+            const dx = e.head.x - crosshair.x;
+            const dy = e.head.y - crosshair.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < minDist && dist < AIMLOCK_CONFIG.TARGET.FOV) {
+                minDist = dist;
+                best = e;
+            }
+        }
+
+        return best;
+    }
+
+    function predictPosition(target, dt) {
+        if (!AIMLOCK_CONFIG.PREDICT.ENABLE) return target.head;
+
+        const vx = target.head.x - target.prevHead.x;
+        const vy = target.head.y - target.prevHead.y;
+
+        return {
+            x: target.head.x + vx * AIMLOCK_CONFIG.PREDICT.LEAD_TIME,
+            y: target.head.y + vy * AIMLOCK_CONFIG.PREDICT.LEAD_TIME
+        };
+    }
+
+    function applySmooth(current, target) {
+        const s = AIMLOCK_CONFIG.TRACK.SMOOTH;
+        return {
+            x: current.x + (target.x - current.x) * (1 - s),
+            y: current.y + (target.y - current.y) * (1 - s)
+        };
+    }
+
+    function stabilize(delta) {
+        if (!AIMLOCK_CONFIG.STABILIZER.ENABLE) return delta;
+
+        if (Math.abs(delta.x) < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION)
+            delta.x = 0;
+
+        if (Math.abs(delta.y) < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION)
+            delta.y = 0;
+
+        return delta;
+    }
+
+    function aim(state) {
+        if (!AIMLOCK_CONFIG.ENABLE) return;
+
+        const dt = getDeltaTime();
+        const target = getTarget(state.enemies, state.crosshair);
+
+        if (!target) return;
+
+        const predicted = predictPosition(target, dt);
+        const smoothed = applySmooth(state.crosshair, predicted);
+
+        let delta = {
+            x: smoothed.x - state.crosshair.x,
+            y: smoothed.y - state.crosshair.y
+        };
+
+        delta = stabilize(delta);
+
+        // ===== APPLY AIM =====
+        state.crosshair.x += delta.x * AIMLOCK_CONFIG.SENS.BASE;
+        state.crosshair.y += delta.y * AIMLOCK_CONFIG.SENS.BASE;
+
+        // ===== AUTO FIRE =====
+        const dist = Math.hypot(delta.x, delta.y);
+        if (AIMLOCK_CONFIG.AUTO_FIRE.ENABLE &&
+            dist < AIMLOCK_CONFIG.AUTO_FIRE.TRIGGER_RADIUS) {
+            state.shoot = true;
+        }
+    }
+
+    return { aim };
+
+})();
+ function gameLoop(state) {
+
+    try {
+        AimLockEngine.aim(state);
+    } catch (e) {}
+
+    setTimeout(() => gameLoop(state), 8);
+}
  
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
