@@ -10977,6 +10977,183 @@ class HeadHuggerEngine {
         document.dispatchEvent(move);
     }
 }
+const AIMLOCK_CONFIG = {
+
+    // ===== CORE =====
+    ENABLE: true,
+    MODE: "AGGRESSIVE", // LEGIT | BALANCED | AGGRESSIVE | SNIPER
+
+    // ===== TARGET =====
+    TARGET: {
+        BONE: "HEAD",           // HEAD | NECK | CHEST
+        SWITCH_DELAY: 80,       // ms chuyển mục tiêu
+        MAX_DISTANCE: 9999,
+        FOV: 180,
+        PRIORITY: "CLOSEST_TO_CROSSHAIR" // DISTANCE | HEALTH | CROSSHAIR
+    },
+
+    // ===== TRACKING =====
+    TRACK: {
+        SMOOTH: 0.15,           // càng thấp càng snap nhanh
+        HARD_LOCK: true,
+        LOCK_STRENGTH: 1.0,     // lực ghim
+        DEADZONE: 0.001         // chống rung
+    },
+
+    // ===== PREDICTION =====
+    PREDICT: {
+        ENABLE: true,
+        VELOCITY_SCALE: 1.0,
+        LEAD_TIME: 0.12,        // thời gian dự đoán trước
+        ADAPTIVE: true
+    },
+
+    // ===== KALMAN FILTER =====
+    KALMAN: {
+        ENABLE: true,
+        PROCESS_NOISE: 0.01,
+        MEASURE_NOISE: 0.1
+    },
+
+    // ===== RECOIL =====
+    RECOIL: {
+        CONTROL: true,
+        VERTICAL: 0.85,
+        HORIZONTAL: 0.25
+    },
+
+    // ===== AUTO FIRE =====
+    AUTO_FIRE: {
+        ENABLE: true,
+        DELAY: 0,
+        TRIGGER_RADIUS: 0.02
+    },
+
+    // ===== SENSITIVITY =====
+    SENS: {
+        BASE: 1.0,
+        ADS_MULTIPLIER: 1.3,
+        DYNAMIC_BY_DISTANCE: true
+    },
+
+    // ===== ANTI SHAKE =====
+    STABILIZER: {
+        ENABLE: true,
+        MICRO_CORRECTION: 0.002,
+        MAX_DELTA: 0.05
+    },
+
+    // ===== DEBUG =====
+    DEBUG: {
+        LOG: false,
+        DRAW_FOV: false
+    }
+};
+ const AimLockEngine = (() => {
+
+    let lastTarget = null;
+    let lastTime = Date.now();
+
+    function getDeltaTime() {
+        const now = Date.now();
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+        return dt;
+    }
+
+    function getTarget(enemies, crosshair) {
+        let best = null;
+        let minDist = Infinity;
+
+        for (let e of enemies) {
+            if (!e || !e.head) continue;
+
+            const dx = e.head.x - crosshair.x;
+            const dy = e.head.y - crosshair.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < minDist && dist < AIMLOCK_CONFIG.TARGET.FOV) {
+                minDist = dist;
+                best = e;
+            }
+        }
+
+        return best;
+    }
+
+    function predictPosition(target, dt) {
+        if (!AIMLOCK_CONFIG.PREDICT.ENABLE) return target.head;
+
+        const vx = target.head.x - target.prevHead.x;
+        const vy = target.head.y - target.prevHead.y;
+
+        return {
+            x: target.head.x + vx * AIMLOCK_CONFIG.PREDICT.LEAD_TIME,
+            y: target.head.y + vy * AIMLOCK_CONFIG.PREDICT.LEAD_TIME
+        };
+    }
+
+    function applySmooth(current, target) {
+        const s = AIMLOCK_CONFIG.TRACK.SMOOTH;
+        return {
+            x: current.x + (target.x - current.x) * (1 - s),
+            y: current.y + (target.y - current.y) * (1 - s)
+        };
+    }
+
+    function stabilize(delta) {
+        if (!AIMLOCK_CONFIG.STABILIZER.ENABLE) return delta;
+
+        if (Math.abs(delta.x) < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION)
+            delta.x = 0;
+
+        if (Math.abs(delta.y) < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION)
+            delta.y = 0;
+
+        return delta;
+    }
+
+    function aim(state) {
+        if (!AIMLOCK_CONFIG.ENABLE) return;
+
+        const dt = getDeltaTime();
+        const target = getTarget(state.enemies, state.crosshair);
+
+        if (!target) return;
+
+        const predicted = predictPosition(target, dt);
+        const smoothed = applySmooth(state.crosshair, predicted);
+
+        let delta = {
+            x: smoothed.x - state.crosshair.x,
+            y: smoothed.y - state.crosshair.y
+        };
+
+        delta = stabilize(delta);
+
+        // ===== APPLY AIM =====
+        state.crosshair.x += delta.x * AIMLOCK_CONFIG.SENS.BASE;
+        state.crosshair.y += delta.y * AIMLOCK_CONFIG.SENS.BASE;
+
+        // ===== AUTO FIRE =====
+        const dist = Math.hypot(delta.x, delta.y);
+        if (AIMLOCK_CONFIG.AUTO_FIRE.ENABLE &&
+            dist < AIMLOCK_CONFIG.AUTO_FIRE.TRIGGER_RADIUS) {
+            state.shoot = true;
+        }
+    }
+
+    return { aim };
+
+})();
+ function gameLoop(state) {
+
+    try {
+        AimLockEngine.aim(state);
+    } catch (e) {}
+
+    setTimeout(() => gameLoop(state), 8);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
