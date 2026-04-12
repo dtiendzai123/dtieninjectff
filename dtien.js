@@ -10911,6 +10911,72 @@ function tick() {
     }
     requestAnimationFrame(tick);
 }
+// ===== [SYSTEM: HEAD_HUGGER_CORE_V10] =====
+// Chiến thuật: Pre-emptive Snap (Khóa trước khi chạm) & Hitbox Expansion
+
+class HeadHuggerEngine {
+    constructor() {
+        this.snapThreshold = 0.01; // Giới hạn thời gian 10ms (0.01s)
+        this.suctionPower = 0.99;  // Lực hút 99% khoảng cách mỗi frame
+        this.headMargin = 1.2;     // Mở rộng vùng nhận diện đầu (Hitbox Expansion)
+    }
+
+    process(target, localPlayer) {
+        if (!target || !target.alive) return;
+
+        const crosshair = localPlayer.crosshair;
+        const head = target.bones.head;
+        
+        // 1. TÍNH TOÁN VECTOR TRUY ĐUỔI (PURSUIT VECTOR)
+        // Bao gồm cả vận tốc của địch để "đón đầu" trước khi kéo
+        let predictX = head.x + (target.velocity?.x || 0) * 0.5;
+        let predictY = head.y + (target.velocity?.y || 0) * 0.5;
+
+        let dx = predictX - crosshair.x;
+        let dy = predictY - crosshair.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        // 2. LOGIC "ÔM TRỌN" (HITBOX HUGGING)
+        // Nếu khoảng cách lớn, dùng gia tốc cực đại để "bay" đến vùng đầu
+        // Nếu đã ở gần (< 30px), cưỡng chế tâm lọt vào tâm điểm đầu ngay lập tức
+        if (dist < 80) {
+            // Vùng tiếp cận nhanh: Nhân lực kéo dọc để bỏ qua thân/cổ
+            dy *= 2.0; 
+            dx *= 1.5;
+        }
+
+        // 3. THỰC THI SNAP 0.01S (ULTRA-FAST INJECTION)
+        // Thay vì di chuyển mượt, ta thực hiện "nhảy bước" (Step-jump)
+        if (dist > 1.0) {
+            // Chỉ mất đúng 1-2 frame để ôm trọn mục tiêu
+            crosshair.x += dx * this.suctionPower;
+            crosshair.y += dy * this.suctionPower;
+        }
+
+        // 4. KHÓA TÂM TUYỆT ĐỐI (ZERO DRIFT)
+        // Khi đã ở trong hitbox đầu, tâm ngắm sẽ "dính" như keo 502
+        if (dist < 15) {
+            crosshair.x = predictX;
+            crosshair.y = predictY;
+            this.isGlued = true;
+        }
+
+        // 5. GỬI TÍN HIỆU CƯỠNG CHẾ (HARD-INPUT)
+        this.injectPhysicalMove(crosshair.x, crosshair.y);
+    }
+
+    injectPhysicalMove(tx, ty) {
+        // Sử dụng PointerEvent với thông số áp lực tuyệt đối
+        const move = new PointerEvent('pointermove', {
+            clientX: tx,
+            clientY: ty,
+            pressure: 1.0,
+            pointerId: 1,
+            isPrimary: true
+        });
+        document.dispatchEvent(move);
+    }
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
