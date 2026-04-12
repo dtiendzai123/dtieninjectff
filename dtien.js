@@ -10525,6 +10525,127 @@ function mainLoop() {
     }
     requestAnimationFrame(mainLoop);
 }
+ 
+ // ===== [ENTITY_AIM_PROCESSOR_V6] =====
+// Tích hợp: Kalman Filter, Prediction, Recoil & Stabilizer
+
+class EnemyEntity {
+    constructor(id, initialPos) {
+        this.id = id;
+        this.head = { x: initialPos.x, y: initialPos.y };
+        this.prevHead = { x: initialPos.x, y: initialPos.y };
+        this.vel = { x: 0, y: 0 };
+        
+        // Kalman Filter State cho từng Entity
+        this.kalman = {
+            x: initialPos.x, y: initialPos.y,
+            p: 1, q: 0.01, r: 0.1
+        };
+        
+        this.lastUpdateTime = Date.now();
+    }
+
+    // Cập nhật tọa độ và lọc nhiễu chuyển động
+    update(newPos) {
+        this.prevHead = { ...this.head };
+        
+        // 1. Áp dụng Kalman Filter để làm mượt quỹ đạo địch
+        this.kalman.p += this.kalman.q;
+        let k = this.kalman.p / (this.kalman.p + this.kalman.r);
+        this.head.x = this.kalman.x + k * (newPos.x - this.kalman.x);
+        this.head.y = this.kalman.y + k * (newPos.y - this.kalman.y);
+        this.kalman.x = this.head.x;
+        this.kalman.y = this.head.y;
+        this.kalman.p = (1 - k) * this.kalman.p;
+
+        // 2. Tính vận tốc (Velocity)
+        this.vel.x = this.head.x - this.prevHead.x;
+        this.vel.y = this.head.y - this.prevHead.y;
+    }
+}
+
+const AimLockEngine = {
+    entities: new Map(), // Lưu trữ danh sách thực thể theo ID
+
+    // Hàm thực thi ngắm bắn chính
+    process: function(visibleEnemies, state) {
+        if (!AIMLOCK_CONFIG.ENABLE) return;
+
+        // 1. Cập nhật hoặc tạo mới thực thể trong bộ nhớ
+        visibleEnemies.forEach(e => {
+            if (!this.entities.has(e.id)) {
+                this.entities.set(e.id, new EnemyEntity(e.id, e.head));
+            } else {
+                this.entities.get(e.id).update(e.head);
+            }
+        });
+
+        // 2. Chọn mục tiêu tối ưu (Priority: CLOSEST_TO_CROSSHAIR)
+        let target = this.getBestTarget(Array.from(this.entities.values()), state.crosshair);
+        if (!target) return;
+
+        // 3. PREDICTION (Dự đoán chặn đầu)
+        let predictX = target.head.x + (target.vel.x * AIMLOCK_CONFIG.PREDICT.LEAD_TIME * 10);
+        let predictY = target.head.y + (target.vel.y * AIMLOCK_CONFIG.PREDICT.LEAD_TIME * 10);
+
+        // 4. CALCULATE DELTA & RECOIL CONTROL
+        let dx = predictX - state.crosshair.x;
+        let dy = predictY - state.crosshair.y;
+
+        if (AIMLOCK_CONFIG.RECOIL.CONTROL && state.isFiring) {
+            dy -= (AIMLOCK_CONFIG.RECOIL.VERTICAL * 5); // Ghì tâm xuống
+            dx -= (Math.random() - 0.5) * AIMLOCK_CONFIG.RECOIL.HORIZONTAL;
+        }
+
+        // 5. SMOOTHING & STABILIZER (Chống overshoot)
+        let dist = Math.hypot(dx, dy);
+        let smooth = (AIMLOCK_CONFIG.MODE === "AGGRESSIVE") ? 0.08 : AIMLOCK_CONFIG.TRACK.SMOOTH;
+        
+        // Stabilizer: Khử rung siêu nhỏ
+        if (dist < AIMLOCK_CONFIG.STABILIZER.MICRO_CORRECTION) {
+            dx = 0; dy = 0;
+        }
+
+        let moveX = dx * (1 - smooth);
+        let moveY = dy * (1 - smooth);
+
+        // 6. APPLY SENSITIVITY & OUTPUT
+        let finalSens = AIMLOCK_CONFIG.SENS.BASE;
+        if (state.isADS) finalSens *= AIMLOCK_CONFIG.SENS.ADS_MULTIPLIER;
+
+        state.crosshair.x += moveX * finalSens;
+        state.crosshair.y += moveY * finalSens;
+
+        // 7. AUTO FIRE JUDGEMENT
+        if (AIMLOCK_CONFIG.AUTO_FIRE.ENABLE && dist < (AIMLOCK_CONFIG.AUTO_FIRE.TRIGGER_RADIUS * 100)) {
+            state.triggerShoot = true;
+        }
+
+        // 8. Dọn dẹp thực thể đã biến mất (Cleanup)
+        this.cleanupEntities(visibleEnemies);
+    },
+
+    getBestTarget: function(entities, crosshair) {
+        let best = null;
+        let minScore = Infinity;
+
+        entities.forEach(e => {
+            let d = Math.hypot(e.head.x - crosshair.x, e.head.y - crosshair.y);
+            if (d < AIMLOCK_CONFIG.TARGET.FOV && d < minScore) {
+                minScore = d;
+                best = e;
+            }
+        });
+        return best;
+    },
+
+    cleanupEntities: function(currentVisible) {
+        const currentIds = new Set(currentVisible.map(e => e.id));
+        for (let [id] of this.entities) {
+            if (!currentIds.has(id)) this.entities.delete(id);
+        }
+    }
+};
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
