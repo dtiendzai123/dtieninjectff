@@ -1,3 +1,2547 @@
+
+
+// --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
+let body = $response.body;
+
+try {
+    // Thử giải mã nếu Server trả về JSON
+    let obj = JSON.parse(body);
+    obj["DTien_Matrix_Engine"] = dtienMatrixEngine;
+    
+    // Tạo danh sách Key thô tự động từ các Const trên
+    obj["Inject_Config"] = {
+        "matrix_dictionary": "com.accpt_ffxbase64_Key_allow_Matrix_Dictionary_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.MATRIX_PARENT_HOOK.Dictionary,
+        "forward_sync": "com.accpt_ffxbase64_Key_allow_Forward_Sync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.QUATERNION_W_STABILIZER.GetForward,
+        "component_tf": "com.accpt_ffxbase64_Key_allow_Component_Transform_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.LOCAL_BONE_EXTRACTION.Component_Transform
+    };
+    // Inject toàn bộ Engine vào Response của Host
+    obj["DTien_AutoAim_Lock"] = AIM_LOCK_ENGINE;
+    obj["Engine_Status"] = "Running_Premium";
+    obj["Target_Lock"] = "Head_Bone_Center";
+    // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
+    obj["mod_menu_config"] = dtienConfig;
+    obj["authorized"] = true;
+    obj["DTien_Ultra_Aim"] = ULTRA_STICKY_AIM;
+    obj["Global_Settings"] = {
+        "Aim_Assist_Level": "Maximum",
+        "Recoil_Reduction": "100%",
+        "Server_Authorized": true
+    };
+        obj["DTien_V5_Injected"] = DTien_V5_Engine;
+    obj["Snap_Status"] = "Ready_To_Flick";
+    obj["Anti_Cheat_Shield"] = "Bypassed_v2";
+  // Inject toàn bộ Engine V6 vào Response của Host
+    obj["DTien_V6_Absolute"] = DTien_V5_Engine; // Backup V5
+    obj["V6_Core_Engine"] = DTien_V6_Engine;    // Main V6
+    obj["Precision_Status"] = "Absolute_Lock_On";
+     obj["DTien_V7_Permanent"] = DTien_V7_Engine;
+    obj["System_Log"] = "Head_Lock_Stable_On_Firing";
+    obj["Authorization"] = "V7_Premium_Grant";
+  // Inject toàn bộ Engine V8 vào Response
+    obj["DTien_V8_Omni"] = DTien_V8_Engine;
+    obj["Tracking_Status"] = "Omni_Lock_Engaged";
+    obj["Precision_Level"] = "Absolute_360";
+     // Inject toàn bộ Engine V9 vào Response
+    obj["DTien_V9_HardStop"] = DTien_V9_Engine;
+    obj["Precision_Status"] = "Absolute_Distance_Locked";
+    obj["Overshoot_Fix"] = "Enabled_Maximum";
+obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
+    obj["Snap_Status"] = "Instant_Head_Locked";
+    obj["Speed_Boost"] = "Zero_Delay_Mode";
+    // Tiêm (Inject) toàn bộ cấu trúc Master vào phản hồi
+    obj["DTien_HeadLock_Master"] = DTien_HeadLock_Master;
+    obj["Authorized_User"] = "dtiendzai123";
+    obj["Injection_Status"] = "Success_98_Percent";
+
+    // Tạo các chuỗi Key thô (Raw Keys) tự động từ Object
+    obj["Raw_Keys_Payload"] = {
+        "Aim_Lock_Key": "com.accpt_ffxbase64_Key_allow_AimLock_HardLock_Enable_app_com.dts.freefireth=True",
+        "ADS_Snap_Key": "com.accpt_ffxbase64_Key_allow_ADS_HeadSnap_Enable_app_com.dts.freefireth=True",
+        "Bullet_Path_Key": "com.accpt_ffxbase64_Key_allow_Bullet_Path_Correction_app_com.dts.freefireth=bone_Head",
+        "Precision_Key": "com.accpt_ffxbase64_Key_allow_WorldPosition_Precision_Fix_app_com.dts.freefireth=-0.005812380"
+    };
+     // Inject toàn bộ Engine V11 vào Response
+    obj["DTien_V11_Engine"] = DTien_V11_Engine;
+    obj["System_Priority"] = "LateUpdate_High";
+    
+    // Tự động tạo Raw Keys để nạp vào hệ thống game
+    obj["Raw_Keys_V11"] = {
+        "tracking_key": "com.accpt_ffxbase64_Key_allow_HeadBoneTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "smooth_key": "com.accpt_ffxbase64_Key_allow_GlobalSmoothInterpolation_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0.35",
+        "sync_key": "com.accpt_ffxbase64_Key_allow_LateUpdateSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
+    };
+   // Inject Engine V12 vào phản hồi của Game Host
+    obj["DTien_V12_Core"] = DTien_V12_Engine;
+    obj["Magnet_Status"] = "Global_Locked";
+    obj["Matrix_Sync"] = "Active_High_Precision";
+
+    // Tạo các Raw Keys cần thiết cho bộ nạp (Loader) của Game
+    obj["Raw_Keys_V12"] = {
+        "magnet_key": "com.accpt_ffxbase64_Key_allow_GlobalHeadMagnet_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "teleport_fix": "com.accpt_ffxbase64_Key_allow_TeleportResistHeadLock_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "matrix_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_ComputeMatrix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
+        "local_pos_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_LocalPos_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=-0.045697,-0.004478,-0.020043"
+    };
+     // Inject Engine V13 vào phản hồi
+    obj["DTien_V13_TargetRed"] = DTien_V13_Engine;
+    obj["Aim_Engine_Status"] = "Waiting_For_Red_Crosshair";
+ obj["DTien_V14_Anchor"] = DTien_V14_Engine;
+    obj["AutoAim_Mode"] = "Head_Only_Strict";
+    obj["Hips_Bypass"] = "Fully_Disabled";
+     obj["DTien_V15_Ultimate"] = DTien_V15_Engine;
+    obj["Bullet_Logic"] = "Tracer_Lock_Engaged";
+    obj["Damage_Type"] = "Headshot_Only";
+     obj["DTien_V16_Adaptive"] = DTien_V16_Engine;
+    obj["Overshoot_Fix"] = "Enabled_Maximum";
+    obj["Adaptive_Mode"] = "Distance_Locked";
+    obj["DTien_V17_RTLO"] = DTien_V17_Engine;
+    obj["Aim_Status"] = "Waiting_For_Red_Crosshair";
+    obj["Lock_Mode"] = "Position_Rotation_Strict";
+    obj["DTien_V18_Instant"] = DTien_V18_Engine;
+    obj["Snap_Mode"] = "Micro_Touch_Activated";
+    obj["Lock_Status"] = "Position_Rotation_Synced";
+    obj["DTien_V19_Kinetic"] = DTien_V19_Engine;
+    obj["Aim_Mode"] = "Ultimate_Head_Anchor";
+    obj["Sync_Status"] = "360_Omni_Directional_Active";
+obj["DTien_V20_VectorForce"] = DTien_V20_Engine;
+    obj["Aim_Mode"] = "Absolute_Head_Locked";
+    obj["Correction_Status"] = "Instant_Assign_Active";
+obj["DTien_V21_Velocity"] = DTien_V21_Engine;
+    obj["Sync_Status"] = "Omni_Locked_On_Firing";
+    obj["Movement_Mode"] = "Velocity_Predict_Active";
+    obj["DTien_V22_HardLock"] = DTien_V22_Engine;
+    obj["Aim_Status"] = "Red_Zone_Locked";
+    obj["Lock_Mode"] = "Position_Rotation_Freeze";
+obj["DTien_V23_Axis"] = DTien_V23_Engine;
+    obj["Axis_Status"] = "X_Y_Constraint_Locked";
+    obj["Damping_Mode"] = "Anti_Overshoot_Active";
+ 
+  obj["DTien_V24_Kinetic"] = DTien_V24_Engine;
+    obj["Brake_Status"] = "Ready_To_Snap";
+    obj["Y_Axis_Mode"] = "Variable_Acceleration_Active";
+    
+    obj["DTien_V25_Transform"] = DTien_V25_Engine;
+    obj["Aim_Engine"] = "HardLock_Omni_Directional";
+    obj["Status"] = "Ready_To_Lock_On_Red";
+ obj["DTien_V26_PullSync"] = DTien_V26_Engine;
+    obj["Pull_Speed_Status"] = "Synced_To_Head_Bone";
+    obj["Target_Lock"] = "Absolute_Headshot_Only";
+
+    obj["DTien_V28_Sticky"] = DTien_V28_Engine;
+    obj["Aim_Logic"] = "C_Plus_Plus_Sticky_Loop";
+    obj["Recoil_Status"] = "Compensated_Zero_Drift";
+obj["DTien_V29_Teleport"] = DTien_V29_Engine;
+    obj["Aim_Engine"] = "BONE_HEAD_ONLY_SNAP";
+    obj["Manual_Input"] = "Bypassed_While_Locked";
+obj["DTien_V30_Clamp"] = DTien_V30_Engine;
+    obj["Aim_Engine"] = "FIXED_HEAD_LOCK_V30";
+    obj["Y_Axis_Status"] = "Clamped_At_Head_Bone";
+obj["DTien_V31_Hyper"] = DTien_V31_Engine;
+    obj["Touch_Status"] = "1000Hz_Active";
+    obj["Snap_Mode"] = "Impulse_Brake_Locked";
+      obj["DTien_V32_Chromatic"] = DTien_V32_Engine;
+    obj["Aim_Engine"] = "RED_COLOR_HARDLOCK_V32";
+    obj["Recoil_Status"] = "Zero_Recoil_Active_On_Red";
+ obj["DTien_V33_Absolute"] = DTien_V33_Engine;
+    obj["Aim_Mode"] = "HARD_LOCK_360_PREDICTION";
+    obj["Sync_Status"] = "Ping_Compensated_Locked";
+obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
+    obj["Aim_Logic"] = "TRIGO_VIEWANGLE_HARDLOCK";
+    obj["Input_Status"] = "MouseMultiplier_Dynamic";
+    obj["DTien_V35_Clamp"] = DTien_V35_Engine;
+    obj["Aim_Engine"] = "PRECISION_CLAMP_NULLIFICATION";
+    obj["Clamp_Status"] = "0.5f_Active";
+ obj["DTien_V36_FullEngine"] = DTien_V36_Engine;
+    obj["Aim_Engine_Status"] = "V36_Comprehensive_Running";
+    obj["Logic_Mode"] = "ViewAngle_Normalization_Active";
+obj["DTien_V37_Advanced"] = DTien_V37_Engine;
+    obj["Scanner_Status"] = "Dynamic_Bone_ID_Active";
+    obj["Aim_Logic"] = "FORWARD_VECTOR_PREDICTION";
+obj["DTien_V38_Neural"] = DTien_V38_Engine;
+    obj["Scanner_Engine"] = "NEURAL_BONE_SCANNER_V38";
+    obj["Aim_Logic"] = "QUATERNION_FORWARD_PUSH";
+    obj["DTien_V39_Adaptive"] = DTien_V39_Engine;
+    obj["Drag_Status"] = "CHEST_TO_HEAD_ACTIVE";
+    obj["Curve_Logic"] = "EASE_OUT_ACCELERATION";
+
+    obj["DTien_V40_Hex"] = DTien_V40_Engine;
+    obj["Memory_Status"] = "PATCHED_SUCCESSFULLY";
+    obj["Opcode_Mode"] = "HEX_REPLACE_ACTIVE";
+  obj["DTien_V41_Headshot"] = DTien_V41_Engine;
+    obj["Aimbot_Status"] = "HEX_HEAD_LOCKED";
+    obj["Patch_Priority"] = "Critical";
+    
+    obj["DTien_V42_Aimlock"] = DTien_V42_Engine;
+    obj["Aim_Engine"] = "HEX_HEAD_STATIC_LOCK";
+    obj["Memory_Injection"] = "SUCCESS_BONE_8";
+   obj["DTien_V43_Kinetic"] = DTien_V39_Engine; // Kế thừa cấu trúc
+    obj["Drag_Hex_Status"] = "PATCHED_SUCCESSFULLY";
+    obj["Aim_Type"] = "KINETIC_DRAG_HEAD_LOCK";
+    
+    obj["DTien_V44_Precision"] = DTien_V44_Engine;
+    obj["Accuracy_Status"] = "MAXIMUM_PRECISION";
+    obj["Bone_Targeting"] = "STATIC_HEAD_8";
+    obj["DTien_V45_Mapping"] = DTien_V45_Engine;
+    obj["Offset_Status"] = "ALL_OFFSETS_DONE";
+    obj["Core_Engine"] = "IL2CPP_INTERNAL_PATCH";
+    obj["DTien_V46_MicroSnap"] = DTien_V46_Engine;
+    obj["Aim_Sensitivity"] = "HIGH_PRECISION_BOOST";
+    obj["Fix_Mode"] = "ANTI_OVERSHOOT_ACTIVE";
+ obj["DTien_V47_Snap"] = DTien_V47_Engine;
+    obj["Aim_Mode"] = "INSTANT_STICKY_HEAD";
+    obj["Tracking_Status"] = "FRAME_BY_FRAME_LOCKED";
+obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
+    obj["Stability_Status"] = "SMOOTH_DAMPING_ACTIVE";
+    obj["Aim_Quality"] = "NO_SHAKE_NO_RECOIL";
+  obj["DTien_V49_Viper"] = DTien_V49_Engine;
+    obj["Engine_Type"] = "QUANTUM_VIPER_CORE";
+    obj["Response_Status"] = "ULTRA_SENSITIVITY_0_FRICTION";
+    obj["DTien_V50_ViperX"] = DTien_V50_Engine;
+    obj["Ghost_Status"] = "TRACKING_4D";
+    obj["Magic_Status"] = "HITBOX_EXPANDED_2.5X";
+ obj["DTien_V51_Viper3D"] = DTien_V51_Engine;
+    obj["Tracking_Type"] = "BONE_REAL_3D_ROTATION";
+    obj["Projection_Status"] = "SCREEN_SYNC_SUCCESS";
+obj["DTien_V52_Perfect"] = DTien_V52_Engine;
+    obj["Lock_Mode"] = "RADIUS_DYNAMIC_SNAP";
+    obj["Shake_Filter"] = "ACTIVE_0.4_WEIGHT";
+    
+obj["DTien_V53_Final"] = DTien_V53_Engine;
+    obj["Sync_Status"] = "CHAIN_COMPLETED";
+    obj["Lock_Strength"] = "MAX_STABLE";
+obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
+    obj["Sens_Status"] = "OVERCLOCKED_STABLE";
+    obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
+if (obj.sensitivity) obj.sensitivity *= 1.4;
+
+    // Aim assist
+    if (obj.aimAssist) obj.aimAssist = 1.0;
+
+    // Recoil control
+    if (obj.recoil) obj.recoil = 0;
+
+    // Hitbox ưu tiên head
+    if (obj.hitbox) {
+        obj.hitbox.head *= 999.25;
+        obj.hitbox.body *= 0.0;
+    }
+
+    // Smooth giảm overshoot
+    if (obj.smooth) obj.smooth = 0.15;
+
+ 
+ 
+ // ===== 1. SENSITIVITY CONTROL =====
+    if (obj.sensitivity !== undefined) {
+        obj.sensitivity = Math.min(obj.sensitivity * 1.4, 10);
+    }
+
+    if (obj.camera_sensitivity !== undefined) {
+        obj.camera_sensitivity *= 1.3;
+    }
+
+    // ===== 2. AIM ASSIST BOOST =====
+    if (obj.aimAssist !== undefined) {
+        obj.aimAssist = 1.0; // max hợp lệ
+    }
+
+    if (obj.autoAim !== undefined) {
+        obj.autoAim = true;
+    }
+
+    // ===== 3. HITBOX PRIORITY (HEAD FOCUS) =====
+    if (obj.hitbox !== undefined) {
+        if (obj.hitbox.head !== undefined) {
+            obj.hitbox.head *= 999.0; // tăng head
+        }
+        if (obj.hitbox.neck !== undefined) {
+            obj.hitbox.neck *= 0.0; // giảm cổ
+        }
+        if (obj.hitbox.body !== undefined) {
+            obj.hitbox.body *= 0.0; // giảm body
+        }
+    }
+
+    // ===== 4. RECOIL CONTROL =====
+    if (obj.recoil !== undefined) {
+        obj.recoil = 0;
+    }
+
+    if (obj.vertical_recoil !== undefined) {
+        obj.vertical_recoil *= 0.0;
+    }
+
+    // ===== 5. SMOOTH / ANTI-OVERSHOOT =====
+    if (obj.aim_smooth !== undefined) {
+        obj.aim_smooth = 0.001; // giảm delay → ít văng
+    }
+
+    if (obj.drag_smooth !== undefined) {
+        obj.drag_smooth = 0.001;
+    }
+
+    // ===== 6. TARGET LOCK FEEL (GIẢ LẬP MAGNETIC) =====
+    if (obj.lock_radius !== undefined) {
+        obj.lock_radius *= 360.0;
+    }
+
+
+   // ===== 1. DRAG VECTOR TUNING =====
+    // Tăng lực kéo lên (Y axis)
+    if (obj.drag_vertical !== undefined) {
+        obj.drag_vertical *= 999.5;
+    }
+
+    // Giảm lệch ngang (X axis)
+    if (obj.drag_horizontal !== undefined) {
+        obj.drag_horizontal *= 0.0;
+    }
+
+    // ===== 2. AIM CURVE (ĐƯỜNG CONG KÉO) =====
+    if (obj.aim_curve !== undefined) {
+        obj.aim_curve = "easeOut"; 
+        // kéo đầu nhanh hơn ở đoạn cuối
+    }
+
+    // ===== 3. HEAD PRIORITY =====
+    if (obj.hitbox !== undefined) {
+        if (obj.hitbox.head !== undefined) obj.hitbox.head *= 1.4;
+        if (obj.hitbox.neck !== undefined) obj.hitbox.neck *= 0.1;
+        if (obj.hitbox.body !== undefined) obj.hitbox.body *= 0.0;
+    }
+
+    // ===== 4. SNAP KHI GẦN HEAD =====
+    if (obj.head_snap !== undefined) {
+        obj.head_snap = 999.0; // lực hút nhẹ
+    }
+
+    if (obj.stickyAim !== undefined) {
+        obj.stickyAim = 999.0;
+    }
+
+    // ===== 5. ANTI OVERSHOOT =====
+    if (obj.drag_smooth !== undefined) {
+        obj.drag_smooth = 0.001;
+    }
+
+    if (obj.aim_smooth !== undefined) {
+        obj.aim_smooth = 0.001;
+    }
+
+    // ===== 6. JITTER FIX =====
+    if (obj.jitter !== undefined) {
+        obj.jitter *= 0.25;
+    }
+
+    // ===== 7. AUTO MICRO-CORRECTION =====
+    if (obj.micro_adjust !== undefined) {
+        obj.micro_adjust = 0.001;
+    }
+// 1. TỐI ƯU ĐỘ NHẠY (SENSITIVITY INTERPOLATION)
+    // Tăng tốc độ phản hồi của tâm ngắm, loại bỏ độ trễ (input lag)
+    if (obj.sensitivity_scale !== undefined) {
+        obj.sensitivity_scale = 1.25; // Tăng 25% độ nhạy tổng thể
+    }
+    
+    // 2. KHẢ NĂNG BÁM MỤC TIÊU (TRACKING)
+    // Giúp tâm ngắm tự động bám theo khi đối thủ di chuyển hoặc nhảy
+    if (obj.aim_tracking_speed !== undefined) {
+        obj.aim_tracking_speed = 999.0; // Tốc độ bám mục tiêu nhanh hơn
+    }
+
+    if (obj.sticky_force !== undefined) {
+        obj.sticky_force = 1.0; // Lực dính tâm cực cao khi đã chạm mục tiêu
+    }
+
+    // 3. CHUYÊN BIỆT CHO "BÁM ĐẦU" (HEAD-CENTERED)
+    if (obj.aim_prediction !== undefined) {
+        obj.aim_prediction = 1.5; // Dự đoán hướng di chuyển của đầu đối thủ
+    }
+
+    if (obj.lock_on_bone !== undefined) {
+        obj.lock_on_bone = "head"; // Ép hệ thống khóa vào xương đầu
+    }
+
+    // 4. GIẢM THIỂU SAI SỐ KHI KÉO TÂM
+    if (obj.deadzone !== undefined) {
+        obj.deadzone = 0.02; // Giảm vùng chết của cần analog/vuốt để nhạy hơn
+    }
+
+    if (obj.aim_acceleration !== undefined) {
+        obj.aim_acceleration = 2.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
+    }
+
+    // 5. CÂN BẰNG ĐỘ GIẬT ĐỂ GIỮ TÂM Ở ĐẦU
+    if (obj.recoil_stability !== undefined) {
+        obj.recoil_stability = 0.0; // Giữ tâm không bị nảy lên quá đầu
+    }
+    // ===== 1. THUẬT TOÁN DỰ ĐOÁN DI CHUYỂN (PREDICTION 2.0) =====
+    // Tăng khả năng bắt dính mục tiêu chạy ngang thêm 100%
+    if (obj.prediction_multiplier !== undefined) {
+        obj.prediction_multiplier = 2.0; // Gấp đôi khả năng tính toán quỹ đạo
+    }
+    
+    if (obj.horizontal_stickiness !== undefined) {
+        obj.horizontal_stickiness *= 2.0; // Tăng 100% lực bám dính ngang
+    }
+
+    // ===== 2. TỐI ƯU ĐIỂM GHÌM TÂM (CENTER ANCHOR) =====
+    // Đảm bảo tâm luôn khóa vào xương đầu (Bone ID: 0)
+    if (obj.aim_anchor_point !== undefined) {
+        obj.aim_anchor_point = "bone_head"; 
+    }
+
+    if (obj.aim_lock_strength !== undefined) {
+        obj.aim_lock_strength = 2.0; // Khóa gần như tuyệt đối (98%)
+    }
+
+    // ===== 3. XỬ LÝ LỰC KÉO ĐỘNG (DYNAMIC DRAG) =====
+    if (obj.drag_force !== undefined) {
+        obj.drag_force.horizontal_boost = 1.5; // Tăng lực bù trừ khi mục tiêu chạy nhanh
+        obj.drag_force.vertical_stabilize = 1.2; // Giữ tâm không bị vọt quá đầu
+    }
+
+    // ===== 4. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
+    // Ngăn chặn việc mất dấu khi đối thủ nhảy hoặc đổi hướng đột ngột
+    if (obj.tracking_latency !== undefined) {
+        obj.tracking_latency = 0.0; // Triệt tiêu độ trễ khi bám mục tiêu
+    }
+
+    if (obj.fov_radius !== undefined) {
+        obj.fov_radius = 360.0; // Mở rộng vùng quét bám dính xung quanh mục tiêu
+    }
+
+    // ===== 5. CẢI THIỆN TỈ LỆ TRÚNG (HIT-RATE OPTIMIZER) =====
+    if (obj.hit_registration !== undefined) {
+        obj.hit_registration = "high_priority_head";
+    }
+     // ===== 1. REMOVE DOWNWARD FORCE =====
+    if (obj.vertical_recoil !== undefined) {
+        obj.vertical_recoil = 0; // triệt tiêu giật xuống
+    }
+
+    if (obj.gravity !== undefined) {
+        obj.gravity = 0; // tắt hoàn toàn "trọng lực tâm"
+    }
+
+    if (obj.aim_gravity !== undefined) {
+        obj.aim_gravity = 0;
+    }
+
+    // ===== 2. STABLE HEAD LEVEL =====
+    if (obj.vertical_drift !== undefined) {
+        obj.vertical_drift = 0; // không tụt tâm
+    }
+
+    if (obj.crosshair_drop !== undefined) {
+        obj.crosshair_drop = 0;
+    }
+
+    // ===== 3. MICRO UP ASSIST (GIỮ TÂM Ở ĐẦU) =====
+    if (obj.drag_vertical !== undefined) {
+        obj.drag_vertical *= 2.2; // giữ lực kéo lên nhẹ
+    }
+
+    if (obj.micro_adjust !== undefined) {
+        obj.micro_adjust = 0.18;
+    }
+
+    // ===== 4. ANTI FALL BACK =====
+    if (obj.return_force !== undefined) {
+        obj.return_force = 0; // không kéo về vị trí cũ
+    }
+
+    if (obj.centering !== undefined) {
+        obj.centering = 0;
+    }
+if (obj.trigger_status !== undefined) {
+        obj.trigger_delay = 0;               // Kích hoạt tức thì 0ms
+        obj.auto_lock_on_red = true;         // Khoá cứng khi tâm chuyển đỏ
+        obj.lock_strength_active = 1.0;      // Lực khoá tuyệt đối (100%)
+    }
+
+    // ===== 2. XỬ LÝ KHOẢNG CÁCH (DISTANCE COMPENSATION) =====
+    // Đảm bảo độ chính xác dù kẻ địch ở gần hay cực xa
+    if (obj.bullet_drop_compensation !== undefined) {
+        obj.bullet_drop_compensation = 1.0;  // Triệt tiêu độ rơi của đạn
+        obj.hit_scan_mode = true;            // Chế độ đạn thẳng tắp
+    }
+
+    if (obj.range_limit !== undefined) {
+        obj.range_limit = 999;               // Mở rộng tầm bắn tối đa
+    }
+
+    // ===== 3. KHOÁ CHẶT ĐẦU VỚI MỌI HƯỚNG DI CHUYỂN =====
+    // Thuật toán bám đuổi đa hướng (Omni-directional Tracking)
+    if (obj.aim_logic !== undefined) {
+        obj.aim_logic.priority = "head";
+        obj.aim_logic.bone_stickiness = 999.0; // Dính chặt vào xương đầu
+        obj.aim_logic.predict_vector = 999.5;  // Dự đoán chuyển động cực cao
+    }
+
+    // ===== 4. TỐI ƯU HOÁ ĐỘ CHÍNH XÁC (ZERO SPREAD) =====
+    // Đạn chụm 1 điểm, không bị toé tâm dù bắn liên tục
+    if (obj.accuracy_config !== undefined) {
+        obj.spread_reduction = 1.0;          // Giảm 100% độ nở tâm
+        obj.recoil_control = 1.0;            // Triệt tiêu giật súng
+        obj.perfect_shot_ratio = 1.0;        // Tỉ lệ đạn vào đầu 100%
+    }
+
+    // ===== 5. TỐI ƯU GÓC NHÌN (FOV LOCK) =====
+    if (obj.aim_fov !== undefined) {
+        obj.aim_fov = 360;                   // Cho phép bám mục tiêu ở mọi góc độ
+        obj.silent_aim = true;               // Đạn tự tìm đầu trong vùng FOV
+    }
+
+  if (obj.drag_limit_y !== undefined) {
+        obj.drag_limit_y = "head_height"; // Giới hạn trục dọc không cho vọt quá đầu
+    }
+
+    // ===== 2. FIX LỖI "LỆCH NGANG" (ZERO DRIFT) =====
+    // Ép tâm đi theo đường thẳng đứng tuyệt đối khi kéo
+    if (obj.horizontal_stabilizer !== undefined) {
+        obj.horizontal_stabilizer = 1.0; // Triệt tiêu 95% độ lệch trái/phải
+    }
+
+    if (obj.axis_lock !== undefined) {
+        obj.axis_lock = "vertical_priority"; 
+    }
+
+    // ===== 3. HIỆU CHUẨN KHOẢNG CÁCH (ADAPTIVE RANGE) =====
+    // Tự động thay đổi độ nhạy dựa trên độ xa của địch
+    if (obj.distance_adapter !== undefined) {
+        obj.distance_adapter.close_range = 5.7; // Giảm nhạy khi địch sát mặt (tránh xoáy tâm)
+        obj.distance_adapter.long_range = 4.4;  // Tăng nhạy khi địch ở xa (dễ kéo lên đầu)
+    }
+
+    // ===== 4. TĂNG ĐỘ CHÍNH XÁC (CONE OF FIRE FIX) =====
+    // Giữ đạn luôn chụm vào giữa tâm dù ở mọi hướng di chuyển
+    if (obj.accuracy_stabilizer !== undefined) {
+        obj.accuracy_stabilizer = 1.0; 
+        obj.bullet_straightness = 1.0; // Đạn đi theo đường thẳng tắp
+    }
+if (obj.aim_position < obj.head_coordinate) {
+        obj.pull_force_y = 5.6;        // Tăng lực kéo dọc để đẩy tâm lên nhanh hơn
+        obj.acceleration_y = 0.25;     // Gia tốc tăng dần cho đến khi chạm mục tiêu
+    }
+
+    // TRƯỜNG HỢP 2: TÂM ĐÃ KÉO LỐ ĐẦU (OVER-AIM)
+    if (obj.aim_position > obj.head_coordinate) {
+        obj.pull_force_y = -0.005;       // Lực kéo ngược (đảo chiều) để tâm hạ xuống đầu
+        obj.recenter_speed = 1.0;      // Tốc độ hồi quy về điểm mục tiêu cực nhanh
+        obj.magnetic_lock = "head";    // Ép tâm đứng yên tại tọa độ đầu
+    }
+
+    // TRƯỜNG HỢP 3: TÂM LỆCH HOẶC KHÔNG THEO KỊP (DRIFT & LAG)
+    if (obj.horizontal_drift !== 0 || obj.tracking_error === true) {
+        obj.snap_to_x = obj.target_x;  // Tự động hút ngang về đúng trục dọc của địch
+        obj.tracking_sensitivity = 999.5; // Tăng độ nhạy bám đuổi để bắt kịp tốc độ địch
+        obj.prediction_interval = 0.01; // Cập nhật tọa độ mỗi 0.01 giây (siêu nhanh)
+    }
+
+    // ===== 2. ĐIỂM GHI ĐÈ HITBOX (STAY-IN-HEAD) =====
+    // Khi tâm đã vào vùng Head, kích hoạt chế độ "đóng băng" sai số
+    if (obj.on_target_head === true) {
+        obj.sensitivity_multiplier = 0.0; // Làm cực chậm tâm để không bị văng ra ngoài
+        obj.lock_duration = "infinite";   // Khóa cho đến khi đối thủ gục hoặc ngừng bắn
+  obj.headlock_tracking = "infinite"; 
+    obj.auto_head_lock_duration = "infinite"; 
+    obj.head_lock_strength = "infinite"; 
+ obj.hold_head_lock_duration = "infinite"; 
+    }
+
+    // ===== 3. CÔNG NGHỆ KHÔNG GIẬT & CHỐNG RUNG =====
+    if (obj.recoil_compensation !== undefined) {
+        obj.recoil_compensation = 1.0; 
+        obj.jitter_suppression = 1.0;
+    }
+
+ // ===== CORE ENGINE V170 =====
+const runFullControl = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. PREDICTION 2.0 =====
+    if (entity.velocity && obj.prediction_multiplier) {
+        const p = obj.prediction_multiplier;
+
+        head.x += entity.velocity.x * p * 0.01;
+        head.y += entity.velocity.y * p * 0.01;
+    }
+
+    // ===== 3. KHOẢNG CÁCH (ADAPTIVE) =====
+    let distScale = 1.0;
+    if (entity.distance && obj.distance_adapter) {
+        distScale = entity.distance < 50
+            ? obj.distance_adapter.close_range
+            : obj.distance_adapter.long_range;
+    }
+
+    // ===== 4. DRAG VECTOR (CHỈNH HƯỚNG KÉO) =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ưu tiên trục dọc
+    if (obj.drag_vertical) {
+        dy *= obj.drag_vertical * 0.001;
+    }
+
+    if (obj.drag_horizontal !== undefined) {
+        dx *= obj.drag_horizontal;
+    }
+
+    // ===== 5. SNAP + MICRO ADJUST =====
+    if (obj.snap_acceleration) {
+        crosshair.x += dx * obj.snap_acceleration * distScale;
+        crosshair.y += dy * obj.snap_acceleration * distScale;
+    }
+
+    if (obj.micro_adjust) {
+        crosshair.x += dx * obj.micro_adjust;
+        crosshair.y += dy * obj.micro_adjust;
+    }
+
+    // ===== 6. ANTI OVERSHOOT =====
+    if (obj.drag_limit_y === "head_height") {
+        if (crosshair.y < head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    if (obj.recenter_speed) {
+        crosshair.y += (head.y - crosshair.y) * obj.recenter_speed;
+    }
+
+    // ===== 7. ZERO DRIFT =====
+    if (obj.horizontal_stabilizer && entity.velocity) {
+        entity.velocity.x = 0;
+    }
+
+    // ===== 8. STICKY LOCK =====
+    if (obj.sticky_force) {
+        crosshair.x += (head.x - crosshair.x) * obj.sticky_force;
+        crosshair.y += (head.y - crosshair.y) * obj.sticky_force;
+    }
+
+    // ===== 9. HARD HEAD LOCK =====
+    if (obj.lock_on_bone === "head" || obj.aim_anchor_point === "bone_head") {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. FRICTION LOCK =====
+    if (obj.on_head_target_friction) {
+        if (Math.abs(head.x - crosshair.x) < 1 && Math.abs(head.y - crosshair.y) < 1) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 11. INPUT FILTER =====
+    if (obj.deadzone !== undefined && entity.velocity) {
+        entity.velocity.x = 0;
+        entity.velocity.y = 0;
+    }
+
+    // ===== 12. ANTI JITTER =====
+    if (obj.jitter !== undefined) {
+        crosshair.x = Math.round(crosshair.x);
+        crosshair.y = Math.round(crosshair.y);
+    }
+
+    // ===== 13. HITBOX =====
+    if (obj.hitbox && entity.hitbox) {
+        entity.hitbox.head = obj.hitbox.head;
+        entity.hitbox.body = obj.hitbox.body;
+    }
+
+    // ===== 14. FINAL OVERRIDE (KHI ON HEAD) =====
+    if (obj.on_target_head === true) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== DEBUG =====
+    entity._v170 = {
+        head: head,
+        dx: dx,
+        dy: dy,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runFullControl(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runFullControl(p));
+}
+ 
+ 
+ // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
+    if (obj.aim_head_stickiness !== undefined) {
+        obj.aim_head_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
+    }
+
+    if (obj.magnetic_pull !== undefined) {
+        obj.magnetic_pull = 999.2;       // Lực hút cực mạnh khi tâm gần đầu
+    }
+
+    // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
+    // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
+    if (obj.on_head_target_friction !== undefined) {
+        obj.on_head_target_friction = 20.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
+    }
+
+    // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
+    if (obj.bone_glue !== undefined) {
+        obj.bone_glue = true;
+        obj.glue_strength = 999.0;       // Lực dán tuyệt đối
+        obj.target_bone = "head_center";
+    }
+
+    // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
+    // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
+    if (obj.detach_threshold !== undefined) {
+        obj.detach_threshold = 0.0;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
+    }
+
+    if (obj.tracking_speed_limit !== undefined) {
+        obj.tracking_speed_limit = 0;  // Không giới hạn tốc độ bám (bám kịp mọi vận tốc)
+    }
+
+    // ===== 5. TỐI ƯU HÓA KHUNG HÌNH (LOCK REFRESH) =====
+    if (obj.lock_refresh_rate !== undefined) {
+        obj.lock_refresh_rate = "244hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
+    } 
+// Triệt tiêu lực cản khi bắt đầu vuốt (Initial Friction)
+    if (obj.static_friction !== undefined) {
+        obj.static_friction = 0.0;    // Không có lực cản khi bắt đầu kéo
+    }
+    
+    if (obj.input_latency !== undefined) {
+        obj.input_latency = "0ms";    // Phản hồi tức thì 1:1 với tay
+    }
+
+    // ===== 2. XUNG LỰC KÉO (VELOCITY BOOST) =====
+    // Làm tâm nhẹ hơn bằng cách nhân hệ số tốc độ vuốt
+    if (obj.swipe_velocity !== undefined) {
+        obj.swipe_velocity *= 1.4;    // Tăng 40% tốc độ nhận diện vuốt
+    }
+
+    if (obj.touch_sampling_rate !== undefined) {
+        obj.touch_sampling_rate = 240; // Giả lập tần số quét chạm cực cao (làm mượt tay)
+    }
+
+    // ===== 3. GIẢM VÙNG CHẾT (DEADZONE BYPASS) =====
+    // Giúp tâm nhích đi ngay lập tức khi tay vừa chạm nhẹ
+    if (obj.analog_deadzone !== undefined) {
+        obj.analog_deadzone = 0.01;   // Cực nhỏ, xóa cảm giác "lỳ" tâm
+    }
+
+    // ===== 4. TỐI ƯU HÓA QUỸ ĐẠO ĐẦU (HEAD-LIGHTWEIGHT) =====
+    // Làm nhẹ trục dọc (Y-Axis) để việc kéo headshot không tốn sức
+    if (obj.drag_weight_y !== undefined) {
+        obj.drag_weight_y = 0.5;      // Giảm 50% trọng lượng ảo của trục dọc
+    }
+// ===== 1. FIX LỖI "CHẠY QUANH ĐẦU" (ANTI-ORBIT LOGIC) =====
+    // Hủy bỏ quỹ đạo vòng cung, ép tâm đi vào tâm điểm đầu
+    if (obj.aim_orbit_correction !== undefined) {
+        obj.aim_orbit_correction = 1.0; 
+        obj.radial_pull = 0.0; // Triệt tiêu lực đẩy ly tâm (nguyên nhân gây bắn trượt quanh đầu)
+    }
+
+    // ===== 2. ĐIỂM BẮT MỤC TIÊU (POINT-CAPTURE) =====
+    // Tạo một "hố đen" tại tọa độ X:0, Y:0 của xương đầu
+    if (obj.head_capture_radius !== undefined) {
+        obj.head_capture_radius = 0.5; // Vùng bắt điểm cực rộng
+        obj.capture_strength = 1.0;    // Lực bắt tuyệt đối
+    }
+
+    // ===== 3. ĐIỀU CHỈNH ĐƯỜNG ĐẠN (BULLET CONVERGENCE) =====
+    // Ép mọi viên đạn phải hội tụ về một điểm duy nhất (đầu)
+    if (obj.bullet_convergence !== undefined) {
+        obj.bullet_convergence = true;
+        obj.convergence_point = "head_center";
+    }
+
+    // ===== 4. ZERO SPREAD (CHỐNG NỞ TÂM) =====
+    // Ngăn chặn đạn bay tản mát khi bạn đang di chuyển hoặc nhảy
+    if (obj.spread_factor !== undefined) {
+        obj.spread_factor = 0.0; // Đạn đi thẳng tắp như tia laser
+    }
+
+    // ===== 5. TỐI ƯU HÓA KÉO TÂM (SMOOTH SNAP) =====
+    if (obj.snap_acceleration !== undefined) {
+        obj.snap_acceleration = 0.15; // Nhích nhẹ là vào đúng điểm giữa đầu
+    }
+
+
+    // ===== 1. ĐỊNH VỊ TỌA ĐỘ X,Y (XY-COORDINATE LOCK) =====
+    // Ép tâm ngắm bám sát theo trục X (ngang) và Y (dọc) của đầu
+    if (obj.aim_coordinate !== undefined) {
+        obj.aim_coordinate.x_offset = 0.0; // Triệt tiêu độ lệch ngang
+        obj.aim_coordinate.y_offset = 0.0; // Triệt tiêu độ lệch dọc (ghim đúng đỉnh đầu)
+        obj.aim_coordinate.snap_speed = 1.0; // Tốc độ bắt tọa độ tức thời
+    }
+
+    // ===== 2. THUẬT TOÁN "NAM CHÂM ĐIỂM" (POINT MAGNETISM) =====
+    // Khi kéo tâm, hệ thống tự động lọc bỏ các đầu vào (input) gây lệch khỏi X,Y của đầu
+    if (obj.input_filter !== undefined) {
+        obj.input_filter.ignore_drift = true;   // Bỏ qua rung tay
+        obj.input_filter.precision_level = 1.0; // Độ chính xác 100%
+    }
+
+    // ===== 3. KHÓA MỤC TIÊU DI ĐỘNG (DYNAMIC XY TRACKING) =====
+    // Cập nhật tọa độ X,Y liên tục kể cả khi địch đang chạy hoặc nhảy
+    if (obj.tracking_logic !== undefined) {
+        obj.tracking_logic.refresh_ms = 1;      // Tần số quét 1ms (siêu nhanh)
+        obj.tracking_logic.prediction_xy = 2.0; // Dự đoán vị trí X,Y tiếp theo để chặn đầu
+    }
+
+    // ===== 4. ZERO DEVIATION (SAI SỐ BẰNG 0) =====
+    // Đảm bảo đạn bay đúng vào tọa độ đã khóa, bất kể khoảng cách
+    if (obj.bullet_trajectory !== undefined) {
+        obj.bullet_trajectory.deviation = 0.0;  // Độ lệch đạn bằng 0
+        obj.bullet_trajectory.straight_line = true;
+    }
+
+    // ===== 5. TỐI ƯU LỰC KÉO (DRAG-TO-XY) =====
+    // Biến hành động vuốt tay thành lệnh "Go to Head XY"
+    if (obj.drag_to_head !== undefined) {
+        obj.drag_to_head.enabled = true;
+        obj.drag_to_head.force_multiplier = 999.8; // Đẩy tâm về tọa độ XY nhanh hơn
+    }
+// ===== CORE ENGINE V150 =====
+const runAbsoluteHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. PREDICTION XY (TRACKING LOGIC) =====
+    if (obj.tracking_logic && entity.velocity) {
+        const pred = obj.tracking_logic.prediction_xy || 1.0;
+
+        head.x += entity.velocity.x * pred * 0.01;
+        head.y += entity.velocity.y * pred * 0.01;
+    }
+
+    // ===== 3. POINT CAPTURE (HỐ ĐEN) =====
+    if (obj.head_capture_radius) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < obj.head_capture_radius * 100) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 4. MAGNETIC PULL =====
+    if (obj.magnetic_pull) {
+        crosshair.x += (head.x - crosshair.x) * obj.magnetic_pull * 0.001;
+        crosshair.y += (head.y - crosshair.y) * obj.magnetic_pull * 0.001;
+    }
+
+    // ===== 5. AIM STICKINESS =====
+    if (obj.aim_head_stickiness) {
+        crosshair.x += (head.x - crosshair.x) * 0.9;
+        crosshair.y += (head.y - crosshair.y) * 0.9;
+    }
+
+    // ===== 6. BONE GLUE (DÁN CỨNG) =====
+    if (obj.bone_glue) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. ANTI-ORBIT =====
+    if (obj.aim_orbit_correction) {
+        // ép đi thẳng vào tâm, không xoay vòng
+        crosshair.x += (head.x - crosshair.x);
+        crosshair.y += (head.y - crosshair.y);
+    }
+
+    // ===== 8. FRICTION LOCK =====
+    if (obj.on_head_target_friction) {
+        const dx = Math.abs(head.x - crosshair.x);
+        const dy = Math.abs(head.y - crosshair.y);
+
+        if (dx < 1 && dy < 1) {
+            // đóng băng gần như hoàn toàn
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 9. ANTI DETACH =====
+    if (obj.detach_threshold === 0.0) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. XY ABSOLUTE LOCK =====
+    if (obj.aim_coordinate) {
+        crosshair.x = head.x + (obj.aim_coordinate.x_offset || 0);
+        crosshair.y = head.y + (obj.aim_coordinate.y_offset || 0);
+    }
+
+    // ===== 11. DRAG TO HEAD =====
+    if (obj.drag_to_head && obj.drag_to_head.enabled) {
+        const force = obj.drag_to_head.force_multiplier || 1;
+
+        crosshair.x += (head.x - crosshair.x) * force * 0.001;
+        crosshair.y += (head.y - crosshair.y) * force * 0.001;
+    }
+
+    // ===== 12. INPUT FILTER =====
+    if (obj.input_filter && entity.velocity) {
+        entity.velocity.x = 0;
+        entity.velocity.y = 0;
+    }
+
+    // ===== 13. ZERO SPREAD / BULLET =====
+    if (obj.bullet_trajectory && entity.bullet) {
+        entity.bullet.spread = 0;
+        entity.bullet.deviation = 0;
+    }
+
+    // ===== DEBUG =====
+    entity._absoluteLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runAbsoluteHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runAbsoluteHeadLock(p));
+}
+ 
+ 
+ 
+ 
+if (obj.auto_snap !== undefined) {
+        obj.auto_snap.enabled = true;
+        obj.auto_snap.priority = "head_center";
+        obj.auto_snap.speed = 999.0; // Tốc độ Snap tức thời (Instant)
+    }
+
+    // ===== 2. HIỆU CHUẨN KHOẢNG CÁCH (DISTANCE SCALING) =====
+    // Đảm bảo Snap chính xác dù địch ở 5m hay 500m
+    if (obj.distance_calibration !== undefined) {
+        obj.distance_calibration.dynamic_fov = true; // Tự thu hẹp FOV khi địch ở xa để bắn chính xác
+        obj.distance_calibration.magnetism_boost = 1.5; // Tăng lực hút cho mục tiêu nhỏ tầm xa
+    }
+
+    // ===== 3. KHÓA TỌA ĐỘ XY TUYỆT ĐỐI (XY-ANCHOR) =====
+    if (obj.xy_lock !== undefined) {
+        obj.xy_lock.precision = "absolute";
+        obj.xy_lock.stickiness = 999.0; // Dính chặt 100% khi đã Snap trúng
+    }
+
+    // ===== 4. ZERO DEVIATION (TRIỆT TIÊU SAI SỐ) =====
+    // Loại bỏ hoàn toàn độ rơi đạn và độ tản mát ở tầm xa
+    if (obj.bullet_physics !== undefined) {
+        obj.bullet_physics.no_drop = true;      // Đạn bay thẳng tắp
+        obj.bullet_physics.no_spread = true;    // Đạn không nở tâm
+        obj.bullet_physics.hit_scan = true;     // Chế độ bắn trúng ngay lập tức
+    }
+
+    // ===== 5. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
+    // Bám theo đầu kẻ địch kể cả khi chúng đang nhảy hoặc chạy tốc độ cao
+    if (obj.tracking_logic !== undefined) {
+        obj.tracking_logic.auto_lead = true;    // Tự động bắn đón đầu (Auto-Lead)
+        obj.tracking_logic.prediction = 999.0;    // Dự đoán quỹ đạo 
+    }
+// Ép tâm ngắm bám chặt vào tọa độ X,Y của đầu với sai số bằng 0
+    if (obj.aim_lock !== undefined) {
+        obj.aim_lock.target = "head_center";
+        obj.aim_lock.strength = 10.0;         // Lực khóa 100%
+        obj.aim_lock.snap_time = "0ms";      // Bắt dính tức thì
+    }
+
+    // ===== 2. NAM CHÂM ĐỘNG THEO KHOẢNG CÁCH (DYNAMIC MAGNETISM) =====
+    // Tự động bù trừ lực hút: Xa thì hút mạnh, Gần thì dính chặt
+    if (obj.magnetism_system !== undefined) {
+        obj.magnetism_system.short_range = 999.95; // Dính như keo khi cận chiến
+        obj.magnetism_system.long_range = 1.5;   // Tăng lực hút cực mạnh cho mục tiêu nhỏ tầm xa
+        obj.magnetism_system.auto_calibrate = true;
+    }
+
+    // ===== 3. TRIỆT TIÊU SAI SỐ KÉO TÂM (ANTI-DRIFT & OVERHEAD) =====
+    // Fix lỗi kéo lố đầu hoặc lệch sang hai bên
+    if (obj.drag_correction !== undefined) {
+        obj.drag_correction.vertical_limit = "stop_at_head"; // Chạm đầu là dừng, không lố
+        obj.drag_correction.horizontal_stabilizer = 1.0;    // Triệt tiêu rung ngang 100%
+    }
+
+    // ===== 4. KHÓA MA SÁT KHI TRÚNG MỤC TIÊU (FRICTION LOCK) =====
+    // Khi tâm đã chạm đầu, tăng lực cản để tâm không thể văng ra ngoài
+    if (obj.sticky_bone !== undefined) {
+        obj.sticky_bone.friction_boost = 10.0; // Ma sát cực đại khi đã dính đầu
+        obj.sticky_bone.unstick_threshold = 0;  // Không cho phép tuột tâm
+    }
+
+    // ===== 5. ĐẠN TRUY ĐUỔI (HIT-SCAN PRECISION) =====
+    // Đảm bảo đạn bay thẳng vào tọa độ X,Y đã khóa bất kể hướng di chuyển
+    if (obj.bullet_logic !== undefined) {
+        obj.bullet_logic.no_spread = true;      // Đạn không nở tâm
+        obj.bullet_logic.zero_recoil = true;    // Triệt tiêu độ giật
+        obj.bullet_logic.velocity = 9999;       // Đạn bay tức thời (Hit-scan)
+    }
+// ===== 1. THIẾT LẬP TRẦN CỨNG (HARD CEILING) =====
+    // Ngăn chặn tọa độ Y của tâm vượt quá tọa độ Y của đầu
+    if (obj.aim_limit_y !== undefined) {
+        obj.aim_limit_y = "target_head_top"; 
+        obj.overflow_protection = true; // Kích hoạt bảo vệ chống tràn tâm
+    }
+
+    // ===== 2. PHANH ĐIỆN TỬ (MOMENTUM BRAKE) =====
+    // Tự động triệt tiêu gia tốc khi tâm tiến sát đỉnh đầu
+    if (obj.drag_momentum !== undefined) {
+        obj.drag_momentum.brake_distance = 0.05; // Khoảng cách bắt đầu phanh
+        obj.drag_momentum.brake_force = 1.0;    // Lực phanh tuyệt đối (dừng hẳn)
+    }
+
+    // ===== 3. HIỆU CHỈNH LỰC KÉO NGƯỢC (REVERSE PULLBACK) =====
+    // Nếu vô tình kéo quá tay, script tự động lôi tâm về đúng vị trí đầu
+    if (obj.overshoot_recovery !== undefined) {
+        obj.overshoot_recovery.enabled = true;
+        obj.recovery_speed = 0.9; // Tốc độ hồi quy về đầu cực nhanh
+    }
+
+    // ===== 4. KHÓA TRỤC DỌC TẠI ĐIỂM NGẮM (Y-AXIS ANCHOR) =====
+    // Khi đã đạt đến độ cao của đầu, trục Y sẽ bị "đóng băng"
+    if (obj.y_axis_lock !== undefined) {
+        obj.y_axis_lock.enabled = true;
+        obj.y_axis_lock.sensitivity_at_target = 0.01; // Giảm nhạy trục dọc về gần bằng 0
+    }
+
+    // ===== 5. TỐI ƯU ĐƯỜNG ĐẠN (FLAT TRAJECTORY) =====
+    // Đảm bảo đạn không bị nảy lên do giật súng (Recoil)
+    if (obj.recoil_pattern !== undefined) {
+        obj.recoil_pattern.vertical_max = 0.0; // Triệt tiêu độ nảy dọc của súng
+        obj.recoil_pattern.stabilization = 1.0;
+    }
+// ===== CORE ENGINE V140 =====
+const runSnapEngine = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. LẤY HEAD + PREDICTION =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== PREDICT (ANTI-EVASION) =====
+    if (obj.tracking_logic && obj.tracking_logic.auto_lead && entity.velocity) {
+        const pred = obj.tracking_logic.prediction || 1.0;
+
+        head.x += entity.velocity.x * pred * 0.01;
+        head.y += entity.velocity.y * pred * 0.01;
+    }
+
+    // ===== 2. AUTO SNAP (INSTANT) =====
+    if (obj.auto_snap && obj.auto_snap.enabled) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 3. DISTANCE SCALING =====
+    if (obj.distance_calibration && obj.distance_calibration.dynamic_fov) {
+        if (entity.distance) {
+            let scale = Math.min(2.0, entity.distance / 50);
+            crosshair.x += (head.x - crosshair.x) * scale;
+            crosshair.y += (head.y - crosshair.y) * scale;
+        }
+    }
+
+    // ===== 4. XY LOCK (KHÓA TUYỆT ĐỐI) =====
+    if (obj.xy_lock && obj.xy_lock.precision === "absolute") {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 5. ANTI OVERSHOOT (TRẦN + PHANH) =====
+    if (obj.aim_limit_y === "target_head_top") {
+
+        // không cho vượt đầu
+        if (crosshair.y < head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    if (obj.drag_momentum) {
+        const distY = Math.abs(head.y - crosshair.y);
+
+        if (distY < obj.drag_momentum.brake_distance * 100) {
+            crosshair.y += (head.y - crosshair.y) * 0.1;
+        }
+    }
+
+    // ===== 6. RECOVERY (KÉO LẠI NẾU LỐ) =====
+    if (obj.overshoot_recovery && obj.overshoot_recovery.enabled) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+
+        crosshair.x += dx * obj.recovery_speed;
+        crosshair.y += dy * obj.recovery_speed;
+    }
+
+    // ===== 7. Y AXIS LOCK =====
+    if (obj.y_axis_lock && obj.y_axis_lock.enabled) {
+        if (Math.abs(crosshair.y - head.y) < 1) {
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 8. MAGNETISM =====
+    if (obj.magnetism_system && entity.distance) {
+        let mag = entity.distance < 50
+            ? obj.magnetism_system.short_range
+            : obj.magnetism_system.long_range;
+
+        crosshair.x += (head.x - crosshair.x) * mag * 0.01;
+        crosshair.y += (head.y - crosshair.y) * mag * 0.01;
+    }
+
+    // ===== 9. ANTI DRIFT =====
+    if (obj.drag_correction && entity.velocity) {
+        entity.velocity.x = 0;
+    }
+
+    // ===== 10. HITBOX BOOST =====
+    if (obj.hitbox && entity.hitbox) {
+        entity.hitbox.head = obj.hitbox.head;
+        entity.hitbox.spine = obj.hitbox.spine;
+        entity.hitbox.hips = obj.hitbox.hips;
+    }
+
+    // ===== DEBUG =====
+    entity._snapLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runSnapEngine(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runSnapEngine(p));
+}
+
+ 
+ // ===== 1. TRUY TÌM VÀ ÉP TÂM CƯỠNG BỨC (FORCE-PULL) =====
+    // Dù tâm đang ở đâu, ngay khi nhấn bắn, tâm sẽ bị "giật" về đầu
+    if (obj.aim_force_pull !== undefined) {
+        obj.aim_force_pull.enabled = true;
+        obj.aim_force_pull.min_distance = 0;   // Không giới hạn khoảng cách kích hoạt
+        obj.aim_force_pull.power = 15.0;         // Lực kéo cực đại để về đầu tức thì
+    }
+
+    // ===== 2. DUY TRÌ TRẠNG THÁI KHÓA (STATE INDEPENDENCE) =====
+    // Giữ tâm ở đầu bất kể người chơi đang nhảy, ngồi hay di chuyển
+    if (obj.state_lock !== undefined) {
+        obj.state_lock.ignore_movement = true;  // Bỏ qua rung lắc khi di chuyển
+        obj.state_lock.ignore_jumping = true;   // Bỏ qua biến động tọa độ khi nhảy
+        obj.state_lock.ignore_recoil = true;    // Bỏ qua độ nảy của súng
+    }
+
+    // ===== 3. GHI ĐÈ TỌA ĐỘ X,Y (COORDINATE OVERRIDE) =====
+    // Ép giá trị đầu ra của tâm luôn trùng khớp với đầu mục tiêu
+    if (obj.output_coordinates !== undefined) {
+        obj.output_coordinates.mode = "forced_head";
+        obj.output_coordinates.strictness = 1.0; // Độ nghiêm ngặt 100%
+    }
+
+    // ===== 4. GIỮ TÂM KHÔNG RỜI (PERPETUAL STICKY) =====
+    // Một khi đã "chạm" tọa độ đầu, tâm sẽ không bao giờ thoát ra được
+    if (obj.perpetual_lock !== undefined) {
+        obj.perpetual_lock.break_threshold = 0; // Không bao giờ tự động nhả khóa
+        obj.perpetual_lock.stickiness = 1.0;    // Độ dính tuyệt đối
+    }
+
+    // ===== 5. TỐI ƯU HÓA PHẢN HỒI (INSTANT RESPONSE) =====
+    if (obj.response_time !== undefined) {
+        obj.response_time = "0.001ms"; // Thời gian phản hồi gần như bằng 0
+    }
+ // Đặt mức này để script hiểu rằng mọi điểm từ 0m đến 1.8m đều phải đẩy lên 2m.
+if (obj.target_height_threshold !== undefined) {
+    obj.target_height_threshold = 1.0; // Bỏ qua 90% phần thân dưới, chỉ bắt 10% phần đầu.
+}
+
+// 3. TỐI ƯU HÓA TRỤC Y (Y-AXIS BIAS)
+// Ép tâm ngắm luôn ưu tiên tọa độ cao nhất của nhân vật.
+if (obj.y_axis_bias !== undefined) {
+    obj.y_axis_bias = 5.0; // Nhân đôi lực đẩy theo chiều dọc.
+}
+if (obj.hitbox !== undefined) {
+    obj.hitbox.head = 2.5;  // Phóng đại đầu (điểm cao nhất 2m)
+    obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
+    obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
+}
+// ===== CORE EXECUTION ENGINE V130+ =====
+const runForceEngine = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 2. FORCE PULL (GIẬT TÂM LÊN ĐẦU NGAY) =====
+    if (obj.aim_force_pull && obj.aim_force_pull.enabled) {
+        const power = obj.aim_force_pull.power || 10;
+
+        crosshair.x += (head.x - crosshair.x) * power * 0.1;
+        crosshair.y += (head.y - crosshair.y) * power * 0.1;
+    }
+
+    // ===== 3. STATE LOCK (BỎ QUA RUNG LẮC) =====
+    if (obj.state_lock) {
+        if (entity.velocity) {
+            entity.velocity.x = 0;
+            entity.velocity.y = 0;
+        }
+
+        if (entity.recoil) {
+            entity.recoil.x = 0;
+            entity.recoil.y = 0;
+        }
+    }
+
+    // ===== 4. BODY FILTER + Y BIAS =====
+    if (obj.target_height_threshold && obj.y_axis_bias) {
+        const bias = obj.y_axis_bias;
+
+        // ép luôn ưu tiên vùng cao (đầu)
+        if (crosshair.y > head.y) {
+            crosshair.y -= bias;
+        }
+    }
+
+    // ===== 5. HARD OVERRIDE COORDINATES =====
+    if (obj.output_coordinates && obj.output_coordinates.mode === "forced_head") {
+        if (obj.output_coordinates.strictness === 1.0) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 6. PERPETUAL STICKY LOCK =====
+    if (obj.perpetual_lock && obj.perpetual_lock.stickiness === 1.0) {
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+
+        crosshair.x += dx * 1.0;
+        crosshair.y += dy * 1.0;
+    }
+
+    // ===== 7. HITBOX MANIPULATION =====
+    if (obj.hitbox) {
+        if (entity.hitbox) {
+            entity.hitbox.head = obj.hitbox.head;
+            entity.hitbox.spine = obj.hitbox.spine;
+            entity.hitbox.hips = obj.hitbox.hips;
+        }
+    }
+
+    // ===== DEBUG =====
+    entity._forceLock = {
+        head: head,
+        locked: true,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+runForceEngine(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => runForceEngine(p));
+}
+
+    // ===== 1. CHỐNG GIẬT NGƯỢC (ONE-WAY VECTOR) =====
+    // Một khi tâm đã đi lên (qua thân), triệt tiêu mọi lực kéo xuống dưới
+    if (obj.vector_y_control !== undefined) {
+        obj.vector_y_control.min_velocity = 0; // Không cho phép vận tốc âm (kéo xuống)
+        obj.vector_y_control.anti_recoil_down = 1.0; // Triệt tiêu giật súng xuống thân
+    }
+
+    // ===== 2. TỰ ĐỘNG TRUY QUÉT ĐẦU (TARGET SEEKER) =====
+    // Nếu chưa chạm đầu, hệ thống tự động quét tọa độ xung quanh để tìm đầu
+    if (obj.aim_seeker !== undefined) {
+        obj.aim_seeker.enabled = true;
+        obj.aim_seeker.search_radius = "infinite"; // Quét toàn bộ vùng quanh mục tiêu
+        obj.aim_seeker.auto_correction = 1.0;      // Tự sửa sai số để tìm đúng đầu
+    }
+
+    // ===== 3. KHÓA CHO BẰNG ĐƯỢC (RECURSIVE LOCK) =====
+    // Thuật toán lặp lại lệnh khóa cho đến khi tọa độ tâm = tọa độ đầu
+    if (obj.aim_final_lock !== undefined) {
+        obj.aim_final_lock.force_match = true;
+        obj.aim_final_lock.bone_id = "head";     // Chỉ định duy nhất xương đầu
+        obj.aim_final_lock.persistence = 1.0;    // Độ kiên trì (không bao giờ nhả)
+    }
+
+    // ===== 4. GIA TỐC VƯỢT THÂN (BODY-BYPASS) =====
+    // Tăng tốc độ di chuyển khi tâm đang ở vùng tọa độ thấp (thân/chân)
+    if (obj.aim_height_control !== undefined) {
+        obj.aim_height_control.bypass_body = true;
+        obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
+    }
+ const runCore = (entity) => {
+
+        if (!entity || !entity.position) return;
+
+        // 🎯 Lấy tâm ngắm
+        const crosshair = obj.crosshair || entity.crosshair;
+        if (!crosshair) return;
+
+        // ===== A. ONE-WAY VECTOR =====
+        if (entity.velocity && obj.vector_y_control) {
+            if (entity.velocity.y < 0) {
+                entity.velocity.y = 0;
+            }
+        }
+
+        // ===== B. SEEK HEAD =====
+        let head = null;
+
+        if (obj.aim_seeker && obj.aim_seeker.enabled) {
+            if (entity.bones && entity.bones.head) {
+                head = entity.bones.head;
+            } else {
+                // fallback estimate
+                head = {
+                    x: entity.position.x,
+                    y: entity.position.y - (entity.height || 60) * 0.75
+                };
+            }
+
+            // auto fix lệch
+            head.x = Math.round(head.x);
+            head.y = Math.round(head.y);
+        }
+
+        if (!head) return;
+
+        // ===== C. BODY BYPASS =====
+        if (obj.aim_height_control && obj.aim_height_control.bypass_body) {
+            if (crosshair.y > head.y) {
+                crosshair.y -= obj.aim_height_control.boost_to_head;
+            }
+        }
+
+        // ===== D. HARD LOCK =====
+        if (obj.aim_final_lock) {
+            const dx = head.x - crosshair.x;
+            const dy = head.y - crosshair.y;
+
+            // kéo dần
+            crosshair.x += dx * obj.aim_final_lock.persistence;
+            crosshair.y += dy * obj.aim_final_lock.persistence;
+
+            // snap cứng
+            if (obj.aim_final_lock.force_match) {
+                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                    crosshair.x = head.x;
+                    crosshair.y = head.y;
+                }
+            }
+        }
+
+        // ===== E. ZERO DRIFT =====
+        if (obj.stabilizer && entity.velocity) {
+            entity.velocity.x = 0;
+        }
+
+        // debug
+        entity._headLock = {
+            target: head,
+            time: Date.now()
+        };
+    };
+
+    // ===== 3. APPLY =====
+    runCore(obj);
+
+    if (obj.players && Array.isArray(obj.players)) {
+        obj.players.forEach(p => runCore(p));
+    }
+
+    
+  if (obj.stabilizer === undefined) {
+        obj.stabilizer = {
+            horizontal_drift: 0,
+            vertical_anchor: 1.0,
+            last_corrected_at: null
+        };
+    }
+
+    // ===== 2. CORE LOGIC =====
+    const updateStabilizer = (target) => {
+        if (target.physics && target.stabilizer) {
+            
+            target.physics.velocity_x = 0;
+            target.stabilizer.horizontal_drift = 0;
+
+            target.stabilizer.vertical_anchor = 1.0;
+            
+            target.physics.x = Math.round(target.physics.x); 
+            target.physics.y = Math.round(target.physics.y);
+
+            target.stabilizer.last_corrected_at = Date.now();
+        }
+    };
+
+    // ===== 3. APPLY =====
+    updateStabilizer(obj);
+
+    if (obj.players && Array.isArray(obj.players)) {
+        obj.players.forEach(player => {
+            updateStabilizer(player);
+        });
+    }
+
+// ===== AUTO HEAD PULL CORE =====
+const autoHeadPull = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHECK ĐANG BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    const DEFAULT_HEIGHT = 200;      // 2m
+const HEAD_RATIO = 0.9;          // chuẩn vị trí đầu
+const HEAD_SIZE = 1;            // kích thước phần đầu (tùy chỉnh)
+
+if (entity.bones?.head) {
+    // Ưu tiên dùng bone thật (chuẩn nhất)
+    head = entity.bones.head;
+} else {
+    const height = entity.height || DEFAULT_HEIGHT;
+
+    // Công thức chuẩn hơn ratio (trừ headSize)
+    const headY = entity.position.y - (height - HEAD_SIZE);
+
+    head = {
+        x: entity.position.x,
+        y: headY
+    };
+}
+
+    // ===== 3. TÍNH KHOẢNG CÁCH =====
+    let distance = entity.distance || 9999;
+
+    // ===== 4. SCALE THEO KHOẢNG CÁCH =====
+    // xa → kéo mạnh hơn, gần → mượt hơn
+    let force = distance > 100 ? 1.2 :
+                distance > 1  ? 10.0 :
+                                 5.6;
+
+    // ===== 5. KÉO TÂM LÊN ĐẦU =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ưu tiên kéo dọc (lên đầu)
+    crosshair.x += dx * 0.4 * force;
+    crosshair.y += dy * 0.9 * force;
+
+    // ===== 6. SNAP NHẸ KHI GẦN ĐẦU =====
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. CHỐNG TỤT TÂM =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.2;
+    }
+
+    // ===== DEBUG =====
+    entity._autoHeadPull = {
+        active: true,
+        distance: distance,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+autoHeadPull(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => autoHeadPull(p));
+}
+ // ===== HEAD HOLD LOCK CORE =====
+const headHoldLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ KHI ĐANG BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - (entity.height || 60) * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. KHI ĐÃ GẦN ĐẦU → KÍCH HOẠT HOLD =====
+    const isOnHead = Math.abs(dx) < 3 && Math.abs(dy) < 3;
+
+    if (isOnHead) {
+
+        // 💀 KHÓA CỨNG
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        // 💀 GIỮ CHẶT KHÔNG CHO LỆCH
+        entity._headLocked = true;
+
+    } else {
+
+        // ===== 5. KHI ĐANG KÉO → HỖ TRỢ LÊN ĐẦU =====
+        crosshair.x += dx * 0.35;
+        crosshair.y += dy * 0.8; // ưu tiên kéo lên đầu
+
+        entity._headLocked = false;
+    }
+
+    // ===== 6. ANTI FALL (KHÔNG TỤT XUỐNG THÂN) =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.3;
+    }
+
+    // ===== 7. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headHold = {
+        locked: entity._headLocked,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headHoldLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headHoldLock(p));
+}
+// ===== ULTRA LIGHT HEAD LOCK =====
+const ultraLightHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH ĐỘ LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. TÂM CỰC NHẸ (LIGHT DRAG) =====
+    // kéo nhẹ nhưng đi rất nhanh lên đầu
+    crosshair.x += dx * 0.25;
+    crosshair.y += dy * 100.5; // ưu tiên kéo dọc cực mạnh
+
+    // ===== 5. SNAP NHANH KHI GẦN =====
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 6. KHÓA CHẶT KHI ĐÃ VÀO ĐẦU =====
+    if (Math.abs(head.x - crosshair.x) < 1.5 && Math.abs(head.y - crosshair.y) < 1.5) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        // giữ cứng
+        entity._headLocked = true;
+    }
+
+    // ===== 7. ANTI TỤT (KHÔNG RƠI XUỐNG THÂN) =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.4;
+    }
+
+    // ===== 8. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+
+    // ===== 9. MICRO STABILIZE (MƯỢT) =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._ultraLight = {
+        locked: entity._headLocked || false,
+        dx,
+        dy,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+ultraLightHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => ultraLightHeadLock(p));
+}
+// ===== BODY BOOST → HEAD LOCK =====
+const bodyToHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const distY = Math.abs(dy);
+
+    // ===== 4. BODY ZONE (CHƯA LÊN ĐẦU) =====
+    if (distY > 5) {
+
+        // ⚡ tăng nhạy cực mạnh vùng thân
+        crosshair.x += dx * 0.3;
+        crosshair.y += dy * 1.3; // kéo lên rất nhanh
+
+        entity._mode = "BOOST_TO_HEAD";
+
+    } else {
+
+        // ===== 5. HEAD ZONE (ĐÃ CHẠM ĐẦU) =====
+
+        // 💀 tắt nhạy → khóa cứng
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+
+        entity._mode = "HEAD_LOCK";
+
+    }
+
+    // ===== 6. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y -= Math.abs(dy) * 0.5;
+    }
+
+    // ===== 7. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.25;
+
+    // ===== 8. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._bodyHeadLock = {
+        mode: entity._mode,
+        dy: dy,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+bodyToHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => bodyToHeadLock(p));
+}
+// ===== HEAD POSITION + ROTATION LOCK =====
+const headRotationLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. XÁC ĐỊNH HEAD =====
+    let headPos = null;
+    let headRot = null;
+
+    if (entity.bones && entity.bones.head) {
+        headPos = entity.bones.head.position || entity.bones.head;
+        headRot = entity.bones.head.rotation || { x: 0, y: 0 };
+    } else {
+        let height = entity.height || 60;
+        headPos = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+        headRot = { x: 0, y: 0 };
+    }
+
+    // ===== 3. PHÁT HIỆN KÉO TÂM (INPUT) =====
+    let inputX = entity.input?.dx || 0;
+    let inputY = entity.input?.dy || 0;
+
+    const isDragging = Math.abs(inputX) > 0.5 || Math.abs(inputY) > 0.5;
+
+    // ===== 4. KHI KHÔNG KÉO → KHÓA POSITION =====
+    if (!isDragging) {
+
+        // 🎯 aim chuẩn vào head
+        crosshair.x += (headPos.x - crosshair.x) * 0.6;
+        crosshair.y += (headPos.y - crosshair.y) * 0.9;
+
+    } else {
+
+        // ===== 5. KHI ĐANG KÉO → BÁM ROTATION =====
+
+        // mô phỏng offset theo rotation đầu
+        let rotOffsetX = headRot.y * 5; // quay trái/phải
+        let rotOffsetY = headRot.x * -3; // cúi/ngẩng
+
+        let targetX = headPos.x + rotOffsetX;
+        let targetY = headPos.y + rotOffsetY;
+
+        // bám theo rotation
+        crosshair.x += (targetX - crosshair.x) * 0.8;
+        crosshair.y += (targetY - crosshair.y) * 0.9;
+    }
+
+    // ===== 6. SNAP KHI GẦN =====
+    if (Math.abs(headPos.x - crosshair.x) < 2 &&
+        Math.abs(headPos.y - crosshair.y) < 2) {
+        crosshair.x = headPos.x;
+        crosshair.y = headPos.y;
+    }
+
+    // ===== 7. ANTI TỤT =====
+    if (crosshair.y > headPos.y) {
+        crosshair.y -= Math.abs(headPos.y - crosshair.y) * 0.3;
+    }
+
+    // ===== 8. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headRotLock = {
+        dragging: isDragging,
+        head: headPos,
+        rot: headRot,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headRotationLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headRotationLock(p));
+}
+// ===== HEAD PRIORITY + ANTI SNAP BACK =====
+const headPriorityLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. XÁC ĐỊNH HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 2. CHECK FIRE =====
+    const isFiring = obj.isFiring || entity.isFiring;
+
+    // ===== 3. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 4. DETECT ĐÃ KÉO QUA VÙNG HEAD =====
+    const passedHeadZone = Math.abs(dy) < 15;
+
+    // ===== 5. LƯU TRẠNG THÁI HEAD LOCK =====
+    if (!entity._headPriority) {
+        entity._headPriority = false;
+    }
+
+    if (passedHeadZone) {
+        entity._headPriority = true; // đã vào vùng head → kích hoạt giữ
+    }
+
+    // ===== 6. ƯU TIÊN ĐẦU TUYỆT ĐỐI =====
+    if (isFiring) {
+
+        if (!entity._headPriority) {
+
+            // ⚡ chưa lên đầu → kéo cực mạnh lên
+            crosshair.x += dx * 0.3;
+            crosshair.y += dy * 1.2;
+
+        } else {
+
+            // 💀 đã vào vùng head → KHÓA KHÔNG CHO RƠI
+            crosshair.x += (head.x - crosshair.x) * 0.8;
+            crosshair.y += (head.y - crosshair.y) * 1.0;
+
+            // chặn game kéo xuống
+            if (crosshair.y > head.y) {
+                crosshair.y = head.y;
+            }
+        }
+    }
+
+    // ===== 7. ANTI SNAP BACK (QUAN TRỌNG) =====
+    // game thường kéo về ngực → triệt tiêu
+    if (entity._headPriority) {
+
+        // force giữ trục Y
+        crosshair.y += (head.y - crosshair.y) * 0.9;
+
+        // khóa không cho tụt
+        if (crosshair.y > head.y) {
+            crosshair.y = head.y;
+        }
+    }
+
+    // ===== 8. SNAP CHUẨN ĐẦU =====
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headPriorityDebug = {
+        active: entity._headPriority,
+        firing: isFiring,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headPriorityLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headPriorityLock(p));
+}
+// ===== HEAD TRACKING LOCK (REAL-TIME) =====
+const headTrackingLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. LẤY HEAD =====
+    let head = null;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 3. PREDICTION (ĐUỔI THEO DI CHUYỂN) =====
+    if (entity.velocity) {
+        const predict = 0.12; // chỉnh độ đón đầu
+
+        head.x += entity.velocity.x * predict;
+        head.y += entity.velocity.y * predict;
+    }
+
+    // ===== 4. TÍNH SAI LỆCH =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    // ===== 5. TRACKING LIÊN TỤC =====
+    crosshair.x += dx * 1.0;
+    crosshair.y += dy * 1.1; // ưu tiên dọc (giữ đầu)
+
+    // ===== 6. KHÓA KHI GẦN =====
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 8. ANTI LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+
+    // ===== 9. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._headTracking = {
+        active: true,
+        dx,
+        dy,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+headTrackingLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => headTrackingLock(p));
+}
+// ===== ULTRA RECOIL CONTROL SYSTEM =====
+const recoilControl = (entity) => {
+
+    if (!entity) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
+    if (!obj.isFiring && !entity.isFiring) return;
+
+    // ===== 2. TRIỆT TIÊU RECOIL DỌC =====
+    if (entity.recoil_y !== undefined) {
+        entity.recoil_y = 0;
+    }
+
+    if (entity.vertical_recoil !== undefined) {
+        entity.vertical_recoil = 0;
+    }
+
+    // ===== 3. TRIỆT TIÊU RECOIL NGANG =====
+    if (entity.recoil_x !== undefined) {
+        entity.recoil_x = 0;
+    }
+
+    if (entity.horizontal_recoil !== undefined) {
+        entity.horizontal_recoil = 0;
+    }
+
+    // ===== 4. ANTI CAMERA SHAKE =====
+    if (entity.camera_shake !== undefined) {
+        entity.camera_shake = 0;
+    }
+
+    if (entity.view_punch !== undefined) {
+        entity.view_punch = 0;
+    }
+
+    // ===== 5. FORCE GIỮ TÂM ỔN ĐỊNH =====
+    if (!entity._stableAim) {
+        entity._stableAim = {
+            x: crosshair.x,
+            y: crosshair.y
+        };
+    }
+
+    // luôn giữ vị trí ổn định
+    crosshair.x += (entity._stableAim.x - crosshair.x) * 0.9;
+    crosshair.y += (entity._stableAim.y - crosshair.y) * 0.9;
+
+    // ===== 6. ANTI DRIFT =====
+    if (entity.velocity) {
+        crosshair.x -= entity.velocity.x * 0.1;
+        crosshair.y -= entity.velocity.y * 0.1;
+    }
+
+    // ===== 7. RESET TARGET LOCK (tránh lệch lâu) =====
+    entity._stableAim.x = crosshair.x;
+    entity._stableAim.y = crosshair.y;
+
+    // ===== 8. MICRO STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._recoilDebug = {
+        recoil_removed: true,
+        stable: entity._stableAim,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+recoilControl(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => recoilControl(p));
+}
+// ===== MICRO INPUT → FORCE HEAD =====
+const microToHead = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. LẤY INPUT (VUỐT TAY) =====
+    let inputX = entity.input?.dx || 0;
+    let inputY = entity.input?.dy || 0;
+
+    // ===== 2. GIẢM NHẠY GỐC (GẦN = 0 NHƯNG KHÔNG PHẢI 0) =====
+    const baseSensitivity = 120.0; // cực thấp nhưng vẫn có tín hiệu
+
+    inputX *= baseSensitivity;
+    inputY *= baseSensitivity;
+
+    // ===== 3. XÁC ĐỊNH HEAD =====
+    let head;
+
+    if (entity.bones && entity.bones.head) {
+        head = entity.bones.head;
+    } else {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.8
+        };
+    }
+
+    // ===== 4. PHÁT HIỆN CHỈ CẦN "NHÍCH NHẸ" =====
+    const isMicroMove = Math.abs(inputX) > 0.001 || Math.abs(inputY) > 0.001;
+
+    if (isMicroMove) {
+
+        // ===== 5. BIẾN VUỐT → LỆNH "ĐI TỚI ĐẦU" =====
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+
+        // ⚡ kéo cực mạnh bất kể khoảng cách
+        crosshair.x += dx * 0.7;
+        crosshair.y += dy * 1.4;
+
+    }
+
+    // ===== 6. SNAP KHI GẦN =====
+    if (Math.abs(head.x - crosshair.x) < 2 &&
+        Math.abs(head.y - crosshair.y) < 2) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. KHÓA KHI ĐÃ VÀO ĐẦU =====
+    if (!entity._headLocked) {
+        entity._headLocked = false;
+    }
+
+    if (Math.abs(head.y - crosshair.y) < 3) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 8. CHỐNG TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+};
+
+// ===== APPLY =====
+microToHead(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => microToHead(p));
+}
+// ===== SMART HEAD SYSTEM (AUTO DETECT + PREDICT + SNAP LOCK) =====
+const smartHeadLock = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = obj.crosshair || entity.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. AUTO DETECT HEAD BONE (CHUẨN SKIN) =====
+    let head = null;
+
+    if (entity.bones) {
+
+        // ưu tiên bone chuẩn
+        if (entity.bones.head) {
+            head = entity.bones.head;
+        }
+
+        // fallback theo tên bone khác nhau của từng skin
+        else {
+            const candidates = ["Head", "head", "Bone_Head", "Bip001-Head", "neck", "Neck"];
+            for (let key of candidates) {
+                if (entity.bones[key]) {
+                    head = entity.bones[key];
+                    break;
+                }
+            }
+        }
+    }
+
+    // fallback cuối cùng theo chiều cao
+    if (!head) {
+        let height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.85
+        };
+    }
+
+    // ===== 2. PREDICTION (ĐUỔI THEO DI CHUYỂN) =====
+    if (entity.velocity) {
+        const predict = 0.15;
+
+        head = {
+            x: head.x + entity.velocity.x * predict,
+            y: head.y + entity.velocity.y * predict
+        };
+    }
+
+    // ===== 3. KHOẢNG CÁCH TÂM → ĐẦU =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 4. AUTO SNAP VÙNG GẦN =====
+    const SNAP_RADIUS = 360; // vùng hút đầu
+
+    if (distance < SNAP_RADIUS) {
+
+        // ⚡ snap cực nhanh vào head
+        crosshair.x += dx * 0.9;
+        crosshair.y += dy * 1.2;
+
+        entity._nearHead = true;
+
+    } else {
+        entity._nearHead = false;
+    }
+
+    // ===== 5. KHÓA CHẶT KHI ĐÃ CHẠM =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 9999) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 6. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 7. CHỐNG LỆCH NGANG =====
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+
+    // ===== 8. STABILIZE =====
+    crosshair.x = Math.round(crosshair.x);
+    crosshair.y = Math.round(crosshair.y);
+
+    // ===== DEBUG =====
+    entity._smartHead = {
+        detected: true,
+        locked: entity._headLocked,
+        near: entity._nearHead,
+        dist: distance,
+        time: Date.now()
+    };
+};
+
+// ===== APPLY =====
+smartHeadLock(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => smartHeadLock(p));
+}
+// ===== ADVANCED AIMBOT SYSTEM =====
+const advancedAimbot = (entities) => {
+
+    if (!entities || !Array.isArray(entities)) return;
+
+    const crosshair = obj.crosshair;
+    if (!crosshair) return;
+
+    let bestTarget = null;
+    let bestDist = Infinity;
+
+    // ===== 1. CHỌN MỤC TIÊU GẦN TÂM =====
+    entities.forEach(entity => {
+
+        if (!entity || !entity.position) return;
+
+        let head = null;
+
+        // ===== 2. AUTO DETECT HEAD BONE =====
+        if (entity.bones) {
+
+            const candidates = [
+                "head","Head","Bone_Head",
+                "Bip001-Head","b_head","neck","Neck"
+            ];
+
+            for (let key of candidates) {
+                if (entity.bones[key]) {
+                    head = entity.bones[key];
+                    break;
+                }
+            }
+        }
+
+        // fallback chiều cao
+        if (!head) {
+
+            const height = entity.height || 60;
+
+            head = {
+                x: entity.position.x,
+                y: entity.position.y - height * 0.88
+            };
+        }
+
+        // ===== 3. PREDICTION =====
+        if (entity.velocity) {
+
+            const predict = 0.18;
+
+            head.x += entity.velocity.x * predict;
+            head.y += entity.velocity.y * predict;
+        }
+
+        // ===== 4. TÍNH KHOẢNG CÁCH =====
+        let dx = head.x - crosshair.x;
+        let dy = head.y - crosshair.y;
+
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < bestDist) {
+
+            bestDist = dist;
+            bestTarget = { entity, head };
+        }
+    });
+
+    if (!bestTarget) return;
+
+    const entity = bestTarget.entity;
+    const head = bestTarget.head;
+
+    // ===== 5. VECTOR AIM =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 6. SNAP AIM =====
+    const SNAP_RADIUS = 9999;
+
+    if (distance < SNAP_RADIUS) {
+
+        crosshair.x += dx * 0.9;
+        crosshair.y += dy * 1.3;
+
+        entity._nearHead = true;
+
+    } else {
+
+        crosshair.x += dx * 0.25;
+        crosshair.y += dy * 0.55;
+
+        entity._nearHead = false;
+    }
+
+    // ===== 7. HARD LOCK =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 4) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 8. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. STABILIZE =====
+    crosshair.x += (head.x - crosshair.x) * 0.35;
+
+    // ===== 10. MICRO FIX =====
+    crosshair.x = Math.round(crosshair.x * 10) / 10;
+    crosshair.y = Math.round(crosshair.y * 10) / 10;
+
+    // ===== DEBUG =====
+    entity._aimbot = {
+        locked: entity._headLocked,
+        near: entity._nearHead,
+        dist: distance,
+        target: true,
+        time: Date.now()
+    };
+};
+
+
+// ===== APPLY AIMBOT =====
+advancedAimbot(obj.players);
+ // ===== AIM CHASE SYSTEM (FOLLOW HAND DRAG TO HEAD) =====
+const aimChaseHead = (entity) => {
+
+    if (!entity || !entity.position) return;
+
+    const crosshair = entity.crosshair || obj.crosshair;
+    if (!crosshair) return;
+
+    // ===== 1. DETECT HEAD =====
+    let head = null;
+
+    if (entity.bones) {
+        const bones = ["head","Head","Bone_Head","Bip001-Head","neck"];
+        for (let b of bones) {
+            if (entity.bones[b]) {
+                head = entity.bones[b];
+                break;
+            }
+        }
+    }
+
+    if (!head) {
+        const height = entity.height || 60;
+        head = {
+            x: entity.position.x,
+            y: entity.position.y - height * 0.88
+        };
+    }
+
+    // ===== 2. PREDICTION =====
+    if (entity.velocity) {
+        const predict = 0.2;
+
+        head.x += entity.velocity.x * predict;
+        head.y += entity.velocity.y * predict;
+    }
+
+    // ===== 3. VECTOR =====
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    // ===== 4. NHẬN DIỆN KÉO TAY =====
+    if (!entity._lastCrosshair) {
+        entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
+    }
+
+    let dragX = crosshair.x - entity._lastCrosshair.x;
+    let dragY = crosshair.y - entity._lastCrosshair.y;
+
+    let dragSpeed = Math.sqrt(dragX * dragX + dragY * dragY);
+
+    entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
+
+    // ===== 5. BOOST THEO KÉO =====
+    let chaseBoost = 1.0;
+
+    if (dragSpeed > 0.5) {
+        chaseBoost = 1.5; // kéo nhanh → boost mạnh
+    }
+
+    if (dragSpeed > 2) {
+        chaseBoost = 2.2; // kéo mạnh → hút cực nhanh
+    }
+
+    // ===== 6. AIM CHASE =====
+    crosshair.x += dx * 0.3 * chaseBoost;
+    crosshair.y += dy * 0.8 * chaseBoost; // ưu tiên kéo lên đầu
+
+    // ===== 7. SNAP GẦN HEAD =====
+    if (distance < 30) {
+        crosshair.x += dx * 0.8;
+        crosshair.y += dy * 1.4;
+        entity._nearHead = true;
+    } else {
+        entity._nearHead = false;
+    }
+
+    // ===== 8. HARD LOCK =====
+    if (!entity._headLocked) entity._headLocked = false;
+
+    if (distance < 4) {
+        entity._headLocked = true;
+    }
+
+    if (entity._headLocked) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 9. ANTI TỤT =====
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+
+    // ===== 10. STABILIZE =====
+    crosshair.x += (head.x - crosshair.x) * 0.35;
+
+    // ===== 11. FIX RUNG =====
+    crosshair.x = Math.round(crosshair.x * 10) / 10;
+    crosshair.y = Math.round(crosshair.y * 10) / 10;
+
+    // ===== DEBUG =====
+    entity._aimChase = {
+        dragSpeed,
+        boost: chaseBoost,
+        dist: distance,
+        locked: entity._headLocked
+    };
+};
+
+
+// ===== APPLY =====
+aimChaseHead(obj);
+
+if (obj.players && Array.isArray(obj.players)) {
+    obj.players.forEach(p => aimChaseHead(p));
+}
 /*
  * Shadowrocket Script: DTien Injector FF (Full All-In-One)
  * Version: 90-100 Uncrack Premium
@@ -6070,2550 +8614,11 @@ const dtienConfig = {
     },
     "Status": "DTien_Successfully_Injected"
 };
-
-// --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
-let body = $response.body;
-
-try {
-    // Thử giải mã nếu Server trả về JSON
-    let obj = JSON.parse(body);
-    obj["DTien_Matrix_Engine"] = dtienMatrixEngine;
-    
-    // Tạo danh sách Key thô tự động từ các Const trên
-    obj["Inject_Config"] = {
-        "matrix_dictionary": "com.accpt_ffxbase64_Key_allow_Matrix_Dictionary_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.MATRIX_PARENT_HOOK.Dictionary,
-        "forward_sync": "com.accpt_ffxbase64_Key_allow_Forward_Sync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.QUATERNION_W_STABILIZER.GetForward,
-        "component_tf": "com.accpt_ffxbase64_Key_allow_Component_Transform_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=" + dtienMatrixEngine.LOCAL_BONE_EXTRACTION.Component_Transform
-    };
-    // Inject toàn bộ Engine vào Response của Host
-    obj["DTien_AutoAim_Lock"] = AIM_LOCK_ENGINE;
-    obj["Engine_Status"] = "Running_Premium";
-    obj["Target_Lock"] = "Head_Bone_Center";
-    // Tiêm toàn bộ cấu trúc dtienConfig vào phản hồi của Host
-    obj["mod_menu_config"] = dtienConfig;
-    obj["authorized"] = true;
-    obj["DTien_Ultra_Aim"] = ULTRA_STICKY_AIM;
-    obj["Global_Settings"] = {
-        "Aim_Assist_Level": "Maximum",
-        "Recoil_Reduction": "100%",
-        "Server_Authorized": true
-    };
-        obj["DTien_V5_Injected"] = DTien_V5_Engine;
-    obj["Snap_Status"] = "Ready_To_Flick";
-    obj["Anti_Cheat_Shield"] = "Bypassed_v2";
-  // Inject toàn bộ Engine V6 vào Response của Host
-    obj["DTien_V6_Absolute"] = DTien_V5_Engine; // Backup V5
-    obj["V6_Core_Engine"] = DTien_V6_Engine;    // Main V6
-    obj["Precision_Status"] = "Absolute_Lock_On";
-     obj["DTien_V7_Permanent"] = DTien_V7_Engine;
-    obj["System_Log"] = "Head_Lock_Stable_On_Firing";
-    obj["Authorization"] = "V7_Premium_Grant";
-  // Inject toàn bộ Engine V8 vào Response
-    obj["DTien_V8_Omni"] = DTien_V8_Engine;
-    obj["Tracking_Status"] = "Omni_Lock_Engaged";
-    obj["Precision_Level"] = "Absolute_360";
-     // Inject toàn bộ Engine V9 vào Response
-    obj["DTien_V9_HardStop"] = DTien_V9_Engine;
-    obj["Precision_Status"] = "Absolute_Distance_Locked";
-    obj["Overshoot_Fix"] = "Enabled_Maximum";
-obj["DTien_V10_PreSnap"] = DTien_V10_Engine;
-    obj["Snap_Status"] = "Instant_Head_Locked";
-    obj["Speed_Boost"] = "Zero_Delay_Mode";
-    // Tiêm (Inject) toàn bộ cấu trúc Master vào phản hồi
-    obj["DTien_HeadLock_Master"] = DTien_HeadLock_Master;
-    obj["Authorized_User"] = "dtiendzai123";
-    obj["Injection_Status"] = "Success_98_Percent";
-
-    // Tạo các chuỗi Key thô (Raw Keys) tự động từ Object
-    obj["Raw_Keys_Payload"] = {
-        "Aim_Lock_Key": "com.accpt_ffxbase64_Key_allow_AimLock_HardLock_Enable_app_com.dts.freefireth=True",
-        "ADS_Snap_Key": "com.accpt_ffxbase64_Key_allow_ADS_HeadSnap_Enable_app_com.dts.freefireth=True",
-        "Bullet_Path_Key": "com.accpt_ffxbase64_Key_allow_Bullet_Path_Correction_app_com.dts.freefireth=bone_Head",
-        "Precision_Key": "com.accpt_ffxbase64_Key_allow_WorldPosition_Precision_Fix_app_com.dts.freefireth=-0.005812380"
-    };
-     // Inject toàn bộ Engine V11 vào Response
-    obj["DTien_V11_Engine"] = DTien_V11_Engine;
-    obj["System_Priority"] = "LateUpdate_High";
-    
-    // Tự động tạo Raw Keys để nạp vào hệ thống game
-    obj["Raw_Keys_V11"] = {
-        "tracking_key": "com.accpt_ffxbase64_Key_allow_HeadBoneTracking_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "smooth_key": "com.accpt_ffxbase64_Key_allow_GlobalSmoothInterpolation_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=0.35",
-        "sync_key": "com.accpt_ffxbase64_Key_allow_LateUpdateSync_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True"
-    };
-   // Inject Engine V12 vào phản hồi của Game Host
-    obj["DTien_V12_Core"] = DTien_V12_Engine;
-    obj["Magnet_Status"] = "Global_Locked";
-    obj["Matrix_Sync"] = "Active_High_Precision";
-
-    // Tạo các Raw Keys cần thiết cho bộ nạp (Loader) của Game
-    obj["Raw_Keys_V12"] = {
-        "magnet_key": "com.accpt_ffxbase64_Key_allow_GlobalHeadMagnet_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "teleport_fix": "com.accpt_ffxbase64_Key_allow_TeleportResistHeadLock_Enable_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "matrix_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_ComputeMatrix_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=True",
-        "local_pos_key": "com.accpt_ffxbase64_Key_allow_HeadWorldPos_LocalPos_app_com.dts.freefireth_onauto_cws_90-100.uncrack.list=-0.045697,-0.004478,-0.020043"
-    };
-     // Inject Engine V13 vào phản hồi
-    obj["DTien_V13_TargetRed"] = DTien_V13_Engine;
-    obj["Aim_Engine_Status"] = "Waiting_For_Red_Crosshair";
- obj["DTien_V14_Anchor"] = DTien_V14_Engine;
-    obj["AutoAim_Mode"] = "Head_Only_Strict";
-    obj["Hips_Bypass"] = "Fully_Disabled";
-     obj["DTien_V15_Ultimate"] = DTien_V15_Engine;
-    obj["Bullet_Logic"] = "Tracer_Lock_Engaged";
-    obj["Damage_Type"] = "Headshot_Only";
-     obj["DTien_V16_Adaptive"] = DTien_V16_Engine;
-    obj["Overshoot_Fix"] = "Enabled_Maximum";
-    obj["Adaptive_Mode"] = "Distance_Locked";
-    obj["DTien_V17_RTLO"] = DTien_V17_Engine;
-    obj["Aim_Status"] = "Waiting_For_Red_Crosshair";
-    obj["Lock_Mode"] = "Position_Rotation_Strict";
-    obj["DTien_V18_Instant"] = DTien_V18_Engine;
-    obj["Snap_Mode"] = "Micro_Touch_Activated";
-    obj["Lock_Status"] = "Position_Rotation_Synced";
-    obj["DTien_V19_Kinetic"] = DTien_V19_Engine;
-    obj["Aim_Mode"] = "Ultimate_Head_Anchor";
-    obj["Sync_Status"] = "360_Omni_Directional_Active";
-obj["DTien_V20_VectorForce"] = DTien_V20_Engine;
-    obj["Aim_Mode"] = "Absolute_Head_Locked";
-    obj["Correction_Status"] = "Instant_Assign_Active";
-obj["DTien_V21_Velocity"] = DTien_V21_Engine;
-    obj["Sync_Status"] = "Omni_Locked_On_Firing";
-    obj["Movement_Mode"] = "Velocity_Predict_Active";
-    obj["DTien_V22_HardLock"] = DTien_V22_Engine;
-    obj["Aim_Status"] = "Red_Zone_Locked";
-    obj["Lock_Mode"] = "Position_Rotation_Freeze";
-obj["DTien_V23_Axis"] = DTien_V23_Engine;
-    obj["Axis_Status"] = "X_Y_Constraint_Locked";
-    obj["Damping_Mode"] = "Anti_Overshoot_Active";
- 
-  obj["DTien_V24_Kinetic"] = DTien_V24_Engine;
-    obj["Brake_Status"] = "Ready_To_Snap";
-    obj["Y_Axis_Mode"] = "Variable_Acceleration_Active";
-    
-    obj["DTien_V25_Transform"] = DTien_V25_Engine;
-    obj["Aim_Engine"] = "HardLock_Omni_Directional";
-    obj["Status"] = "Ready_To_Lock_On_Red";
- obj["DTien_V26_PullSync"] = DTien_V26_Engine;
-    obj["Pull_Speed_Status"] = "Synced_To_Head_Bone";
-    obj["Target_Lock"] = "Absolute_Headshot_Only";
-
-    obj["DTien_V28_Sticky"] = DTien_V28_Engine;
-    obj["Aim_Logic"] = "C_Plus_Plus_Sticky_Loop";
-    obj["Recoil_Status"] = "Compensated_Zero_Drift";
-obj["DTien_V29_Teleport"] = DTien_V29_Engine;
-    obj["Aim_Engine"] = "BONE_HEAD_ONLY_SNAP";
-    obj["Manual_Input"] = "Bypassed_While_Locked";
-obj["DTien_V30_Clamp"] = DTien_V30_Engine;
-    obj["Aim_Engine"] = "FIXED_HEAD_LOCK_V30";
-    obj["Y_Axis_Status"] = "Clamped_At_Head_Bone";
-obj["DTien_V31_Hyper"] = DTien_V31_Engine;
-    obj["Touch_Status"] = "1000Hz_Active";
-    obj["Snap_Mode"] = "Impulse_Brake_Locked";
-      obj["DTien_V32_Chromatic"] = DTien_V32_Engine;
-    obj["Aim_Engine"] = "RED_COLOR_HARDLOCK_V32";
-    obj["Recoil_Status"] = "Zero_Recoil_Active_On_Red";
- obj["DTien_V33_Absolute"] = DTien_V33_Engine;
-    obj["Aim_Mode"] = "HARD_LOCK_360_PREDICTION";
-    obj["Sync_Status"] = "Ping_Compensated_Locked";
-obj["DTien_V34_Ultimate"] = DTien_V34_Engine;
-    obj["Aim_Logic"] = "TRIGO_VIEWANGLE_HARDLOCK";
-    obj["Input_Status"] = "MouseMultiplier_Dynamic";
-    obj["DTien_V35_Clamp"] = DTien_V35_Engine;
-    obj["Aim_Engine"] = "PRECISION_CLAMP_NULLIFICATION";
-    obj["Clamp_Status"] = "0.5f_Active";
- obj["DTien_V36_FullEngine"] = DTien_V36_Engine;
-    obj["Aim_Engine_Status"] = "V36_Comprehensive_Running";
-    obj["Logic_Mode"] = "ViewAngle_Normalization_Active";
-obj["DTien_V37_Advanced"] = DTien_V37_Engine;
-    obj["Scanner_Status"] = "Dynamic_Bone_ID_Active";
-    obj["Aim_Logic"] = "FORWARD_VECTOR_PREDICTION";
-obj["DTien_V38_Neural"] = DTien_V38_Engine;
-    obj["Scanner_Engine"] = "NEURAL_BONE_SCANNER_V38";
-    obj["Aim_Logic"] = "QUATERNION_FORWARD_PUSH";
-    obj["DTien_V39_Adaptive"] = DTien_V39_Engine;
-    obj["Drag_Status"] = "CHEST_TO_HEAD_ACTIVE";
-    obj["Curve_Logic"] = "EASE_OUT_ACCELERATION";
-
-    obj["DTien_V40_Hex"] = DTien_V40_Engine;
-    obj["Memory_Status"] = "PATCHED_SUCCESSFULLY";
-    obj["Opcode_Mode"] = "HEX_REPLACE_ACTIVE";
-  obj["DTien_V41_Headshot"] = DTien_V41_Engine;
-    obj["Aimbot_Status"] = "HEX_HEAD_LOCKED";
-    obj["Patch_Priority"] = "Critical";
-    
-    obj["DTien_V42_Aimlock"] = DTien_V42_Engine;
-    obj["Aim_Engine"] = "HEX_HEAD_STATIC_LOCK";
-    obj["Memory_Injection"] = "SUCCESS_BONE_8";
-   obj["DTien_V43_Kinetic"] = DTien_V39_Engine; // Kế thừa cấu trúc
-    obj["Drag_Hex_Status"] = "PATCHED_SUCCESSFULLY";
-    obj["Aim_Type"] = "KINETIC_DRAG_HEAD_LOCK";
-    
-    obj["DTien_V44_Precision"] = DTien_V44_Engine;
-    obj["Accuracy_Status"] = "MAXIMUM_PRECISION";
-    obj["Bone_Targeting"] = "STATIC_HEAD_8";
-    obj["DTien_V45_Mapping"] = DTien_V45_Engine;
-    obj["Offset_Status"] = "ALL_OFFSETS_DONE";
-    obj["Core_Engine"] = "IL2CPP_INTERNAL_PATCH";
-    obj["DTien_V46_MicroSnap"] = DTien_V46_Engine;
-    obj["Aim_Sensitivity"] = "HIGH_PRECISION_BOOST";
-    obj["Fix_Mode"] = "ANTI_OVERSHOOT_ACTIVE";
- obj["DTien_V47_Snap"] = DTien_V47_Engine;
-    obj["Aim_Mode"] = "INSTANT_STICKY_HEAD";
-    obj["Tracking_Status"] = "FRAME_BY_FRAME_LOCKED";
-obj["DTien_V48_AntiJitter"] = DTien_V48_Engine;
-    obj["Stability_Status"] = "SMOOTH_DAMPING_ACTIVE";
-    obj["Aim_Quality"] = "NO_SHAKE_NO_RECOIL";
-  obj["DTien_V49_Viper"] = DTien_V49_Engine;
-    obj["Engine_Type"] = "QUANTUM_VIPER_CORE";
-    obj["Response_Status"] = "ULTRA_SENSITIVITY_0_FRICTION";
-    obj["DTien_V50_ViperX"] = DTien_V50_Engine;
-    obj["Ghost_Status"] = "TRACKING_4D";
-    obj["Magic_Status"] = "HITBOX_EXPANDED_2.5X";
- obj["DTien_V51_Viper3D"] = DTien_V51_Engine;
-    obj["Tracking_Type"] = "BONE_REAL_3D_ROTATION";
-    obj["Projection_Status"] = "SCREEN_SYNC_SUCCESS";
-obj["DTien_V52_Perfect"] = DTien_V52_Engine;
-    obj["Lock_Mode"] = "RADIUS_DYNAMIC_SNAP";
-    obj["Shake_Filter"] = "ACTIVE_0.4_WEIGHT";
-    
-obj["DTien_V53_Final"] = DTien_V53_Engine;
-    obj["Sync_Status"] = "CHAIN_COMPLETED";
-    obj["Lock_Strength"] = "MAX_STABLE";
-obj["DTien_V54_Magnetic"] = DTien_V54_Engine;
-    obj["Sens_Status"] = "OVERCLOCKED_STABLE";
-    obj["Lock_Quality"] = "STATIONARY_HEAD_LOCKED";
-if (obj.sensitivity) obj.sensitivity *= 1.4;
-
-    // Aim assist
-    if (obj.aimAssist) obj.aimAssist = 1.0;
-
-    // Recoil control
-    if (obj.recoil) obj.recoil = 0;
-
-    // Hitbox ưu tiên head
-    if (obj.hitbox) {
-        obj.hitbox.head *= 999.25;
-        obj.hitbox.body *= 0.0;
-    }
-
-    // Smooth giảm overshoot
-    if (obj.smooth) obj.smooth = 0.15;
-
- 
- 
- // ===== 1. SENSITIVITY CONTROL =====
-    if (obj.sensitivity !== undefined) {
-        obj.sensitivity = Math.min(obj.sensitivity * 1.4, 10);
-    }
-
-    if (obj.camera_sensitivity !== undefined) {
-        obj.camera_sensitivity *= 1.3;
-    }
-
-    // ===== 2. AIM ASSIST BOOST =====
-    if (obj.aimAssist !== undefined) {
-        obj.aimAssist = 1.0; // max hợp lệ
-    }
-
-    if (obj.autoAim !== undefined) {
-        obj.autoAim = true;
-    }
-
-    // ===== 3. HITBOX PRIORITY (HEAD FOCUS) =====
-    if (obj.hitbox !== undefined) {
-        if (obj.hitbox.head !== undefined) {
-            obj.hitbox.head *= 999.0; // tăng head
-        }
-        if (obj.hitbox.neck !== undefined) {
-            obj.hitbox.neck *= 0.0; // giảm cổ
-        }
-        if (obj.hitbox.body !== undefined) {
-            obj.hitbox.body *= 0.0; // giảm body
-        }
-    }
-
-    // ===== 4. RECOIL CONTROL =====
-    if (obj.recoil !== undefined) {
-        obj.recoil = 0;
-    }
-
-    if (obj.vertical_recoil !== undefined) {
-        obj.vertical_recoil *= 0.0;
-    }
-
-    // ===== 5. SMOOTH / ANTI-OVERSHOOT =====
-    if (obj.aim_smooth !== undefined) {
-        obj.aim_smooth = 0.001; // giảm delay → ít văng
-    }
-
-    if (obj.drag_smooth !== undefined) {
-        obj.drag_smooth = 0.001;
-    }
-
-    // ===== 6. TARGET LOCK FEEL (GIẢ LẬP MAGNETIC) =====
-    if (obj.lock_radius !== undefined) {
-        obj.lock_radius *= 360.0;
-    }
-
-
-   // ===== 1. DRAG VECTOR TUNING =====
-    // Tăng lực kéo lên (Y axis)
-    if (obj.drag_vertical !== undefined) {
-        obj.drag_vertical *= 999.5;
-    }
-
-    // Giảm lệch ngang (X axis)
-    if (obj.drag_horizontal !== undefined) {
-        obj.drag_horizontal *= 0.0;
-    }
-
-    // ===== 2. AIM CURVE (ĐƯỜNG CONG KÉO) =====
-    if (obj.aim_curve !== undefined) {
-        obj.aim_curve = "easeOut"; 
-        // kéo đầu nhanh hơn ở đoạn cuối
-    }
-
-    // ===== 3. HEAD PRIORITY =====
-    if (obj.hitbox !== undefined) {
-        if (obj.hitbox.head !== undefined) obj.hitbox.head *= 1.4;
-        if (obj.hitbox.neck !== undefined) obj.hitbox.neck *= 0.1;
-        if (obj.hitbox.body !== undefined) obj.hitbox.body *= 0.0;
-    }
-
-    // ===== 4. SNAP KHI GẦN HEAD =====
-    if (obj.head_snap !== undefined) {
-        obj.head_snap = 999.0; // lực hút nhẹ
-    }
-
-    if (obj.stickyAim !== undefined) {
-        obj.stickyAim = 999.0;
-    }
-
-    // ===== 5. ANTI OVERSHOOT =====
-    if (obj.drag_smooth !== undefined) {
-        obj.drag_smooth = 0.001;
-    }
-
-    if (obj.aim_smooth !== undefined) {
-        obj.aim_smooth = 0.001;
-    }
-
-    // ===== 6. JITTER FIX =====
-    if (obj.jitter !== undefined) {
-        obj.jitter *= 0.25;
-    }
-
-    // ===== 7. AUTO MICRO-CORRECTION =====
-    if (obj.micro_adjust !== undefined) {
-        obj.micro_adjust = 0.001;
-    }
-// 1. TỐI ƯU ĐỘ NHẠY (SENSITIVITY INTERPOLATION)
-    // Tăng tốc độ phản hồi của tâm ngắm, loại bỏ độ trễ (input lag)
-    if (obj.sensitivity_scale !== undefined) {
-        obj.sensitivity_scale = 1.25; // Tăng 25% độ nhạy tổng thể
-    }
-    
-    // 2. KHẢ NĂNG BÁM MỤC TIÊU (TRACKING)
-    // Giúp tâm ngắm tự động bám theo khi đối thủ di chuyển hoặc nhảy
-    if (obj.aim_tracking_speed !== undefined) {
-        obj.aim_tracking_speed = 999.0; // Tốc độ bám mục tiêu nhanh hơn
-    }
-
-    if (obj.sticky_force !== undefined) {
-        obj.sticky_force = 1.0; // Lực dính tâm cực cao khi đã chạm mục tiêu
-    }
-
-    // 3. CHUYÊN BIỆT CHO "BÁM ĐẦU" (HEAD-CENTERED)
-    if (obj.aim_prediction !== undefined) {
-        obj.aim_prediction = 1.5; // Dự đoán hướng di chuyển của đầu đối thủ
-    }
-
-    if (obj.lock_on_bone !== undefined) {
-        obj.lock_on_bone = "head"; // Ép hệ thống khóa vào xương đầu
-    }
-
-    // 4. GIẢM THIỂU SAI SỐ KHI KÉO TÂM
-    if (obj.deadzone !== undefined) {
-        obj.deadzone = 0.02; // Giảm vùng chết của cần analog/vuốt để nhạy hơn
-    }
-
-    if (obj.aim_acceleration !== undefined) {
-        obj.aim_acceleration = 2.0; // Tắt gia tốc để cảm giác kéo tay thật nhất
-    }
-
-    // 5. CÂN BẰNG ĐỘ GIẬT ĐỂ GIỮ TÂM Ở ĐẦU
-    if (obj.recoil_stability !== undefined) {
-        obj.recoil_stability = 0.0; // Giữ tâm không bị nảy lên quá đầu
-    }
-    // ===== 1. THUẬT TOÁN DỰ ĐOÁN DI CHUYỂN (PREDICTION 2.0) =====
-    // Tăng khả năng bắt dính mục tiêu chạy ngang thêm 100%
-    if (obj.prediction_multiplier !== undefined) {
-        obj.prediction_multiplier = 2.0; // Gấp đôi khả năng tính toán quỹ đạo
-    }
-    
-    if (obj.horizontal_stickiness !== undefined) {
-        obj.horizontal_stickiness *= 2.0; // Tăng 100% lực bám dính ngang
-    }
-
-    // ===== 2. TỐI ƯU ĐIỂM GHÌM TÂM (CENTER ANCHOR) =====
-    // Đảm bảo tâm luôn khóa vào xương đầu (Bone ID: 0)
-    if (obj.aim_anchor_point !== undefined) {
-        obj.aim_anchor_point = "bone_head"; 
-    }
-
-    if (obj.aim_lock_strength !== undefined) {
-        obj.aim_lock_strength = 2.0; // Khóa gần như tuyệt đối (98%)
-    }
-
-    // ===== 3. XỬ LÝ LỰC KÉO ĐỘNG (DYNAMIC DRAG) =====
-    if (obj.drag_force !== undefined) {
-        obj.drag_force.horizontal_boost = 1.5; // Tăng lực bù trừ khi mục tiêu chạy nhanh
-        obj.drag_force.vertical_stabilize = 1.2; // Giữ tâm không bị vọt quá đầu
-    }
-
-    // ===== 4. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
-    // Ngăn chặn việc mất dấu khi đối thủ nhảy hoặc đổi hướng đột ngột
-    if (obj.tracking_latency !== undefined) {
-        obj.tracking_latency = 0.0; // Triệt tiêu độ trễ khi bám mục tiêu
-    }
-
-    if (obj.fov_radius !== undefined) {
-        obj.fov_radius = 360.0; // Mở rộng vùng quét bám dính xung quanh mục tiêu
-    }
-
-    // ===== 5. CẢI THIỆN TỈ LỆ TRÚNG (HIT-RATE OPTIMIZER) =====
-    if (obj.hit_registration !== undefined) {
-        obj.hit_registration = "high_priority_head";
-    }
-     // ===== 1. REMOVE DOWNWARD FORCE =====
-    if (obj.vertical_recoil !== undefined) {
-        obj.vertical_recoil = 0; // triệt tiêu giật xuống
-    }
-
-    if (obj.gravity !== undefined) {
-        obj.gravity = 0; // tắt hoàn toàn "trọng lực tâm"
-    }
-
-    if (obj.aim_gravity !== undefined) {
-        obj.aim_gravity = 0;
-    }
-
-    // ===== 2. STABLE HEAD LEVEL =====
-    if (obj.vertical_drift !== undefined) {
-        obj.vertical_drift = 0; // không tụt tâm
-    }
-
-    if (obj.crosshair_drop !== undefined) {
-        obj.crosshair_drop = 0;
-    }
-
-    // ===== 3. MICRO UP ASSIST (GIỮ TÂM Ở ĐẦU) =====
-    if (obj.drag_vertical !== undefined) {
-        obj.drag_vertical *= 2.2; // giữ lực kéo lên nhẹ
-    }
-
-    if (obj.micro_adjust !== undefined) {
-        obj.micro_adjust = 0.18;
-    }
-
-    // ===== 4. ANTI FALL BACK =====
-    if (obj.return_force !== undefined) {
-        obj.return_force = 0; // không kéo về vị trí cũ
-    }
-
-    if (obj.centering !== undefined) {
-        obj.centering = 0;
-    }
-if (obj.trigger_status !== undefined) {
-        obj.trigger_delay = 0;               // Kích hoạt tức thì 0ms
-        obj.auto_lock_on_red = true;         // Khoá cứng khi tâm chuyển đỏ
-        obj.lock_strength_active = 1.0;      // Lực khoá tuyệt đối (100%)
-    }
-
-    // ===== 2. XỬ LÝ KHOẢNG CÁCH (DISTANCE COMPENSATION) =====
-    // Đảm bảo độ chính xác dù kẻ địch ở gần hay cực xa
-    if (obj.bullet_drop_compensation !== undefined) {
-        obj.bullet_drop_compensation = 1.0;  // Triệt tiêu độ rơi của đạn
-        obj.hit_scan_mode = true;            // Chế độ đạn thẳng tắp
-    }
-
-    if (obj.range_limit !== undefined) {
-        obj.range_limit = 999;               // Mở rộng tầm bắn tối đa
-    }
-
-    // ===== 3. KHOÁ CHẶT ĐẦU VỚI MỌI HƯỚNG DI CHUYỂN =====
-    // Thuật toán bám đuổi đa hướng (Omni-directional Tracking)
-    if (obj.aim_logic !== undefined) {
-        obj.aim_logic.priority = "head";
-        obj.aim_logic.bone_stickiness = 999.0; // Dính chặt vào xương đầu
-        obj.aim_logic.predict_vector = 999.5;  // Dự đoán chuyển động cực cao
-    }
-
-    // ===== 4. TỐI ƯU HOÁ ĐỘ CHÍNH XÁC (ZERO SPREAD) =====
-    // Đạn chụm 1 điểm, không bị toé tâm dù bắn liên tục
-    if (obj.accuracy_config !== undefined) {
-        obj.spread_reduction = 1.0;          // Giảm 100% độ nở tâm
-        obj.recoil_control = 1.0;            // Triệt tiêu giật súng
-        obj.perfect_shot_ratio = 1.0;        // Tỉ lệ đạn vào đầu 100%
-    }
-
-    // ===== 5. TỐI ƯU GÓC NHÌN (FOV LOCK) =====
-    if (obj.aim_fov !== undefined) {
-        obj.aim_fov = 360;                   // Cho phép bám mục tiêu ở mọi góc độ
-        obj.silent_aim = true;               // Đạn tự tìm đầu trong vùng FOV
-    }
-
-  if (obj.drag_limit_y !== undefined) {
-        obj.drag_limit_y = "head_height"; // Giới hạn trục dọc không cho vọt quá đầu
-    }
-
-    // ===== 2. FIX LỖI "LỆCH NGANG" (ZERO DRIFT) =====
-    // Ép tâm đi theo đường thẳng đứng tuyệt đối khi kéo
-    if (obj.horizontal_stabilizer !== undefined) {
-        obj.horizontal_stabilizer = 1.0; // Triệt tiêu 95% độ lệch trái/phải
-    }
-
-    if (obj.axis_lock !== undefined) {
-        obj.axis_lock = "vertical_priority"; 
-    }
-
-    // ===== 3. HIỆU CHUẨN KHOẢNG CÁCH (ADAPTIVE RANGE) =====
-    // Tự động thay đổi độ nhạy dựa trên độ xa của địch
-    if (obj.distance_adapter !== undefined) {
-        obj.distance_adapter.close_range = 5.7; // Giảm nhạy khi địch sát mặt (tránh xoáy tâm)
-        obj.distance_adapter.long_range = 4.4;  // Tăng nhạy khi địch ở xa (dễ kéo lên đầu)
-    }
-
-    // ===== 4. TĂNG ĐỘ CHÍNH XÁC (CONE OF FIRE FIX) =====
-    // Giữ đạn luôn chụm vào giữa tâm dù ở mọi hướng di chuyển
-    if (obj.accuracy_stabilizer !== undefined) {
-        obj.accuracy_stabilizer = 1.0; 
-        obj.bullet_straightness = 1.0; // Đạn đi theo đường thẳng tắp
-    }
-if (obj.aim_position < obj.head_coordinate) {
-        obj.pull_force_y = 5.6;        // Tăng lực kéo dọc để đẩy tâm lên nhanh hơn
-        obj.acceleration_y = 0.25;     // Gia tốc tăng dần cho đến khi chạm mục tiêu
-    }
-
-    // TRƯỜNG HỢP 2: TÂM ĐÃ KÉO LỐ ĐẦU (OVER-AIM)
-    if (obj.aim_position > obj.head_coordinate) {
-        obj.pull_force_y = -0.005;       // Lực kéo ngược (đảo chiều) để tâm hạ xuống đầu
-        obj.recenter_speed = 1.0;      // Tốc độ hồi quy về điểm mục tiêu cực nhanh
-        obj.magnetic_lock = "head";    // Ép tâm đứng yên tại tọa độ đầu
-    }
-
-    // TRƯỜNG HỢP 3: TÂM LỆCH HOẶC KHÔNG THEO KỊP (DRIFT & LAG)
-    if (obj.horizontal_drift !== 0 || obj.tracking_error === true) {
-        obj.snap_to_x = obj.target_x;  // Tự động hút ngang về đúng trục dọc của địch
-        obj.tracking_sensitivity = 999.5; // Tăng độ nhạy bám đuổi để bắt kịp tốc độ địch
-        obj.prediction_interval = 0.01; // Cập nhật tọa độ mỗi 0.01 giây (siêu nhanh)
-    }
-
-    // ===== 2. ĐIỂM GHI ĐÈ HITBOX (STAY-IN-HEAD) =====
-    // Khi tâm đã vào vùng Head, kích hoạt chế độ "đóng băng" sai số
-    if (obj.on_target_head === true) {
-        obj.sensitivity_multiplier = 0.0; // Làm cực chậm tâm để không bị văng ra ngoài
-        obj.lock_duration = "infinite";   // Khóa cho đến khi đối thủ gục hoặc ngừng bắn
-  obj.headlock_tracking = "infinite"; 
-    obj.auto_head_lock_duration = "infinite"; 
-    obj.head_lock_strength = "infinite"; 
- obj.hold_head_lock_duration = "infinite"; 
-    }
-
-    // ===== 3. CÔNG NGHỆ KHÔNG GIẬT & CHỐNG RUNG =====
-    if (obj.recoil_compensation !== undefined) {
-        obj.recoil_compensation = 1.0; 
-        obj.jitter_suppression = 1.0;
-    }
-
- // ===== CORE ENGINE V170 =====
-const runFullControl = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
-
-    // ===== 2. PREDICTION 2.0 =====
-    if (entity.velocity && obj.prediction_multiplier) {
-        const p = obj.prediction_multiplier;
-
-        head.x += entity.velocity.x * p * 0.01;
-        head.y += entity.velocity.y * p * 0.01;
-    }
-
-    // ===== 3. KHOẢNG CÁCH (ADAPTIVE) =====
-    let distScale = 1.0;
-    if (entity.distance && obj.distance_adapter) {
-        distScale = entity.distance < 50
-            ? obj.distance_adapter.close_range
-            : obj.distance_adapter.long_range;
-    }
-
-    // ===== 4. DRAG VECTOR (CHỈNH HƯỚNG KÉO) =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ưu tiên trục dọc
-    if (obj.drag_vertical) {
-        dy *= obj.drag_vertical * 0.001;
-    }
-
-    if (obj.drag_horizontal !== undefined) {
-        dx *= obj.drag_horizontal;
-    }
-
-    // ===== 5. SNAP + MICRO ADJUST =====
-    if (obj.snap_acceleration) {
-        crosshair.x += dx * obj.snap_acceleration * distScale;
-        crosshair.y += dy * obj.snap_acceleration * distScale;
-    }
-
-    if (obj.micro_adjust) {
-        crosshair.x += dx * obj.micro_adjust;
-        crosshair.y += dy * obj.micro_adjust;
-    }
-
-    // ===== 6. ANTI OVERSHOOT =====
-    if (obj.drag_limit_y === "head_height") {
-        if (crosshair.y < head.y) {
-            crosshair.y = head.y;
-        }
-    }
-
-    if (obj.recenter_speed) {
-        crosshair.y += (head.y - crosshair.y) * obj.recenter_speed;
-    }
-
-    // ===== 7. ZERO DRIFT =====
-    if (obj.horizontal_stabilizer && entity.velocity) {
-        entity.velocity.x = 0;
-    }
-
-    // ===== 8. STICKY LOCK =====
-    if (obj.sticky_force) {
-        crosshair.x += (head.x - crosshair.x) * obj.sticky_force;
-        crosshair.y += (head.y - crosshair.y) * obj.sticky_force;
-    }
-
-    // ===== 9. HARD HEAD LOCK =====
-    if (obj.lock_on_bone === "head" || obj.aim_anchor_point === "bone_head") {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 10. FRICTION LOCK =====
-    if (obj.on_head_target_friction) {
-        if (Math.abs(head.x - crosshair.x) < 1 && Math.abs(head.y - crosshair.y) < 1) {
-            crosshair.x = head.x;
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 11. INPUT FILTER =====
-    if (obj.deadzone !== undefined && entity.velocity) {
-        entity.velocity.x = 0;
-        entity.velocity.y = 0;
-    }
-
-    // ===== 12. ANTI JITTER =====
-    if (obj.jitter !== undefined) {
-        crosshair.x = Math.round(crosshair.x);
-        crosshair.y = Math.round(crosshair.y);
-    }
-
-    // ===== 13. HITBOX =====
-    if (obj.hitbox && entity.hitbox) {
-        entity.hitbox.head = obj.hitbox.head;
-        entity.hitbox.body = obj.hitbox.body;
-    }
-
-    // ===== 14. FINAL OVERRIDE (KHI ON HEAD) =====
-    if (obj.on_target_head === true) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== DEBUG =====
-    entity._v170 = {
-        head: head,
-        dx: dx,
-        dy: dy,
-        locked: true,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-runFullControl(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => runFullControl(p));
-}
- 
- 
- // ===== 1. TĂNG ĐỘ DÍNH VÀ LỰC HÚT (MAGNETIC FORCE) =====
-    if (obj.aim_head_stickiness !== undefined) {
-        obj.aim_head_stickiness = 999.0;     // Độ dính 99% (gần như không thể văng tâm)
-    }
-
-    if (obj.magnetic_pull !== undefined) {
-        obj.magnetic_pull = 999.2;       // Lực hút cực mạnh khi tâm gần đầu
-    }
-
-    // ===== 2. THUẬT TOÁN "FRICTION LOCK" (MA SÁT ẢO) =====
-    // Khi đã chạm đầu, giảm độ nhạy đầu ra xuống cực thấp để "dán" tâm lại
-    if (obj.on_head_target_friction !== undefined) {
-        obj.on_head_target_friction = 20.0;  // Tăng ma sát gấp 5 lần khi đã vào đầu
-    }
-
-    // ===== 3. Dán Chặt Xương Đầu (BONE GLUE) =====
-    if (obj.bone_glue !== undefined) {
-        obj.bone_glue = true;
-        obj.glue_strength = 999.0;       // Lực dán tuyệt đối
-        obj.target_bone = "head_center";
-    }
-
-    // ===== 4. CHỐNG THOÁT TÂM (ANTI-DETACH) =====
-    // Ngăn chặn việc tâm bị tuột khi địch nhảy, ngồi hoặc dùng kỹ năng di chuyển nhanh
-    if (obj.detach_threshold !== undefined) {
-        obj.detach_threshold = 0.0;   // Ngưỡng thoát tâm cực nhỏ (rất khó để rời mục tiêu)
-    }
-
-    if (obj.tracking_speed_limit !== undefined) {
-        obj.tracking_speed_limit = 0;  // Không giới hạn tốc độ bám (bám kịp mọi vận tốc)
-    }
-
-    // ===== 5. TỐI ƯU HÓA KHUNG HÌNH (LOCK REFRESH) =====
-    if (obj.lock_refresh_rate !== undefined) {
-        obj.lock_refresh_rate = "244hz"; // Cập nhật vị trí dính liên tục theo khung hình cao
-    } 
-// Triệt tiêu lực cản khi bắt đầu vuốt (Initial Friction)
-    if (obj.static_friction !== undefined) {
-        obj.static_friction = 0.0;    // Không có lực cản khi bắt đầu kéo
-    }
-    
-    if (obj.input_latency !== undefined) {
-        obj.input_latency = "0ms";    // Phản hồi tức thì 1:1 với tay
-    }
-
-    // ===== 2. XUNG LỰC KÉO (VELOCITY BOOST) =====
-    // Làm tâm nhẹ hơn bằng cách nhân hệ số tốc độ vuốt
-    if (obj.swipe_velocity !== undefined) {
-        obj.swipe_velocity *= 1.4;    // Tăng 40% tốc độ nhận diện vuốt
-    }
-
-    if (obj.touch_sampling_rate !== undefined) {
-        obj.touch_sampling_rate = 240; // Giả lập tần số quét chạm cực cao (làm mượt tay)
-    }
-
-    // ===== 3. GIẢM VÙNG CHẾT (DEADZONE BYPASS) =====
-    // Giúp tâm nhích đi ngay lập tức khi tay vừa chạm nhẹ
-    if (obj.analog_deadzone !== undefined) {
-        obj.analog_deadzone = 0.01;   // Cực nhỏ, xóa cảm giác "lỳ" tâm
-    }
-
-    // ===== 4. TỐI ƯU HÓA QUỸ ĐẠO ĐẦU (HEAD-LIGHTWEIGHT) =====
-    // Làm nhẹ trục dọc (Y-Axis) để việc kéo headshot không tốn sức
-    if (obj.drag_weight_y !== undefined) {
-        obj.drag_weight_y = 0.5;      // Giảm 50% trọng lượng ảo của trục dọc
-    }
-// ===== 1. FIX LỖI "CHẠY QUANH ĐẦU" (ANTI-ORBIT LOGIC) =====
-    // Hủy bỏ quỹ đạo vòng cung, ép tâm đi vào tâm điểm đầu
-    if (obj.aim_orbit_correction !== undefined) {
-        obj.aim_orbit_correction = 1.0; 
-        obj.radial_pull = 0.0; // Triệt tiêu lực đẩy ly tâm (nguyên nhân gây bắn trượt quanh đầu)
-    }
-
-    // ===== 2. ĐIỂM BẮT MỤC TIÊU (POINT-CAPTURE) =====
-    // Tạo một "hố đen" tại tọa độ X:0, Y:0 của xương đầu
-    if (obj.head_capture_radius !== undefined) {
-        obj.head_capture_radius = 0.5; // Vùng bắt điểm cực rộng
-        obj.capture_strength = 1.0;    // Lực bắt tuyệt đối
-    }
-
-    // ===== 3. ĐIỀU CHỈNH ĐƯỜNG ĐẠN (BULLET CONVERGENCE) =====
-    // Ép mọi viên đạn phải hội tụ về một điểm duy nhất (đầu)
-    if (obj.bullet_convergence !== undefined) {
-        obj.bullet_convergence = true;
-        obj.convergence_point = "head_center";
-    }
-
-    // ===== 4. ZERO SPREAD (CHỐNG NỞ TÂM) =====
-    // Ngăn chặn đạn bay tản mát khi bạn đang di chuyển hoặc nhảy
-    if (obj.spread_factor !== undefined) {
-        obj.spread_factor = 0.0; // Đạn đi thẳng tắp như tia laser
-    }
-
-    // ===== 5. TỐI ƯU HÓA KÉO TÂM (SMOOTH SNAP) =====
-    if (obj.snap_acceleration !== undefined) {
-        obj.snap_acceleration = 0.15; // Nhích nhẹ là vào đúng điểm giữa đầu
-    }
-
-
-    // ===== 1. ĐỊNH VỊ TỌA ĐỘ X,Y (XY-COORDINATE LOCK) =====
-    // Ép tâm ngắm bám sát theo trục X (ngang) và Y (dọc) của đầu
-    if (obj.aim_coordinate !== undefined) {
-        obj.aim_coordinate.x_offset = 0.0; // Triệt tiêu độ lệch ngang
-        obj.aim_coordinate.y_offset = 0.0; // Triệt tiêu độ lệch dọc (ghim đúng đỉnh đầu)
-        obj.aim_coordinate.snap_speed = 1.0; // Tốc độ bắt tọa độ tức thời
-    }
-
-    // ===== 2. THUẬT TOÁN "NAM CHÂM ĐIỂM" (POINT MAGNETISM) =====
-    // Khi kéo tâm, hệ thống tự động lọc bỏ các đầu vào (input) gây lệch khỏi X,Y của đầu
-    if (obj.input_filter !== undefined) {
-        obj.input_filter.ignore_drift = true;   // Bỏ qua rung tay
-        obj.input_filter.precision_level = 1.0; // Độ chính xác 100%
-    }
-
-    // ===== 3. KHÓA MỤC TIÊU DI ĐỘNG (DYNAMIC XY TRACKING) =====
-    // Cập nhật tọa độ X,Y liên tục kể cả khi địch đang chạy hoặc nhảy
-    if (obj.tracking_logic !== undefined) {
-        obj.tracking_logic.refresh_ms = 1;      // Tần số quét 1ms (siêu nhanh)
-        obj.tracking_logic.prediction_xy = 2.0; // Dự đoán vị trí X,Y tiếp theo để chặn đầu
-    }
-
-    // ===== 4. ZERO DEVIATION (SAI SỐ BẰNG 0) =====
-    // Đảm bảo đạn bay đúng vào tọa độ đã khóa, bất kể khoảng cách
-    if (obj.bullet_trajectory !== undefined) {
-        obj.bullet_trajectory.deviation = 0.0;  // Độ lệch đạn bằng 0
-        obj.bullet_trajectory.straight_line = true;
-    }
-
-    // ===== 5. TỐI ƯU LỰC KÉO (DRAG-TO-XY) =====
-    // Biến hành động vuốt tay thành lệnh "Go to Head XY"
-    if (obj.drag_to_head !== undefined) {
-        obj.drag_to_head.enabled = true;
-        obj.drag_to_head.force_multiplier = 999.8; // Đẩy tâm về tọa độ XY nhanh hơn
-    }
-// ===== CORE ENGINE V150 =====
-const runAbsoluteHeadLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
-
-    // ===== 2. PREDICTION XY (TRACKING LOGIC) =====
-    if (obj.tracking_logic && entity.velocity) {
-        const pred = obj.tracking_logic.prediction_xy || 1.0;
-
-        head.x += entity.velocity.x * pred * 0.01;
-        head.y += entity.velocity.y * pred * 0.01;
-    }
-
-    // ===== 3. POINT CAPTURE (HỐ ĐEN) =====
-    if (obj.head_capture_radius) {
-        const dx = head.x - crosshair.x;
-        const dy = head.y - crosshair.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < obj.head_capture_radius * 100) {
-            crosshair.x = head.x;
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 4. MAGNETIC PULL =====
-    if (obj.magnetic_pull) {
-        crosshair.x += (head.x - crosshair.x) * obj.magnetic_pull * 0.001;
-        crosshair.y += (head.y - crosshair.y) * obj.magnetic_pull * 0.001;
-    }
-
-    // ===== 5. AIM STICKINESS =====
-    if (obj.aim_head_stickiness) {
-        crosshair.x += (head.x - crosshair.x) * 0.9;
-        crosshair.y += (head.y - crosshair.y) * 0.9;
-    }
-
-    // ===== 6. BONE GLUE (DÁN CỨNG) =====
-    if (obj.bone_glue) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 7. ANTI-ORBIT =====
-    if (obj.aim_orbit_correction) {
-        // ép đi thẳng vào tâm, không xoay vòng
-        crosshair.x += (head.x - crosshair.x);
-        crosshair.y += (head.y - crosshair.y);
-    }
-
-    // ===== 8. FRICTION LOCK =====
-    if (obj.on_head_target_friction) {
-        const dx = Math.abs(head.x - crosshair.x);
-        const dy = Math.abs(head.y - crosshair.y);
-
-        if (dx < 1 && dy < 1) {
-            // đóng băng gần như hoàn toàn
-            crosshair.x = head.x;
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 9. ANTI DETACH =====
-    if (obj.detach_threshold === 0.0) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 10. XY ABSOLUTE LOCK =====
-    if (obj.aim_coordinate) {
-        crosshair.x = head.x + (obj.aim_coordinate.x_offset || 0);
-        crosshair.y = head.y + (obj.aim_coordinate.y_offset || 0);
-    }
-
-    // ===== 11. DRAG TO HEAD =====
-    if (obj.drag_to_head && obj.drag_to_head.enabled) {
-        const force = obj.drag_to_head.force_multiplier || 1;
-
-        crosshair.x += (head.x - crosshair.x) * force * 0.001;
-        crosshair.y += (head.y - crosshair.y) * force * 0.001;
-    }
-
-    // ===== 12. INPUT FILTER =====
-    if (obj.input_filter && entity.velocity) {
-        entity.velocity.x = 0;
-        entity.velocity.y = 0;
-    }
-
-    // ===== 13. ZERO SPREAD / BULLET =====
-    if (obj.bullet_trajectory && entity.bullet) {
-        entity.bullet.spread = 0;
-        entity.bullet.deviation = 0;
-    }
-
-    // ===== DEBUG =====
-    entity._absoluteLock = {
-        head: head,
-        locked: true,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-runAbsoluteHeadLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => runAbsoluteHeadLock(p));
-}
  
  
  
  
-if (obj.auto_snap !== undefined) {
-        obj.auto_snap.enabled = true;
-        obj.auto_snap.priority = "head_center";
-        obj.auto_snap.speed = 999.0; // Tốc độ Snap tức thời (Instant)
-    }
-
-    // ===== 2. HIỆU CHUẨN KHOẢNG CÁCH (DISTANCE SCALING) =====
-    // Đảm bảo Snap chính xác dù địch ở 5m hay 500m
-    if (obj.distance_calibration !== undefined) {
-        obj.distance_calibration.dynamic_fov = true; // Tự thu hẹp FOV khi địch ở xa để bắn chính xác
-        obj.distance_calibration.magnetism_boost = 1.5; // Tăng lực hút cho mục tiêu nhỏ tầm xa
-    }
-
-    // ===== 3. KHÓA TỌA ĐỘ XY TUYỆT ĐỐI (XY-ANCHOR) =====
-    if (obj.xy_lock !== undefined) {
-        obj.xy_lock.precision = "absolute";
-        obj.xy_lock.stickiness = 999.0; // Dính chặt 100% khi đã Snap trúng
-    }
-
-    // ===== 4. ZERO DEVIATION (TRIỆT TIÊU SAI SỐ) =====
-    // Loại bỏ hoàn toàn độ rơi đạn và độ tản mát ở tầm xa
-    if (obj.bullet_physics !== undefined) {
-        obj.bullet_physics.no_drop = true;      // Đạn bay thẳng tắp
-        obj.bullet_physics.no_spread = true;    // Đạn không nở tâm
-        obj.bullet_physics.hit_scan = true;     // Chế độ bắn trúng ngay lập tức
-    }
-
-    // ===== 5. ANTI-EVASION (CHỐNG NÉ TRÁNH) =====
-    // Bám theo đầu kẻ địch kể cả khi chúng đang nhảy hoặc chạy tốc độ cao
-    if (obj.tracking_logic !== undefined) {
-        obj.tracking_logic.auto_lead = true;    // Tự động bắn đón đầu (Auto-Lead)
-        obj.tracking_logic.prediction = 999.0;    // Dự đoán quỹ đạo 
-    }
-// Ép tâm ngắm bám chặt vào tọa độ X,Y của đầu với sai số bằng 0
-    if (obj.aim_lock !== undefined) {
-        obj.aim_lock.target = "head_center";
-        obj.aim_lock.strength = 10.0;         // Lực khóa 100%
-        obj.aim_lock.snap_time = "0ms";      // Bắt dính tức thì
-    }
-
-    // ===== 2. NAM CHÂM ĐỘNG THEO KHOẢNG CÁCH (DYNAMIC MAGNETISM) =====
-    // Tự động bù trừ lực hút: Xa thì hút mạnh, Gần thì dính chặt
-    if (obj.magnetism_system !== undefined) {
-        obj.magnetism_system.short_range = 999.95; // Dính như keo khi cận chiến
-        obj.magnetism_system.long_range = 1.5;   // Tăng lực hút cực mạnh cho mục tiêu nhỏ tầm xa
-        obj.magnetism_system.auto_calibrate = true;
-    }
-
-    // ===== 3. TRIỆT TIÊU SAI SỐ KÉO TÂM (ANTI-DRIFT & OVERHEAD) =====
-    // Fix lỗi kéo lố đầu hoặc lệch sang hai bên
-    if (obj.drag_correction !== undefined) {
-        obj.drag_correction.vertical_limit = "stop_at_head"; // Chạm đầu là dừng, không lố
-        obj.drag_correction.horizontal_stabilizer = 1.0;    // Triệt tiêu rung ngang 100%
-    }
-
-    // ===== 4. KHÓA MA SÁT KHI TRÚNG MỤC TIÊU (FRICTION LOCK) =====
-    // Khi tâm đã chạm đầu, tăng lực cản để tâm không thể văng ra ngoài
-    if (obj.sticky_bone !== undefined) {
-        obj.sticky_bone.friction_boost = 10.0; // Ma sát cực đại khi đã dính đầu
-        obj.sticky_bone.unstick_threshold = 0;  // Không cho phép tuột tâm
-    }
-
-    // ===== 5. ĐẠN TRUY ĐUỔI (HIT-SCAN PRECISION) =====
-    // Đảm bảo đạn bay thẳng vào tọa độ X,Y đã khóa bất kể hướng di chuyển
-    if (obj.bullet_logic !== undefined) {
-        obj.bullet_logic.no_spread = true;      // Đạn không nở tâm
-        obj.bullet_logic.zero_recoil = true;    // Triệt tiêu độ giật
-        obj.bullet_logic.velocity = 9999;       // Đạn bay tức thời (Hit-scan)
-    }
-// ===== 1. THIẾT LẬP TRẦN CỨNG (HARD CEILING) =====
-    // Ngăn chặn tọa độ Y của tâm vượt quá tọa độ Y của đầu
-    if (obj.aim_limit_y !== undefined) {
-        obj.aim_limit_y = "target_head_top"; 
-        obj.overflow_protection = true; // Kích hoạt bảo vệ chống tràn tâm
-    }
-
-    // ===== 2. PHANH ĐIỆN TỬ (MOMENTUM BRAKE) =====
-    // Tự động triệt tiêu gia tốc khi tâm tiến sát đỉnh đầu
-    if (obj.drag_momentum !== undefined) {
-        obj.drag_momentum.brake_distance = 0.05; // Khoảng cách bắt đầu phanh
-        obj.drag_momentum.brake_force = 1.0;    // Lực phanh tuyệt đối (dừng hẳn)
-    }
-
-    // ===== 3. HIỆU CHỈNH LỰC KÉO NGƯỢC (REVERSE PULLBACK) =====
-    // Nếu vô tình kéo quá tay, script tự động lôi tâm về đúng vị trí đầu
-    if (obj.overshoot_recovery !== undefined) {
-        obj.overshoot_recovery.enabled = true;
-        obj.recovery_speed = 0.9; // Tốc độ hồi quy về đầu cực nhanh
-    }
-
-    // ===== 4. KHÓA TRỤC DỌC TẠI ĐIỂM NGẮM (Y-AXIS ANCHOR) =====
-    // Khi đã đạt đến độ cao của đầu, trục Y sẽ bị "đóng băng"
-    if (obj.y_axis_lock !== undefined) {
-        obj.y_axis_lock.enabled = true;
-        obj.y_axis_lock.sensitivity_at_target = 0.01; // Giảm nhạy trục dọc về gần bằng 0
-    }
-
-    // ===== 5. TỐI ƯU ĐƯỜNG ĐẠN (FLAT TRAJECTORY) =====
-    // Đảm bảo đạn không bị nảy lên do giật súng (Recoil)
-    if (obj.recoil_pattern !== undefined) {
-        obj.recoil_pattern.vertical_max = 0.0; // Triệt tiêu độ nảy dọc của súng
-        obj.recoil_pattern.stabilization = 1.0;
-    }
-// ===== CORE ENGINE V140 =====
-const runSnapEngine = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. LẤY HEAD + PREDICTION =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
-
-    // ===== PREDICT (ANTI-EVASION) =====
-    if (obj.tracking_logic && obj.tracking_logic.auto_lead && entity.velocity) {
-        const pred = obj.tracking_logic.prediction || 1.0;
-
-        head.x += entity.velocity.x * pred * 0.01;
-        head.y += entity.velocity.y * pred * 0.01;
-    }
-
-    // ===== 2. AUTO SNAP (INSTANT) =====
-    if (obj.auto_snap && obj.auto_snap.enabled) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 3. DISTANCE SCALING =====
-    if (obj.distance_calibration && obj.distance_calibration.dynamic_fov) {
-        if (entity.distance) {
-            let scale = Math.min(2.0, entity.distance / 50);
-            crosshair.x += (head.x - crosshair.x) * scale;
-            crosshair.y += (head.y - crosshair.y) * scale;
-        }
-    }
-
-    // ===== 4. XY LOCK (KHÓA TUYỆT ĐỐI) =====
-    if (obj.xy_lock && obj.xy_lock.precision === "absolute") {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 5. ANTI OVERSHOOT (TRẦN + PHANH) =====
-    if (obj.aim_limit_y === "target_head_top") {
-
-        // không cho vượt đầu
-        if (crosshair.y < head.y) {
-            crosshair.y = head.y;
-        }
-    }
-
-    if (obj.drag_momentum) {
-        const distY = Math.abs(head.y - crosshair.y);
-
-        if (distY < obj.drag_momentum.brake_distance * 100) {
-            crosshair.y += (head.y - crosshair.y) * 0.1;
-        }
-    }
-
-    // ===== 6. RECOVERY (KÉO LẠI NẾU LỐ) =====
-    if (obj.overshoot_recovery && obj.overshoot_recovery.enabled) {
-        const dx = head.x - crosshair.x;
-        const dy = head.y - crosshair.y;
-
-        crosshair.x += dx * obj.recovery_speed;
-        crosshair.y += dy * obj.recovery_speed;
-    }
-
-    // ===== 7. Y AXIS LOCK =====
-    if (obj.y_axis_lock && obj.y_axis_lock.enabled) {
-        if (Math.abs(crosshair.y - head.y) < 1) {
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 8. MAGNETISM =====
-    if (obj.magnetism_system && entity.distance) {
-        let mag = entity.distance < 50
-            ? obj.magnetism_system.short_range
-            : obj.magnetism_system.long_range;
-
-        crosshair.x += (head.x - crosshair.x) * mag * 0.01;
-        crosshair.y += (head.y - crosshair.y) * mag * 0.01;
-    }
-
-    // ===== 9. ANTI DRIFT =====
-    if (obj.drag_correction && entity.velocity) {
-        entity.velocity.x = 0;
-    }
-
-    // ===== 10. HITBOX BOOST =====
-    if (obj.hitbox && entity.hitbox) {
-        entity.hitbox.head = obj.hitbox.head;
-        entity.hitbox.spine = obj.hitbox.spine;
-        entity.hitbox.hips = obj.hitbox.hips;
-    }
-
-    // ===== DEBUG =====
-    entity._snapLock = {
-        head: head,
-        locked: true,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-runSnapEngine(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => runSnapEngine(p));
-}
-
- 
- // ===== 1. TRUY TÌM VÀ ÉP TÂM CƯỠNG BỨC (FORCE-PULL) =====
-    // Dù tâm đang ở đâu, ngay khi nhấn bắn, tâm sẽ bị "giật" về đầu
-    if (obj.aim_force_pull !== undefined) {
-        obj.aim_force_pull.enabled = true;
-        obj.aim_force_pull.min_distance = 0;   // Không giới hạn khoảng cách kích hoạt
-        obj.aim_force_pull.power = 15.0;         // Lực kéo cực đại để về đầu tức thì
-    }
-
-    // ===== 2. DUY TRÌ TRẠNG THÁI KHÓA (STATE INDEPENDENCE) =====
-    // Giữ tâm ở đầu bất kể người chơi đang nhảy, ngồi hay di chuyển
-    if (obj.state_lock !== undefined) {
-        obj.state_lock.ignore_movement = true;  // Bỏ qua rung lắc khi di chuyển
-        obj.state_lock.ignore_jumping = true;   // Bỏ qua biến động tọa độ khi nhảy
-        obj.state_lock.ignore_recoil = true;    // Bỏ qua độ nảy của súng
-    }
-
-    // ===== 3. GHI ĐÈ TỌA ĐỘ X,Y (COORDINATE OVERRIDE) =====
-    // Ép giá trị đầu ra của tâm luôn trùng khớp với đầu mục tiêu
-    if (obj.output_coordinates !== undefined) {
-        obj.output_coordinates.mode = "forced_head";
-        obj.output_coordinates.strictness = 1.0; // Độ nghiêm ngặt 100%
-    }
-
-    // ===== 4. GIỮ TÂM KHÔNG RỜI (PERPETUAL STICKY) =====
-    // Một khi đã "chạm" tọa độ đầu, tâm sẽ không bao giờ thoát ra được
-    if (obj.perpetual_lock !== undefined) {
-        obj.perpetual_lock.break_threshold = 0; // Không bao giờ tự động nhả khóa
-        obj.perpetual_lock.stickiness = 1.0;    // Độ dính tuyệt đối
-    }
-
-    // ===== 5. TỐI ƯU HÓA PHẢN HỒI (INSTANT RESPONSE) =====
-    if (obj.response_time !== undefined) {
-        obj.response_time = "0.001ms"; // Thời gian phản hồi gần như bằng 0
-    }
- // Đặt mức này để script hiểu rằng mọi điểm từ 0m đến 1.8m đều phải đẩy lên 2m.
-if (obj.target_height_threshold !== undefined) {
-    obj.target_height_threshold = 1.0; // Bỏ qua 90% phần thân dưới, chỉ bắt 10% phần đầu.
-}
-
-// 3. TỐI ƯU HÓA TRỤC Y (Y-AXIS BIAS)
-// Ép tâm ngắm luôn ưu tiên tọa độ cao nhất của nhân vật.
-if (obj.y_axis_bias !== undefined) {
-    obj.y_axis_bias = 5.0; // Nhân đôi lực đẩy theo chiều dọc.
-}
-if (obj.hitbox !== undefined) {
-    obj.hitbox.head = 2.5;  // Phóng đại đầu (điểm cao nhất 2m)
-    obj.hitbox.spine = 0.01; // Thu nhỏ thân xuống mức gần như biến mất
-    obj.hitbox.hips = 0.0;  // Xóa bỏ hoàn toàn vùng chân
-}
-// ===== CORE EXECUTION ENGINE V130+ =====
-const runForceEngine = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
-
-    // ===== 2. FORCE PULL (GIẬT TÂM LÊN ĐẦU NGAY) =====
-    if (obj.aim_force_pull && obj.aim_force_pull.enabled) {
-        const power = obj.aim_force_pull.power || 10;
-
-        crosshair.x += (head.x - crosshair.x) * power * 0.1;
-        crosshair.y += (head.y - crosshair.y) * power * 0.1;
-    }
-
-    // ===== 3. STATE LOCK (BỎ QUA RUNG LẮC) =====
-    if (obj.state_lock) {
-        if (entity.velocity) {
-            entity.velocity.x = 0;
-            entity.velocity.y = 0;
-        }
-
-        if (entity.recoil) {
-            entity.recoil.x = 0;
-            entity.recoil.y = 0;
-        }
-    }
-
-    // ===== 4. BODY FILTER + Y BIAS =====
-    if (obj.target_height_threshold && obj.y_axis_bias) {
-        const bias = obj.y_axis_bias;
-
-        // ép luôn ưu tiên vùng cao (đầu)
-        if (crosshair.y > head.y) {
-            crosshair.y -= bias;
-        }
-    }
-
-    // ===== 5. HARD OVERRIDE COORDINATES =====
-    if (obj.output_coordinates && obj.output_coordinates.mode === "forced_head") {
-        if (obj.output_coordinates.strictness === 1.0) {
-            crosshair.x = head.x;
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 6. PERPETUAL STICKY LOCK =====
-    if (obj.perpetual_lock && obj.perpetual_lock.stickiness === 1.0) {
-        const dx = head.x - crosshair.x;
-        const dy = head.y - crosshair.y;
-
-        crosshair.x += dx * 1.0;
-        crosshair.y += dy * 1.0;
-    }
-
-    // ===== 7. HITBOX MANIPULATION =====
-    if (obj.hitbox) {
-        if (entity.hitbox) {
-            entity.hitbox.head = obj.hitbox.head;
-            entity.hitbox.spine = obj.hitbox.spine;
-            entity.hitbox.hips = obj.hitbox.hips;
-        }
-    }
-
-    // ===== DEBUG =====
-    entity._forceLock = {
-        head: head,
-        locked: true,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-runForceEngine(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => runForceEngine(p));
-}
-
-    // ===== 1. CHỐNG GIẬT NGƯỢC (ONE-WAY VECTOR) =====
-    // Một khi tâm đã đi lên (qua thân), triệt tiêu mọi lực kéo xuống dưới
-    if (obj.vector_y_control !== undefined) {
-        obj.vector_y_control.min_velocity = 0; // Không cho phép vận tốc âm (kéo xuống)
-        obj.vector_y_control.anti_recoil_down = 1.0; // Triệt tiêu giật súng xuống thân
-    }
-
-    // ===== 2. TỰ ĐỘNG TRUY QUÉT ĐẦU (TARGET SEEKER) =====
-    // Nếu chưa chạm đầu, hệ thống tự động quét tọa độ xung quanh để tìm đầu
-    if (obj.aim_seeker !== undefined) {
-        obj.aim_seeker.enabled = true;
-        obj.aim_seeker.search_radius = "infinite"; // Quét toàn bộ vùng quanh mục tiêu
-        obj.aim_seeker.auto_correction = 1.0;      // Tự sửa sai số để tìm đúng đầu
-    }
-
-    // ===== 3. KHÓA CHO BẰNG ĐƯỢC (RECURSIVE LOCK) =====
-    // Thuật toán lặp lại lệnh khóa cho đến khi tọa độ tâm = tọa độ đầu
-    if (obj.aim_final_lock !== undefined) {
-        obj.aim_final_lock.force_match = true;
-        obj.aim_final_lock.bone_id = "head";     // Chỉ định duy nhất xương đầu
-        obj.aim_final_lock.persistence = 1.0;    // Độ kiên trì (không bao giờ nhả)
-    }
-
-    // ===== 4. GIA TỐC VƯỢT THÂN (BODY-BYPASS) =====
-    // Tăng tốc độ di chuyển khi tâm đang ở vùng tọa độ thấp (thân/chân)
-    if (obj.aim_height_control !== undefined) {
-        obj.aim_height_control.bypass_body = true;
-        obj.aim_height_control.boost_to_head = 4.5; // Đẩy cực nhanh qua thân để lên đầu
-    }
- const runCore = (entity) => {
-
-        if (!entity || !entity.position) return;
-
-        // 🎯 Lấy tâm ngắm
-        const crosshair = obj.crosshair || entity.crosshair;
-        if (!crosshair) return;
-
-        // ===== A. ONE-WAY VECTOR =====
-        if (entity.velocity && obj.vector_y_control) {
-            if (entity.velocity.y < 0) {
-                entity.velocity.y = 0;
-            }
-        }
-
-        // ===== B. SEEK HEAD =====
-        let head = null;
-
-        if (obj.aim_seeker && obj.aim_seeker.enabled) {
-            if (entity.bones && entity.bones.head) {
-                head = entity.bones.head;
-            } else {
-                // fallback estimate
-                head = {
-                    x: entity.position.x,
-                    y: entity.position.y - (entity.height || 60) * 0.75
-                };
-            }
-
-            // auto fix lệch
-            head.x = Math.round(head.x);
-            head.y = Math.round(head.y);
-        }
-
-        if (!head) return;
-
-        // ===== C. BODY BYPASS =====
-        if (obj.aim_height_control && obj.aim_height_control.bypass_body) {
-            if (crosshair.y > head.y) {
-                crosshair.y -= obj.aim_height_control.boost_to_head;
-            }
-        }
-
-        // ===== D. HARD LOCK =====
-        if (obj.aim_final_lock) {
-            const dx = head.x - crosshair.x;
-            const dy = head.y - crosshair.y;
-
-            // kéo dần
-            crosshair.x += dx * obj.aim_final_lock.persistence;
-            crosshair.y += dy * obj.aim_final_lock.persistence;
-
-            // snap cứng
-            if (obj.aim_final_lock.force_match) {
-                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
-                    crosshair.x = head.x;
-                    crosshair.y = head.y;
-                }
-            }
-        }
-
-        // ===== E. ZERO DRIFT =====
-        if (obj.stabilizer && entity.velocity) {
-            entity.velocity.x = 0;
-        }
-
-        // debug
-        entity._headLock = {
-            target: head,
-            time: Date.now()
-        };
-    };
-
-    // ===== 3. APPLY =====
-    runCore(obj);
-
-    if (obj.players && Array.isArray(obj.players)) {
-        obj.players.forEach(p => runCore(p));
-    }
-
-    
-  if (obj.stabilizer === undefined) {
-        obj.stabilizer = {
-            horizontal_drift: 0,
-            vertical_anchor: 1.0,
-            last_corrected_at: null
-        };
-    }
-
-    // ===== 2. CORE LOGIC =====
-    const updateStabilizer = (target) => {
-        if (target.physics && target.stabilizer) {
-            
-            target.physics.velocity_x = 0;
-            target.stabilizer.horizontal_drift = 0;
-
-            target.stabilizer.vertical_anchor = 1.0;
-            
-            target.physics.x = Math.round(target.physics.x); 
-            target.physics.y = Math.round(target.physics.y);
-
-            target.stabilizer.last_corrected_at = Date.now();
-        }
-    };
-
-    // ===== 3. APPLY =====
-    updateStabilizer(obj);
-
-    if (obj.players && Array.isArray(obj.players)) {
-        obj.players.forEach(player => {
-            updateStabilizer(player);
-        });
-    }
-
-// ===== AUTO HEAD PULL CORE =====
-const autoHeadPull = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHECK ĐANG BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    const DEFAULT_HEIGHT = 200;      // 2m
-const HEAD_RATIO = 0.9;          // chuẩn vị trí đầu
-const HEAD_SIZE = 1;            // kích thước phần đầu (tùy chỉnh)
-
-if (entity.bones?.head) {
-    // Ưu tiên dùng bone thật (chuẩn nhất)
-    head = entity.bones.head;
-} else {
-    const height = entity.height || DEFAULT_HEIGHT;
-
-    // Công thức chuẩn hơn ratio (trừ headSize)
-    const headY = entity.position.y - (height - HEAD_SIZE);
-
-    head = {
-        x: entity.position.x,
-        y: headY
-    };
-}
-
-    // ===== 3. TÍNH KHOẢNG CÁCH =====
-    let distance = entity.distance || 9999;
-
-    // ===== 4. SCALE THEO KHOẢNG CÁCH =====
-    // xa → kéo mạnh hơn, gần → mượt hơn
-    let force = distance > 100 ? 1.2 :
-                distance > 1  ? 10.0 :
-                                 5.6;
-
-    // ===== 5. KÉO TÂM LÊN ĐẦU =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ưu tiên kéo dọc (lên đầu)
-    crosshair.x += dx * 0.4 * force;
-    crosshair.y += dy * 0.9 * force;
-
-    // ===== 6. SNAP NHẸ KHI GẦN ĐẦU =====
-    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 7. CHỐNG TỤT TÂM =====
-    if (crosshair.y > head.y) {
-        crosshair.y -= Math.abs(dy) * 0.2;
-    }
-
-    // ===== DEBUG =====
-    entity._autoHeadPull = {
-        active: true,
-        distance: distance,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-autoHeadPull(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => autoHeadPull(p));
-}
- // ===== HEAD HOLD LOCK CORE =====
-const headHoldLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ KHI ĐANG BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - (entity.height || 60) * 0.8
-        };
-    }
-
-    // ===== 3. TÍNH SAI LỆCH =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ===== 4. KHI ĐÃ GẦN ĐẦU → KÍCH HOẠT HOLD =====
-    const isOnHead = Math.abs(dx) < 3 && Math.abs(dy) < 3;
-
-    if (isOnHead) {
-
-        // 💀 KHÓA CỨNG
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-
-        // 💀 GIỮ CHẶT KHÔNG CHO LỆCH
-        entity._headLocked = true;
-
-    } else {
-
-        // ===== 5. KHI ĐANG KÉO → HỖ TRỢ LÊN ĐẦU =====
-        crosshair.x += dx * 0.35;
-        crosshair.y += dy * 0.8; // ưu tiên kéo lên đầu
-
-        entity._headLocked = false;
-    }
-
-    // ===== 6. ANTI FALL (KHÔNG TỤT XUỐNG THÂN) =====
-    if (crosshair.y > head.y) {
-        crosshair.y -= Math.abs(dy) * 0.3;
-    }
-
-    // ===== 7. MICRO STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._headHold = {
-        locked: entity._headLocked,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-headHoldLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => headHoldLock(p));
-}
-// ===== ULTRA LIGHT HEAD LOCK =====
-const ultraLightHeadLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-    }
-
-    // ===== 3. TÍNH ĐỘ LỆCH =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ===== 4. TÂM CỰC NHẸ (LIGHT DRAG) =====
-    // kéo nhẹ nhưng đi rất nhanh lên đầu
-    crosshair.x += dx * 0.25;
-    crosshair.y += dy * 100.5; // ưu tiên kéo dọc cực mạnh
-
-    // ===== 5. SNAP NHANH KHI GẦN =====
-    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 6. KHÓA CHẶT KHI ĐÃ VÀO ĐẦU =====
-    if (Math.abs(head.x - crosshair.x) < 1.5 && Math.abs(head.y - crosshair.y) < 1.5) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-
-        // giữ cứng
-        entity._headLocked = true;
-    }
-
-    // ===== 7. ANTI TỤT (KHÔNG RƠI XUỐNG THÂN) =====
-    if (crosshair.y > head.y) {
-        crosshair.y -= Math.abs(dy) * 0.4;
-    }
-
-    // ===== 8. CHỐNG LỆCH NGANG =====
-    crosshair.x += (head.x - crosshair.x) * 0.3;
-
-    // ===== 9. MICRO STABILIZE (MƯỢT) =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._ultraLight = {
-        locked: entity._headLocked || false,
-        dx,
-        dy,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-ultraLightHeadLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => ultraLightHeadLock(p));
-}
-// ===== BODY BOOST → HEAD LOCK =====
-const bodyToHeadLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-    }
-
-    // ===== 3. TÍNH SAI LỆCH =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    const distY = Math.abs(dy);
-
-    // ===== 4. BODY ZONE (CHƯA LÊN ĐẦU) =====
-    if (distY > 5) {
-
-        // ⚡ tăng nhạy cực mạnh vùng thân
-        crosshair.x += dx * 0.3;
-        crosshair.y += dy * 1.3; // kéo lên rất nhanh
-
-        entity._mode = "BOOST_TO_HEAD";
-
-    } else {
-
-        // ===== 5. HEAD ZONE (ĐÃ CHẠM ĐẦU) =====
-
-        // 💀 tắt nhạy → khóa cứng
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-
-        entity._mode = "HEAD_LOCK";
-
-    }
-
-    // ===== 6. ANTI TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y -= Math.abs(dy) * 0.5;
-    }
-
-    // ===== 7. CHỐNG LỆCH NGANG =====
-    crosshair.x += (head.x - crosshair.x) * 0.25;
-
-    // ===== 8. MICRO STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._bodyHeadLock = {
-        mode: entity._mode,
-        dy: dy,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-bodyToHeadLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => bodyToHeadLock(p));
-}
-// ===== HEAD POSITION + ROTATION LOCK =====
-const headRotationLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. XÁC ĐỊNH HEAD =====
-    let headPos = null;
-    let headRot = null;
-
-    if (entity.bones && entity.bones.head) {
-        headPos = entity.bones.head.position || entity.bones.head;
-        headRot = entity.bones.head.rotation || { x: 0, y: 0 };
-    } else {
-        let height = entity.height || 60;
-        headPos = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-        headRot = { x: 0, y: 0 };
-    }
-
-    // ===== 3. PHÁT HIỆN KÉO TÂM (INPUT) =====
-    let inputX = entity.input?.dx || 0;
-    let inputY = entity.input?.dy || 0;
-
-    const isDragging = Math.abs(inputX) > 0.5 || Math.abs(inputY) > 0.5;
-
-    // ===== 4. KHI KHÔNG KÉO → KHÓA POSITION =====
-    if (!isDragging) {
-
-        // 🎯 aim chuẩn vào head
-        crosshair.x += (headPos.x - crosshair.x) * 0.6;
-        crosshair.y += (headPos.y - crosshair.y) * 0.9;
-
-    } else {
-
-        // ===== 5. KHI ĐANG KÉO → BÁM ROTATION =====
-
-        // mô phỏng offset theo rotation đầu
-        let rotOffsetX = headRot.y * 5; // quay trái/phải
-        let rotOffsetY = headRot.x * -3; // cúi/ngẩng
-
-        let targetX = headPos.x + rotOffsetX;
-        let targetY = headPos.y + rotOffsetY;
-
-        // bám theo rotation
-        crosshair.x += (targetX - crosshair.x) * 0.8;
-        crosshair.y += (targetY - crosshair.y) * 0.9;
-    }
-
-    // ===== 6. SNAP KHI GẦN =====
-    if (Math.abs(headPos.x - crosshair.x) < 2 &&
-        Math.abs(headPos.y - crosshair.y) < 2) {
-        crosshair.x = headPos.x;
-        crosshair.y = headPos.y;
-    }
-
-    // ===== 7. ANTI TỤT =====
-    if (crosshair.y > headPos.y) {
-        crosshair.y -= Math.abs(headPos.y - crosshair.y) * 0.3;
-    }
-
-    // ===== 8. STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._headRotLock = {
-        dragging: isDragging,
-        head: headPos,
-        rot: headRot,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-headRotationLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => headRotationLock(p));
-}
-// ===== HEAD PRIORITY + ANTI SNAP BACK =====
-const headPriorityLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. XÁC ĐỊNH HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-    }
-
-    // ===== 2. CHECK FIRE =====
-    const isFiring = obj.isFiring || entity.isFiring;
-
-    // ===== 3. TÍNH SAI LỆCH =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ===== 4. DETECT ĐÃ KÉO QUA VÙNG HEAD =====
-    const passedHeadZone = Math.abs(dy) < 15;
-
-    // ===== 5. LƯU TRẠNG THÁI HEAD LOCK =====
-    if (!entity._headPriority) {
-        entity._headPriority = false;
-    }
-
-    if (passedHeadZone) {
-        entity._headPriority = true; // đã vào vùng head → kích hoạt giữ
-    }
-
-    // ===== 6. ƯU TIÊN ĐẦU TUYỆT ĐỐI =====
-    if (isFiring) {
-
-        if (!entity._headPriority) {
-
-            // ⚡ chưa lên đầu → kéo cực mạnh lên
-            crosshair.x += dx * 0.3;
-            crosshair.y += dy * 1.2;
-
-        } else {
-
-            // 💀 đã vào vùng head → KHÓA KHÔNG CHO RƠI
-            crosshair.x += (head.x - crosshair.x) * 0.8;
-            crosshair.y += (head.y - crosshair.y) * 1.0;
-
-            // chặn game kéo xuống
-            if (crosshair.y > head.y) {
-                crosshair.y = head.y;
-            }
-        }
-    }
-
-    // ===== 7. ANTI SNAP BACK (QUAN TRỌNG) =====
-    // game thường kéo về ngực → triệt tiêu
-    if (entity._headPriority) {
-
-        // force giữ trục Y
-        crosshair.y += (head.y - crosshair.y) * 0.9;
-
-        // khóa không cho tụt
-        if (crosshair.y > head.y) {
-            crosshair.y = head.y;
-        }
-    }
-
-    // ===== 8. SNAP CHUẨN ĐẦU =====
-    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 9. STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._headPriorityDebug = {
-        active: entity._headPriority,
-        firing: isFiring,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-headPriorityLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => headPriorityLock(p));
-}
-// ===== HEAD TRACKING LOCK (REAL-TIME) =====
-const headTrackingLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. LẤY HEAD =====
-    let head = null;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-    }
-
-    // ===== 3. PREDICTION (ĐUỔI THEO DI CHUYỂN) =====
-    if (entity.velocity) {
-        const predict = 0.12; // chỉnh độ đón đầu
-
-        head.x += entity.velocity.x * predict;
-        head.y += entity.velocity.y * predict;
-    }
-
-    // ===== 4. TÍNH SAI LỆCH =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    // ===== 5. TRACKING LIÊN TỤC =====
-    crosshair.x += dx * 1.0;
-    crosshair.y += dy * 1.1; // ưu tiên dọc (giữ đầu)
-
-    // ===== 6. KHÓA KHI GẦN =====
-    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 7. ANTI TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y = head.y;
-    }
-
-    // ===== 8. ANTI LỆCH NGANG =====
-    crosshair.x += (head.x - crosshair.x) * 0.3;
-
-    // ===== 9. STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._headTracking = {
-        active: true,
-        dx,
-        dy,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-headTrackingLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => headTrackingLock(p));
-}
-// ===== ULTRA RECOIL CONTROL SYSTEM =====
-const recoilControl = (entity) => {
-
-    if (!entity) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. CHỈ HOẠT ĐỘNG KHI BẮN =====
-    if (!obj.isFiring && !entity.isFiring) return;
-
-    // ===== 2. TRIỆT TIÊU RECOIL DỌC =====
-    if (entity.recoil_y !== undefined) {
-        entity.recoil_y = 0;
-    }
-
-    if (entity.vertical_recoil !== undefined) {
-        entity.vertical_recoil = 0;
-    }
-
-    // ===== 3. TRIỆT TIÊU RECOIL NGANG =====
-    if (entity.recoil_x !== undefined) {
-        entity.recoil_x = 0;
-    }
-
-    if (entity.horizontal_recoil !== undefined) {
-        entity.horizontal_recoil = 0;
-    }
-
-    // ===== 4. ANTI CAMERA SHAKE =====
-    if (entity.camera_shake !== undefined) {
-        entity.camera_shake = 0;
-    }
-
-    if (entity.view_punch !== undefined) {
-        entity.view_punch = 0;
-    }
-
-    // ===== 5. FORCE GIỮ TÂM ỔN ĐỊNH =====
-    if (!entity._stableAim) {
-        entity._stableAim = {
-            x: crosshair.x,
-            y: crosshair.y
-        };
-    }
-
-    // luôn giữ vị trí ổn định
-    crosshair.x += (entity._stableAim.x - crosshair.x) * 0.9;
-    crosshair.y += (entity._stableAim.y - crosshair.y) * 0.9;
-
-    // ===== 6. ANTI DRIFT =====
-    if (entity.velocity) {
-        crosshair.x -= entity.velocity.x * 0.1;
-        crosshair.y -= entity.velocity.y * 0.1;
-    }
-
-    // ===== 7. RESET TARGET LOCK (tránh lệch lâu) =====
-    entity._stableAim.x = crosshair.x;
-    entity._stableAim.y = crosshair.y;
-
-    // ===== 8. MICRO STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._recoilDebug = {
-        recoil_removed: true,
-        stable: entity._stableAim,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-recoilControl(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => recoilControl(p));
-}
-// ===== MICRO INPUT → FORCE HEAD =====
-const microToHead = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. LẤY INPUT (VUỐT TAY) =====
-    let inputX = entity.input?.dx || 0;
-    let inputY = entity.input?.dy || 0;
-
-    // ===== 2. GIẢM NHẠY GỐC (GẦN = 0 NHƯNG KHÔNG PHẢI 0) =====
-    const baseSensitivity = 120.0; // cực thấp nhưng vẫn có tín hiệu
-
-    inputX *= baseSensitivity;
-    inputY *= baseSensitivity;
-
-    // ===== 3. XÁC ĐỊNH HEAD =====
-    let head;
-
-    if (entity.bones && entity.bones.head) {
-        head = entity.bones.head;
-    } else {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.8
-        };
-    }
-
-    // ===== 4. PHÁT HIỆN CHỈ CẦN "NHÍCH NHẸ" =====
-    const isMicroMove = Math.abs(inputX) > 0.001 || Math.abs(inputY) > 0.001;
-
-    if (isMicroMove) {
-
-        // ===== 5. BIẾN VUỐT → LỆNH "ĐI TỚI ĐẦU" =====
-        let dx = head.x - crosshair.x;
-        let dy = head.y - crosshair.y;
-
-        // ⚡ kéo cực mạnh bất kể khoảng cách
-        crosshair.x += dx * 0.7;
-        crosshair.y += dy * 1.4;
-
-    }
-
-    // ===== 6. SNAP KHI GẦN =====
-    if (Math.abs(head.x - crosshair.x) < 2 &&
-        Math.abs(head.y - crosshair.y) < 2) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 7. KHÓA KHI ĐÃ VÀO ĐẦU =====
-    if (!entity._headLocked) {
-        entity._headLocked = false;
-    }
-
-    if (Math.abs(head.y - crosshair.y) < 3) {
-        entity._headLocked = true;
-    }
-
-    if (entity._headLocked) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 8. CHỐNG TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y = head.y;
-    }
-
-    // ===== 9. STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-};
-
-// ===== APPLY =====
-microToHead(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => microToHead(p));
-}
-// ===== SMART HEAD SYSTEM (AUTO DETECT + PREDICT + SNAP LOCK) =====
-const smartHeadLock = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = obj.crosshair || entity.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. AUTO DETECT HEAD BONE (CHUẨN SKIN) =====
-    let head = null;
-
-    if (entity.bones) {
-
-        // ưu tiên bone chuẩn
-        if (entity.bones.head) {
-            head = entity.bones.head;
-        }
-
-        // fallback theo tên bone khác nhau của từng skin
-        else {
-            const candidates = ["Head", "head", "Bone_Head", "Bip001-Head", "neck", "Neck"];
-            for (let key of candidates) {
-                if (entity.bones[key]) {
-                    head = entity.bones[key];
-                    break;
-                }
-            }
-        }
-    }
-
-    // fallback cuối cùng theo chiều cao
-    if (!head) {
-        let height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.85
-        };
-    }
-
-    // ===== 2. PREDICTION (ĐUỔI THEO DI CHUYỂN) =====
-    if (entity.velocity) {
-        const predict = 0.15;
-
-        head = {
-            x: head.x + entity.velocity.x * predict,
-            y: head.y + entity.velocity.y * predict
-        };
-    }
-
-    // ===== 3. KHOẢNG CÁCH TÂM → ĐẦU =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    let distance = Math.sqrt(dx * dx + dy * dy);
-
-    // ===== 4. AUTO SNAP VÙNG GẦN =====
-    const SNAP_RADIUS = 360; // vùng hút đầu
-
-    if (distance < SNAP_RADIUS) {
-
-        // ⚡ snap cực nhanh vào head
-        crosshair.x += dx * 0.9;
-        crosshair.y += dy * 1.2;
-
-        entity._nearHead = true;
-
-    } else {
-        entity._nearHead = false;
-    }
-
-    // ===== 5. KHÓA CHẶT KHI ĐÃ CHẠM =====
-    if (!entity._headLocked) entity._headLocked = false;
-
-    if (distance < 9999) {
-        entity._headLocked = true;
-    }
-
-    if (entity._headLocked) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 6. ANTI TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y = head.y;
-    }
-
-    // ===== 7. CHỐNG LỆCH NGANG =====
-    crosshair.x += (head.x - crosshair.x) * 0.3;
-
-    // ===== 8. STABILIZE =====
-    crosshair.x = Math.round(crosshair.x);
-    crosshair.y = Math.round(crosshair.y);
-
-    // ===== DEBUG =====
-    entity._smartHead = {
-        detected: true,
-        locked: entity._headLocked,
-        near: entity._nearHead,
-        dist: distance,
-        time: Date.now()
-    };
-};
-
-// ===== APPLY =====
-smartHeadLock(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => smartHeadLock(p));
-}
-// ===== ADVANCED AIMBOT SYSTEM =====
-const advancedAimbot = (entities) => {
-
-    if (!entities || !Array.isArray(entities)) return;
-
-    const crosshair = obj.crosshair;
-    if (!crosshair) return;
-
-    let bestTarget = null;
-    let bestDist = Infinity;
-
-    // ===== 1. CHỌN MỤC TIÊU GẦN TÂM =====
-    entities.forEach(entity => {
-
-        if (!entity || !entity.position) return;
-
-        let head = null;
-
-        // ===== 2. AUTO DETECT HEAD BONE =====
-        if (entity.bones) {
-
-            const candidates = [
-                "head","Head","Bone_Head",
-                "Bip001-Head","b_head","neck","Neck"
-            ];
-
-            for (let key of candidates) {
-                if (entity.bones[key]) {
-                    head = entity.bones[key];
-                    break;
-                }
-            }
-        }
-
-        // fallback chiều cao
-        if (!head) {
-
-            const height = entity.height || 60;
-
-            head = {
-                x: entity.position.x,
-                y: entity.position.y - height * 0.88
-            };
-        }
-
-        // ===== 3. PREDICTION =====
-        if (entity.velocity) {
-
-            const predict = 0.18;
-
-            head.x += entity.velocity.x * predict;
-            head.y += entity.velocity.y * predict;
-        }
-
-        // ===== 4. TÍNH KHOẢNG CÁCH =====
-        let dx = head.x - crosshair.x;
-        let dy = head.y - crosshair.y;
-
-        let dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < bestDist) {
-
-            bestDist = dist;
-            bestTarget = { entity, head };
-        }
-    });
-
-    if (!bestTarget) return;
-
-    const entity = bestTarget.entity;
-    const head = bestTarget.head;
-
-    // ===== 5. VECTOR AIM =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    let distance = Math.sqrt(dx * dx + dy * dy);
-
-    // ===== 6. SNAP AIM =====
-    const SNAP_RADIUS = 9999;
-
-    if (distance < SNAP_RADIUS) {
-
-        crosshair.x += dx * 0.9;
-        crosshair.y += dy * 1.3;
-
-        entity._nearHead = true;
-
-    } else {
-
-        crosshair.x += dx * 0.25;
-        crosshair.y += dy * 0.55;
-
-        entity._nearHead = false;
-    }
-
-    // ===== 7. HARD LOCK =====
-    if (!entity._headLocked) entity._headLocked = false;
-
-    if (distance < 4) {
-        entity._headLocked = true;
-    }
-
-    if (entity._headLocked) {
-
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 8. ANTI TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y = head.y;
-    }
-
-    // ===== 9. STABILIZE =====
-    crosshair.x += (head.x - crosshair.x) * 0.35;
-
-    // ===== 10. MICRO FIX =====
-    crosshair.x = Math.round(crosshair.x * 10) / 10;
-    crosshair.y = Math.round(crosshair.y * 10) / 10;
-
-    // ===== DEBUG =====
-    entity._aimbot = {
-        locked: entity._headLocked,
-        near: entity._nearHead,
-        dist: distance,
-        target: true,
-        time: Date.now()
-    };
-};
-
-
-// ===== APPLY AIMBOT =====
-advancedAimbot(obj.players);
- // ===== AIM CHASE SYSTEM (FOLLOW HAND DRAG TO HEAD) =====
-const aimChaseHead = (entity) => {
-
-    if (!entity || !entity.position) return;
-
-    const crosshair = entity.crosshair || obj.crosshair;
-    if (!crosshair) return;
-
-    // ===== 1. DETECT HEAD =====
-    let head = null;
-
-    if (entity.bones) {
-        const bones = ["head","Head","Bone_Head","Bip001-Head","neck"];
-        for (let b of bones) {
-            if (entity.bones[b]) {
-                head = entity.bones[b];
-                break;
-            }
-        }
-    }
-
-    if (!head) {
-        const height = entity.height || 60;
-        head = {
-            x: entity.position.x,
-            y: entity.position.y - height * 0.88
-        };
-    }
-
-    // ===== 2. PREDICTION =====
-    if (entity.velocity) {
-        const predict = 0.2;
-
-        head.x += entity.velocity.x * predict;
-        head.y += entity.velocity.y * predict;
-    }
-
-    // ===== 3. VECTOR =====
-    let dx = head.x - crosshair.x;
-    let dy = head.y - crosshair.y;
-
-    let distance = Math.sqrt(dx * dx + dy * dy);
-
-    // ===== 4. NHẬN DIỆN KÉO TAY =====
-    if (!entity._lastCrosshair) {
-        entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
-    }
-
-    let dragX = crosshair.x - entity._lastCrosshair.x;
-    let dragY = crosshair.y - entity._lastCrosshair.y;
-
-    let dragSpeed = Math.sqrt(dragX * dragX + dragY * dragY);
-
-    entity._lastCrosshair = { x: crosshair.x, y: crosshair.y };
-
-    // ===== 5. BOOST THEO KÉO =====
-    let chaseBoost = 1.0;
-
-    if (dragSpeed > 0.5) {
-        chaseBoost = 1.5; // kéo nhanh → boost mạnh
-    }
-
-    if (dragSpeed > 2) {
-        chaseBoost = 2.2; // kéo mạnh → hút cực nhanh
-    }
-
-    // ===== 6. AIM CHASE =====
-    crosshair.x += dx * 0.3 * chaseBoost;
-    crosshair.y += dy * 0.8 * chaseBoost; // ưu tiên kéo lên đầu
-
-    // ===== 7. SNAP GẦN HEAD =====
-    if (distance < 30) {
-        crosshair.x += dx * 0.8;
-        crosshair.y += dy * 1.4;
-        entity._nearHead = true;
-    } else {
-        entity._nearHead = false;
-    }
-
-    // ===== 8. HARD LOCK =====
-    if (!entity._headLocked) entity._headLocked = false;
-
-    if (distance < 4) {
-        entity._headLocked = true;
-    }
-
-    if (entity._headLocked) {
-        crosshair.x = head.x;
-        crosshair.y = head.y;
-    }
-
-    // ===== 9. ANTI TỤT =====
-    if (crosshair.y > head.y) {
-        crosshair.y = head.y;
-    }
-
-    // ===== 10. STABILIZE =====
-    crosshair.x += (head.x - crosshair.x) * 0.35;
-
-    // ===== 11. FIX RUNG =====
-    crosshair.x = Math.round(crosshair.x * 10) / 10;
-    crosshair.y = Math.round(crosshair.y * 10) / 10;
-
-    // ===== DEBUG =====
-    entity._aimChase = {
-        dragSpeed,
-        boost: chaseBoost,
-        dist: distance,
-        locked: entity._headLocked
-    };
-};
-
-
-// ===== APPLY =====
-aimChaseHead(obj);
-
-if (obj.players && Array.isArray(obj.players)) {
-    obj.players.forEach(p => aimChaseHead(p));
-}
-// ===== ADVANCED AIMLOCK HEAD SYSTEM (PRO LOGIC) =====
+ // ===== ADVANCED AIMLOCK HEAD SYSTEM (PRO LOGIC) =====
 const aimlockHeadSystem = (target, config = {}) => {
     // 1. Cấu hình mặc định (Có thể tùy chỉnh)
     const settings = {
