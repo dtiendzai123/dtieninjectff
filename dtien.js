@@ -11690,8 +11690,7 @@ if (dist > DISTANCE.MID) {
 }
 
 let targetY = target.head.y + headOffset;
-        let dx = target.head.x - state.crosshairX;
-let dy = targetY - state.crosshairY;
+       
 
 dx *= scale;
 dy *= scale;
