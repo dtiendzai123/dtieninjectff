@@ -11593,9 +11593,86 @@ const HEAD_LOCK_SYSTEM = {
         STOP_ZONE: 0.02
     }
 };
- 
+ const DISTANCE_LIGHT_AIM = {
+
+    ENABLE: true,
+
+    // ===== KHOẢNG CÁCH PLAYER → TARGET =====
+    DISTANCE: {
+        NEAR: 0.2,
+        MID: 0.5,
+        FAR: 1.0
+    },
+
+    // ===== SENS THEO KHOẢNG CÁCH =====
+    SENS: {
+        NEAR_BOOST: 1.6,   // gần → tăng nhạy mạnh (cực nhẹ tay)
+        MID: 1.2,
+        FAR: 0.9           // xa → giảm nhạy để ổn định
+    },
+
+    // ===== DRAG (ĐỘ NẶNG) =====
+    DRAG: {
+        NEAR: 0.15,        // gần → rất nhẹ
+        MID: 0.35,
+        FAR: 0.55          // xa → nặng hơn để không rung
+    },
+
+    // ===== FORCE (LỰC KÉO) =====
+    FORCE: {
+        NEAR: 0.7,         // gần → giảm lực thô (tránh giật)
+        MID: 1.0,
+        FAR: 1.3           // xa → cần lực mạnh để kéo tới
+    },
+
+    // ===== STABILIZE =====
+    STABILIZE: {
+        NEAR_SMOOTH: 0.85, // gần → cực mượt
+        FAR_SMOOTH: 0.3
+    }
+};
     const AimLockHeadEngine = (() => {
-let scale = 1.0;
+let dist = getDistance(state.playerPos, target.position);
+        let sens, drag, force, smooth;
+
+if (dist < DISTANCE.NEAR) {
+    sens = SENS.NEAR_BOOST;
+    drag = DRAG.NEAR;
+    force = FORCE.NEAR;
+    smooth = STABILIZE.NEAR_SMOOTH;
+}
+else if (dist < DISTANCE.MID) {
+    sens = SENS.MID;
+    drag = DRAG.MID;
+    force = FORCE.MID;
+    smooth = 0.5;
+}
+else {
+    sens = SENS.FAR;
+    drag = DRAG.FAR;
+    force = FORCE.FAR;
+    smooth = STABILIZE.FAR_SMOOTH;
+}
+        
+        let dx = target.head.x - state.crosshairX;
+let dy = target.head.y - state.crosshairY;
+        dx *= force * sens;
+dy *= force * sens;
+        dx *= (1 - drag);
+dy *= (1 - drag);
+        dx = dx * (1 - smooth) + dx * smooth;
+dy = dy * (1 - smooth) + dy * smooth;
+        if (dist < DISTANCE.NEAR) {
+
+    if (Math.abs(dx) < 0.01) dx *= 0.5;
+    if (Math.abs(dy) < 0.01) dy *= 0.5;
+}
+        state.crosshairX += dx;
+state.crosshairY += dy;
+        
+        
+        
+        let scale = 1.0;
 
 if (dist < DISTANCE.NEAR) {
     scale = DISTANCE.SCALE_NEAR;
