@@ -11206,6 +11206,35 @@ const HEAD_HOLD_CONFIG = {
         ALLOW_MICRO_ADJUST: 0.002
     }
 };
+const FIRE_HEAD_LOCK_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== TRIGGER =====
+    TRIGGER: {
+        REQUIRE_SHOOT_TOUCH: true, // chỉ kích hoạt khi bấm nút bắn
+        HOLD_ONLY: true            // giữ khi đang giữ nút
+    },
+
+    // ===== LOCK =====
+    LOCK: {
+        STRENGTH: 6.0,     // lực khóa cực mạnh
+        SNAP: true,        // chạm là snap
+        SNAP_RADIUS: 0.03
+    },
+
+    // ===== HOLD =====
+    HOLD: {
+        FORCE: 4.0,
+        ZERO_SHAKE: true
+    },
+
+    // ===== ANTI DROP =====
+    ANTI_DROP: {
+        BLOCK_DOWN: true,
+        Y_PRIORITY: true
+    }
+};
  const AimLockHeadEngine = (() => {
   
 
@@ -11255,7 +11284,60 @@ function forceHeadPullUp(state, target) {
         crosshair.y += dy;
     }
 }
-let headLocked = false;
+let fireLockActive = false;
+
+function fireHeadLock(state, target) {
+
+    if (!FIRE_HEAD_LOCK_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+
+    // ===== 1. CHECK NÚT BẮN =====
+    const isFiring = state.isShooting === true;
+
+    if (FIRE_HEAD_LOCK_CONFIG.TRIGGER.REQUIRE_SHOOT_TOUCH) {
+        fireLockActive = isFiring;
+    }
+
+    if (!fireLockActive) return;
+
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const dist = Math.hypot(dx, dy);
+
+    // ===== 2. SNAP NGAY =====
+    if (FIRE_HEAD_LOCK_CONFIG.LOCK.SNAP &&
+        dist < FIRE_HEAD_LOCK_CONFIG.LOCK.SNAP_RADIUS) {
+
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+
+    // ===== 3. ƯU TIÊN LÊN ĐẦU =====
+    if (FIRE_HEAD_LOCK_CONFIG.ANTI_DROP.Y_PRIORITY) {
+        if (dy < 0) {
+            dy *= FIRE_HEAD_LOCK_CONFIG.LOCK.STRENGTH;
+        }
+    }
+
+    // ===== 4. CHẶN TỤT =====
+    if (FIRE_HEAD_LOCK_CONFIG.ANTI_DROP.BLOCK_DOWN) {
+        if (dy > 0) dy = 0;
+    }
+
+    // ===== 5. KHÓA CỨNG =====
+    crosshair.x += dx * FIRE_HEAD_LOCK_CONFIG.HOLD.FORCE;
+    crosshair.y += dy * FIRE_HEAD_LOCK_CONFIG.HOLD.FORCE;
+
+    // ===== 6. ZERO SHAKE =====
+    if (FIRE_HEAD_LOCK_CONFIG.HOLD.ZERO_SHAKE) {
+        if (Math.abs(dx) < 0.001) crosshair.x = head.x;
+        if (Math.abs(dy) < 0.001) crosshair.y = head.y;
+    }
+}
+  let headLocked = false;
 
 function preventDropFromHead(state, target) {
 
@@ -11575,7 +11657,7 @@ function headMagnetLock(state, target) {
 
     try {
         AimLockEngine.aim(state);
-  
+  fireHeadLock(state, target);      // 🔥 chỉ kích hoạt khi bắn
 forceHeadPullUp(state, target);     // kéo lên đầu
 microDragHeadBoost(state, target);  // tăng tốc kéo
 headMovingLock(state, target);      // tracking
