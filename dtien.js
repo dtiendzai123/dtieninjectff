@@ -11108,7 +11108,7 @@ const HEAD_MOVING_CONFIG = {
     // ===== PHÁT HIỆN DI CHUYỂN =====
     DETECT: {
         MIN_VELOCITY: 0.002,   // ngưỡng coi là đang chạy
-        HORIZONTAL_WEIGHT: 1.8 // ưu tiên ngang
+        HORIZONTAL_WEIGHT: 1.9 // ưu tiên ngang
     },
 
     // ===== PREDICT =====
@@ -11121,7 +11121,7 @@ const HEAD_MOVING_CONFIG = {
     // ===== TRACK =====
     TRACK: {
         FOLLOW_STRENGTH: 2.5,  // lực bám theo
-        SNAP_CORRECTION: 0.6   // sửa sai nhanh
+        SNAP_CORRECTION: 1.0   // sửa sai nhanh
     },
 
     // ===== HEAD PRIORITY =====
