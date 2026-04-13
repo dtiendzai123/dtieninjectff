@@ -11363,12 +11363,233 @@ const FIRE_HEAD_LOCK_CONFIG = {
         FOLLOW_SPEED: 1.2,
         PREDICT: 0.9,
 
-        VELOCITY_DAMP: 0.75,     // giảm ảnh hưởng velocity
-        SNAP_LIMIT: 0.04         // tránh snap quá mạnh gây lệch
+        VELOCITY_DAMP: 0.0,     // giảm ảnh hưởng velocity
+        SNAP_LIMIT: 360.9         // tránh snap quá mạnh gây lệch
+    }
+};
+ const HYPER_SENS_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== ĐỘ NHẠY CHUNG =====
+    SENS: {
+        BASE: 1.4,              // độ nhạy gốc
+        MAX: 2.5,               // giới hạn tối đa
+
+        DYNAMIC: true,          // tăng theo tốc độ kéo
+        SPEED_SCALE: 1.2,       // scale theo lực tay
+
+        LOW_INPUT_BOOST: 1.6,   // kéo nhẹ vẫn bay nhanh
+        HIGH_INPUT_DAMP: 0.85   // kéo mạnh thì giảm rung
+    },
+
+    // ===== GIẢM ĐỘ NẶNG TÂM =====
+    DRAG: {
+        ENABLE: true,
+
+        BASE_DRAG: 0.4,         // lực cản thấp (rất nhẹ)
+        ADAPTIVE: true,
+
+        HEAD_REDUCTION: 0.2,    // vào head giảm drag cực mạnh
+        MOVE_REDUCTION: 0.3     // khi kéo thì giảm drag
+    },
+
+    // ===== TĂNG TỐC KÉO LÊN HEAD =====
+    UPWARD_ASSIST: {
+        ENABLE: true,
+
+        BOOST: 1.8,             // lực kéo lên
+        PRIORITY: 1.5,          // ưu tiên hướng lên
+
+        IGNORE_DOWN: true,      // bỏ lực kéo xuống
+        SNAP_UP: true           // kéo là bật lên ngay
+    },
+
+    // ===== SNAP SIÊU NHANH =====
+    SNAP: {
+        ENABLE: true,
+
+        FORCE: 1.7,
+        SPEED: 1.5,
+
+        INPUT_THRESHOLD: 0.002, // kéo nhẹ vẫn kích hoạt
+        HEAD_ONLY: true
+    },
+
+    // ===== ANTI HEAVY AIM =====
+    ANTI_HEAVY: {
+        ENABLE: true,
+
+        RESIST_REDUCTION: 0.5,  // giảm lực cản tổng
+        INSTANT_RESPONSE: true, // phản hồi ngay
+
+        NO_DELAY: true          // bỏ delay input
+    }
+};
+  const PRECISION_HEAD_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== ĐỘ CHÍNH XÁC =====
+    PRECISION: {
+        BASE: 1.0,              // độ chính xác cơ bản
+        HEAD_BOOST: 1.6,        // tăng mạnh khi gần head
+
+        DISTANCE_SCALE: true,   // càng gần càng chính xác
+        MIN_FACTOR: 0.6,
+        MAX_FACTOR: 1.8
+    },
+
+    // ===== GIẢM OVERSHOOT =====
+    OVERSHOOT: {
+        ENABLE: true,
+
+        DAMPING: 0.7,           // giảm lực khi gần mục tiêu
+        HARD_CLAMP: true,       // không cho vượt head
+
+        SLOW_ZONE: 0.035,       // vùng giảm tốc
+        STOP_ZONE: 0.015        // vùng dừng chính xác
+    },
+
+    // ===== SNAP CHÍNH XÁC =====
+    SNAP: {
+        ENABLE: true,
+
+        FORCE: 1.4,
+        PRECISION_BOOST: 1.8,   // snap chính xác hơn thay vì mạnh hơn
+
+        ACTIVATION_RADIUS: 0.04
+    },
+
+    // ===== MICRO ADJUST =====
+    MICRO_ADJUST: {
+        ENABLE: true,
+
+        STEP: 0.0015,           // bước chỉnh nhỏ
+        SMOOTH: 0.85,           // làm mượt vi chỉnh
+
+        LOCK_THRESHOLD: 0.002   // sai số cực nhỏ thì khóa
+    },
+
+    // ===== HEAD LOCK =====
+    HEAD_LOCK: {
+        ENABLE: true,
+
+        STICK_FORCE: 1.3,       // độ dính head
+        RELEASE_TOLERANCE: 0.05,
+
+        PRIORITY_Y: 1.4         // ưu tiên trục Y (đầu)
     }
 };
     const AimLockHeadEngine = (() => {
-  let recoilForceY = RECOIL.VERTICAL_COMP;
+let dist = Math.sqrt(dx*dx + dy*dy);
+
+let precision = PRECISION.BASE;
+
+if (PRECISION.DISTANCE_SCALE) {
+    let factor = 1 / (dist + 0.001);
+
+    factor = clamp(factor, PRECISION.MIN_FACTOR, PRECISION.MAX_FACTOR);
+
+    precision *= factor;
+}
+        if (dist < OVERSHOOT.SLOW_ZONE) {
+    dx *= OVERSHOOT.DAMPING;
+    dy *= OVERSHOOT.DAMPING;
+}
+
+if (dist < OVERSHOOT.STOP_ZONE) {
+    dx *= 0.3;
+    dy *= 0.3;
+}
+        if (OVERSHOOT.HARD_CLAMP) {
+
+    if (Math.abs(dx) > Math.abs(targetX - crosshairX)) {
+        dx = targetX - crosshairX;
+    }
+
+    if (Math.abs(dy) > Math.abs(targetY - crosshairY)) {
+        dy = targetY - crosshairY;
+    }
+}
+        if (dist < SNAP.ACTIVATION_RADIUS) {
+
+    dx *= SNAP.PRECISION_BOOST;
+    dy *= SNAP.PRECISION_BOOST;
+}
+        if (Math.abs(dx) < MICRO_ADJUST.STEP) {
+    dx *= MICRO_ADJUST.SMOOTH;
+}
+
+if (Math.abs(dy) < MICRO_ADJUST.STEP) {
+    dy *= MICRO_ADJUST.SMOOTH;
+}
+        if (dist < MICRO_ADJUST.LOCK_THRESHOLD) {
+    dx = 0;
+    dy = 0;
+}
+        dy *= HEAD_LOCK.PRIORITY_Y;
+        if (isOnHead) {
+    dx *= HEAD_LOCK.STICK_FORCE;
+    dy *= HEAD_LOCK.STICK_FORCE;
+}
+        
+        let inputMag = Math.sqrt(inputX * inputX + inputY * inputY);
+
+let sens = SENS.BASE;
+
+if (SENS.DYNAMIC) {
+    sens += inputMag * SENS.SPEED_SCALE;
+}
+
+// clamp
+sens = Math.min(sens, SENS.MAX);
+        
+        let drag = DRAG.BASE_DRAG;
+
+if (DRAG.ADAPTIVE) {
+    if (isMovingAim) {
+        drag *= DRAG.MOVE_REDUCTION;
+    }
+
+    if (isOnHead) {
+        drag *= DRAG.HEAD_REDUCTION;
+    }
+}
+if (UPWARD_ASSIST.ENABLE) {
+
+    if (deltaY < 0) { // kéo lên
+        deltaY *= UPWARD_ASSIST.BOOST;
+    }
+
+    if (UPWARD_ASSIST.IGNORE_DOWN && deltaY > 0) {
+        deltaY = 0;
+    }
+}
+        
+if (SNAP.ENABLE && distanceToHead < SNAP_RADIUS) {
+
+    if (inputMag > SNAP.INPUT_THRESHOLD) {
+        deltaX *= SNAP.FORCE;
+        deltaY *= SNAP.FORCE;
+    }
+}
+        if (ANTI_HEAVY.ENABLE) {
+
+    deltaX *= ANTI_HEAVY.RESIST_REDUCTION;
+    deltaY *= ANTI_HEAVY.RESIST_REDUCTION;
+
+    if (ANTI_HEAVY.INSTANT_RESPONSE) {
+        deltaX *= 1.2;
+        deltaY *= 1.2;
+    }
+}
+        state.crosshairX += deltaX * sens * (1 - drag);
+state.crosshairY += deltaY * sens * (1 - drag);
+        
+
+
+        let recoilForceY = RECOIL.VERTICAL_COMP;
 let recoilForceX = RECOIL.HORIZONTAL_COMP;
 
 // scale theo số đạn
