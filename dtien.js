@@ -11733,10 +11733,9 @@ if (Math.abs(dy) < PRECISION.MICRO_STEP) {
         
 let headX = target.head.x + target.velocity.x * POSITION.PREDICT;
 let headY = target.head.y + target.velocity.y * POSITION.PREDICT;
-        let dx = headX - state.crosshairX;
-let dy = headY - state.crosshairY;
+      
 
-let dist = Math.sqrt(dx*dx + dy*dy);
+
 
 // vùng soft → hút vào
 if (dist < POSITION.SOFT_ZONE) {
@@ -11785,7 +11784,7 @@ if (Math.abs(dy) < ANTI_DRIFT.MICRO_FREEZE) dy = 0;
 
 
         
-let dist = Math.sqrt(dx*dx + dy*dy);
+
 
 let precision = PRECISION.BASE;
 
@@ -11839,7 +11838,7 @@ if (Math.abs(dy) < MICRO_ADJUST.STEP) {
         
         let inputMag = Math.sqrt(inputX * inputX + inputY * inputY);
 
-let sens = SENS.BASE;
+
 
 if (SENS.DYNAMIC) {
     sens += inputMag * SENS.SPEED_SCALE;
@@ -11848,7 +11847,7 @@ if (SENS.DYNAMIC) {
 // clamp
 sens = Math.min(sens, SENS.MAX);
         
-        let drag = DRAG.BASE_DRAG;
+        
 
 if (DRAG.ADAPTIVE) {
     if (isMovingAim) {
