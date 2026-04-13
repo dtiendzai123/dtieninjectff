@@ -11159,6 +11159,30 @@ const MICRO_DRAG_CONFIG = {
         BOOST_FIRST_FRAME: 3.0
     }
 };
+const HEAD_PULL_FIX_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== PHÁT HIỆN CẦN KÉO LÊN =====
+    DETECT: {
+        MIN_Y_GAP: 0.01,     // đầu cao hơn tâm
+        ACTIVE_ZONE: 360.0    // vùng kích hoạt
+    },
+
+    // ===== FORCE KÉO LÊN =====
+    FORCE: {
+        Y_BOOST: 5.5,        // lực kéo lên (cực quan trọng)
+        X_REDUCE: 0.4,       // giảm lực ngang
+        OVERRIDE_SMOOTH: true
+    },
+
+    // ===== BREAK LIMIT =====
+    BREAK: {
+        ENABLE: true,
+        THRESHOLD: 0.02,     // nếu không lên → phá giới hạn
+        FORCE: 2.5
+    }
+};
  const AimLockHeadEngine = (() => {
   
 
@@ -11171,7 +11195,44 @@ const MICRO_DRAG_CONFIG = {
         lastTime = now;
         return dt;
     }
-function headMovingLock(state, target) {
+function forceHeadPullUp(state, target) {
+
+    if (!HEAD_PULL_FIX_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const dist = Math.hypot(dx, dy);
+
+    // ===== 1. PHÁT HIỆN "BỊ KẸT KHÔNG LÊN" =====
+    const needPullUp =
+        dy < -HEAD_PULL_FIX_CONFIG.DETECT.MIN_Y_GAP &&
+        dist < HEAD_PULL_FIX_CONFIG.DETECT.ACTIVE_ZONE;
+
+    if (needPullUp) {
+
+        // ===== 2. GIẢM NGANG =====
+        dx *= HEAD_PULL_FIX_CONFIG.FORCE.X_REDUCE;
+
+        // ===== 3. BOOST LÊN ĐẦU =====
+        dy *= HEAD_PULL_FIX_CONFIG.FORCE.Y_BOOST;
+
+        // ===== 4. BREAK LIMIT (PHÁ CẢN) =====
+        if (HEAD_PULL_FIX_CONFIG.BREAK.ENABLE &&
+            Math.abs(dy) < HEAD_PULL_FIX_CONFIG.BREAK.THRESHOLD) {
+
+            dy *= HEAD_PULL_FIX_CONFIG.BREAK.FORCE;
+        }
+
+        // ===== 5. APPLY TRỰC TIẾP (BỎ SMOOTH) =====
+        crosshair.x += dx;
+        crosshair.y += dy;
+    }
+}
+  function headMovingLock(state, target) {
 
     if (!HEAD_MOVING_CONFIG.ENABLE || !target) return;
 
@@ -11447,9 +11508,11 @@ function headMagnetLock(state, target) {
 
     try {
         AimLockEngine.aim(state);
-  headMagnetLock(state, target);
-  headMovingLock(state, target);
+  
+forceHeadPullUp(state, target);   // FIX KHÔNG LÊN ĐẦU
 microDragHeadBoost(state, target);
+headMovingLock(state, target);
+headMagnetLock(state, target);
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
