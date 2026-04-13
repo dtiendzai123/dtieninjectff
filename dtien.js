@@ -11194,21 +11194,76 @@ const HEAD_HOLD_CONFIG = {
 
     // ===== VÙNG HEAD =====
     HEAD_ZONE: {
-        LOCK_RADIUS: 0.025,     // vào head là lock
-        RELEASE_RADIUS: 0.06    // ra xa mới nhả
+        LOCK_RADIUS: 0.025,      // vào head là lock
+        RELEASE_RADIUS: 0.065,   // ra xa mới nhả (tăng hysteresis)
+        HARD_LOCK_RADIUS: 0.018, // vùng lock cứng (không cho thoát)
+        SNAP_RADIUS: 0.04        // vùng hỗ trợ hút vào head
     },
 
     // ===== GIỮ TÂM =====
     HOLD: {
-        STRENGTH: 1.0,
+        STRENGTH: 1.15,          // lực giữ tổng
+        STATIC_BOOST: 1.25,      // tăng lực khi đã lock
+        DYNAMIC_BOOST: 1.4,      // tăng lực khi target di chuyển
         ANTI_DROP_Y: true,
-        MAX_DOWN_FORCE: 0       // cấm kéo xuống
+        MAX_DOWN_FORCE: 0,       // cấm kéo xuống
+        LOCK_RESIST: 0.9         // chống bị kéo lệch khỏi head
+    },
+
+    // ===== SNAP VÀO ĐẦU =====
+    SNAP: {
+        ENABLE: true,
+        FORCE: 1.6,              // lực hút cực mạnh
+        SPEED: 1.3,              // tốc độ snap
+        MIN_INPUT_IGNORE: 0.003, // input nhỏ vẫn auto snap
+        OVERDRIVE: true          // vượt lực kéo tay người
+    },
+
+    // ===== ANTI TỤT TÂM =====
+    ANTI_DROP: {
+        ENABLE: true,
+        Y_LOCK_THRESHOLD: 0.002,  // nếu lệch nhỏ thì khóa Y
+        HOLD_FRAMES: 6,           // giữ trong X frame
+        DECAY: 0.85              // giảm dần lực giữ
+    },
+
+    // ===== CHỐNG GIẬT NGƯỢC =====
+    ANTI_REVERSE: {
+        ENABLE: true,
+        BLOCK_BACK_FORCE: true,   // chặn lực kéo ngược
+        ANGLE_LIMIT: 35,         // giới hạn góc đảo chiều
+        DAMPING: 0.75            // giảm giật
+    },
+
+    // ===== TRACK CHUYỂN ĐỘNG =====
+    TRACKING: {
+        PREDICT: 1.0,            // dự đoán vị trí head
+        FOLLOW_SPEED: 1.25,      // tốc độ bám
+        VELOCITY_SCALE: 1.1,     // scale theo tốc độ địch
+        SMOOTH: 0.2              // làm mượt tracking
     },
 
     // ===== FILTER =====
     FILTER: {
-        BLOCK_NEGATIVE_Y: true, // chặn lực kéo xuống
-        ALLOW_MICRO_ADJUST: 0.002
+        BLOCK_NEGATIVE_Y: true,
+        ALLOW_MICRO_ADJUST: 0.002,
+        DEADZONE: 0.0015,        // vùng bỏ qua rung nhỏ
+        NOISE_REDUCTION: 0.8     // giảm jitter
+    },
+
+    // ===== ƯU TIÊN HEAD =====
+    PRIORITY: {
+        FORCE_HEAD_OVER_BODY: true, // luôn ưu tiên head
+        BODY_REJECT_ZONE: 0.08,     // vùng bỏ qua body
+        STICK_TO_HEAD: 1.3          // độ dính vào head
+    },
+
+    // ===== AUTO FIRE LOCK =====
+    FIRE_LOCK: {
+        ENABLE: true,
+        REQUIRE_TOUCH: true,     // chỉ lock khi bấm nút bắn
+        LOCK_WHEN_SHOOT: true,
+        HOLD_WHILE_FIRE: true
     }
 };
 const FIRE_HEAD_LOCK_CONFIG = {
@@ -11304,7 +11359,34 @@ function fireHeadLock(state, target) {
     if (FIRE_HEAD_LOCK_CONFIG.TRIGGER.REQUIRE_SHOOT_TOUCH) {
         fireLockActive = isFiring;
     }
+if (distance < SNAP_RADIUS) {
+    force = SNAP.FORCE * SNAP.SPEED;
 
+    if (input < SNAP.MIN_INPUT_IGNORE) {
+        force *= 1.3; // auto kéo mạnh hơn
+    }
+}
+    if (isLockedHead) {
+    aimY = Math.max(aimY, targetHeadY); // không cho tụt xuống
+
+    holdForce *= HOLD.STATIC_BOOST;
+}
+    if (deltaY > 0 && FILTER.BLOCK_NEGATIVE_Y) {
+    deltaY = Math.min(deltaY, HOLD.MAX_DOWN_FORCE);
+}
+    if (distance < HARD_LOCK_RADIUS) {
+    lockStrength = 999; // khóa cứng
+}
+    predictedX = head.x + velocity.x * TRACKING.PREDICT;
+predictedY = head.y + velocity.y * TRACKING.PREDICT;
+  if (dot(inputDir, aimDir) < 0) {
+    if (ANTI_REVERSE.BLOCK_BACK_FORCE) {
+        input = input * ANTI_REVERSE.DAMPING;
+    }
+}
+    if (Math.abs(deltaY) < ANTI_DROP.Y_LOCK_THRESHOLD) {
+    deltaY = 0;
+}
     if (!fireLockActive) return;
 
     let dx = head.x - crosshair.x;
