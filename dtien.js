@@ -11142,7 +11142,7 @@ const MICRO_DRAG_CONFIG = {
 
     // ===== GIA TỐC =====
     ACCEL: {
-        MULTIPLIER_Y: 6.0,    // lực kéo lên đầu (rất mạnh)
+        MULTIPLIER_Y: 10.0,    // lực kéo lên đầu (rất mạnh)
         MULTIPLIER_X: 1.2,    // giữ ngang ổn định
         RAMP: 2.5             // tăng tốc theo thời gian kéo
     },
@@ -11150,7 +11150,7 @@ const MICRO_DRAG_CONFIG = {
     // ===== HÚT VỀ ĐẦU =====
     MAGNET: {
         FORCE: 4.0,
-        SNAP_DIST: 0.02
+        SNAP_DIST: 360.0
     },
 
     // ===== ANTI DELAY =====
@@ -11171,7 +11171,7 @@ const HEAD_PULL_FIX_CONFIG = {
 
     // ===== FORCE KÉO LÊN =====
     FORCE: {
-        Y_BOOST: 5.5,        // lực kéo lên (cực quan trọng)
+        Y_BOOST: 10.5,        // lực kéo lên (cực quan trọng)
         X_REDUCE: 0.4,       // giảm lực ngang
         OVERRIDE_SMOOTH: true
     },
