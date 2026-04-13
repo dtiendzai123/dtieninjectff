@@ -11295,10 +11295,132 @@ const FIRE_HEAD_LOCK_CONFIG = {
         Y_PRIORITY: true
     }
 };
- const AimLockHeadEngine = (() => {
-  
+ const RECOIL_CROSSHAIR_CONFIG = {
 
-    let lastTarget = null;
+    ENABLE: true,
+
+    // ===== FIX RECOIL =====
+    RECOIL: {
+        ENABLE: true,
+
+        VERTICAL_COMP: 1.25,     // bù giật dọc (quan trọng nhất)
+        HORIZONTAL_COMP: 0.6,    // bù giật ngang
+
+        DYNAMIC_SCALE: true,     // tăng theo thời gian bắn
+        SCALE_PER_SHOT: 0.08,    // mỗi viên tăng lực
+
+        MAX_COMP: 2.2,           // giới hạn chống overcomp
+
+        BURST_RESET_TIME: 120,   // ms reset recoil
+        RESET_SMOOTH: 0.85,      // hồi về mượt
+
+        ANTI_OVER_PULL: true,    // tránh kéo quá đầu
+        CLAMP_Y: true            // giới hạn trục Y
+    },
+
+    // ===== GIỮ CROSSHAIR ỔN ĐỊNH =====
+    CROSSHAIR: {
+        ENABLE: true,
+
+        STABILITY: 1.2,          // độ ổn định tổng
+        DRAG_RESIST: 0.9,        // chống lệch khi kéo
+
+        MICRO_CORRECTION: 0.002, // chỉnh sai số nhỏ
+        DEADZONE: 0.0015,        // vùng bỏ qua rung
+
+        SMOOTH: 0.2,             // làm mượt
+        LOCK_STRENGTH: 1.1,      // giữ tâm khi đã đúng
+
+        CENTER_PULL: 0.15        // kéo nhẹ về trung tâm head
+    },
+
+    // ===== CHỐNG RUNG (JITTER FIX) =====
+    STABILIZER: {
+        ENABLE: true,
+
+        NOISE_FILTER: 0.85,      // lọc nhiễu
+        SHAKE_DAMPING: 0.8,      // giảm rung
+
+        MAX_DELTA: 0.03,         // giới hạn thay đổi frame
+        MIN_DELTA: 0.0005        // bỏ rung siêu nhỏ
+    },
+
+    // ===== KHÓA TRỤC Y (QUAN TRỌNG) =====
+    AXIS_LOCK: {
+        ENABLE: true,
+
+        LOCK_Y_WHEN_SHOOT: true, // bắn là khóa Y
+        Y_THRESHOLD: 0.002,      // sai số nhỏ thì giữ nguyên
+
+        NO_DOWN_FORCE: true,     // không cho kéo xuống
+        UPWARD_PRIORITY: 1.2     // ưu tiên kéo lên head
+    },
+
+    // ===== TRACK ỔN ĐỊNH =====
+    TRACK_ASSIST: {
+        ENABLE: true,
+
+        FOLLOW_SPEED: 1.2,
+        PREDICT: 0.9,
+
+        VELOCITY_DAMP: 0.75,     // giảm ảnh hưởng velocity
+        SNAP_LIMIT: 0.04         // tránh snap quá mạnh gây lệch
+    }
+};
+    const AimLockHeadEngine = (() => {
+  let recoilForceY = RECOIL.VERTICAL_COMP;
+let recoilForceX = RECOIL.HORIZONTAL_COMP;
+
+// scale theo số đạn
+if (RECOIL.DYNAMIC_SCALE) {
+    recoilForceY += shotCount * RECOIL.SCALE_PER_SHOT;
+}
+
+// clamp tránh quá tay
+recoilForceY = Math.min(recoilForceY, RECOIL.MAX_COMP);
+
+// áp dụng (đảo chiều recoil)
+aimY -= recoilForceY;
+aimX -= recoilForceX;
+if (RECOIL.ANTI_OVER_PULL) {
+    if (aimY < targetHeadY) {
+        aimY = targetHeadY;
+    }
+}
+        let deltaX = targetX - crosshairX;
+let deltaY = targetY - crosshairY;
+
+// deadzone
+if (Math.abs(deltaX) < CROSSHAIR.DEADZONE) deltaX = 0;
+if (Math.abs(deltaY) < CROSSHAIR.DEADZONE) deltaY = 0;
+
+// micro adjust
+deltaX *= CROSSHAIR.STABILITY;
+deltaY *= CROSSHAIR.STABILITY;
+ if (isOnHead) {
+    deltaX *= CROSSHAIR.LOCK_STRENGTH;
+    deltaY *= CROSSHAIR.LOCK_STRENGTH;
+}
+        if (AXIS_LOCK.NO_DOWN_FORCE && deltaY > 0) {
+    deltaY = 0; // chặn kéo xuống
+}
+
+if (Math.abs(deltaY) < AXIS_LOCK.Y_THRESHOLD) {
+    deltaY = 0;
+}
+        deltaX = deltaX * STABILIZER.NOISE_FILTER;
+deltaY = deltaY * STABILIZER.NOISE_FILTER;
+
+// clamp thay đổi
+deltaX = Math.max(Math.min(deltaX, STABILIZER.MAX_DELTA), -STABILIZER.MAX_DELTA);
+deltaY = Math.max(Math.min(deltaY, STABILIZER.MAX_DELTA), -STABILIZER.MAX_DELTA);
+        
+        predictedX = targetX + velocityX * TRACK_ASSIST.PREDICT;
+predictedY = targetY + velocityY * TRACK_ASSIST.PREDICT;
+
+deltaX += (predictedX - crosshairX) * TRACK_ASSIST.FOLLOW_SPEED;
+deltaY += (predictedY - crosshairY) * TRACK_ASSIST.FOLLOW_SPEED;
+let lastTarget = null;
     let lastTime = Date.now();
 
     function getDeltaTime() {
@@ -11750,6 +11872,20 @@ microDragHeadBoost(state, target);  // tăng tốc kéo
 headMovingLock(state, target);      // tracking
 preventDropFromHead(state, target); // 🚫 chặn tụt
 headMagnetLock(state, target);      // ghim cứng
+
+
+    // 1. Update target
+    updateTarget(state);
+
+    // 2. Aimlock (head tracking)
+    updateAimLock(state);
+
+    // 3. 👉 RECOIL + CROSSHAIR (CHÈN Ở ĐÂY)
+    applyRecoilCrosshair(state);
+
+    // 4. Apply camera
+    applyCamera(state);
+
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
