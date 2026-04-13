@@ -11130,6 +11130,35 @@ const HEAD_MOVING_CONFIG = {
         IGNORE_BODY: true
     }
 };
+const MICRO_DRAG_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== PHÁT HIỆN KÉO NHẸ =====
+    INPUT: {
+        MIN_DELTA: 0.0005,    // chỉ cần động nhẹ
+        MAX_DELTA: 0.02,      // vẫn coi là kéo nhẹ
+    },
+
+    // ===== GIA TỐC =====
+    ACCEL: {
+        MULTIPLIER_Y: 6.0,    // lực kéo lên đầu (rất mạnh)
+        MULTIPLIER_X: 1.2,    // giữ ngang ổn định
+        RAMP: 2.5             // tăng tốc theo thời gian kéo
+    },
+
+    // ===== HÚT VỀ ĐẦU =====
+    MAGNET: {
+        FORCE: 4.0,
+        SNAP_DIST: 0.02
+    },
+
+    // ===== ANTI DELAY =====
+    RESPONSE: {
+        INSTANT: true,
+        BOOST_FIRST_FRAME: 3.0
+    }
+};
  const AimLockHeadEngine = (() => {
   
 
@@ -11196,7 +11225,57 @@ function headMovingLock(state, target) {
     crosshair.x += errorX * HEAD_MOVING_CONFIG.TRACK.SNAP_CORRECTION;
     crosshair.y += errorY * HEAD_MOVING_CONFIG.TRACK.SNAP_CORRECTION;
 }
-    function getTarget(enemies, crosshair) {
+let lastCrosshair = { x: 0, y: 0 };
+let rampFactor = 1;
+
+function microDragHeadBoost(state, target) {
+
+    if (!MICRO_DRAG_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+
+    // ===== 1. INPUT DELTA (NGƯỜI DÙNG KÉO) =====
+    const inputX = crosshair.x - lastCrosshair.x;
+    const inputY = crosshair.y - lastCrosshair.y;
+
+    const inputMag = Math.hypot(inputX, inputY);
+
+    // ===== 2. PHÁT HIỆN KÉO NHẸ =====
+    const isMicroDrag =
+        inputMag > MICRO_DRAG_CONFIG.INPUT.MIN_DELTA &&
+        inputMag < MICRO_DRAG_CONFIG.INPUT.MAX_DELTA;
+
+    if (isMicroDrag) {
+
+        // ===== 3. TĂNG GIA TỐC =====
+        rampFactor *= MICRO_DRAG_CONFIG.ACCEL.RAMP;
+        rampFactor = Math.min(rampFactor, 6);
+
+        // ===== 4. KÉO LÊN ĐẦU =====
+        const dx = head.x - crosshair.x;
+        const dy = head.y - crosshair.y;
+
+        crosshair.x += dx * MICRO_DRAG_CONFIG.ACCEL.MULTIPLIER_X * rampFactor;
+        crosshair.y += dy * MICRO_DRAG_CONFIG.ACCEL.MULTIPLIER_Y * rampFactor;
+
+        // ===== 5. HÚT NAM CHÂM =====
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < MICRO_DRAG_CONFIG.MAGNET.SNAP_DIST) {
+            crosshair.x = head.x;
+            crosshair.y = head.y;
+        }
+
+    } else {
+        rampFactor = 1; // reset nếu không kéo
+    }
+
+    // ===== 6. LƯU FRAME TRƯỚC =====
+    lastCrosshair.x = crosshair.x;
+    lastCrosshair.y = crosshair.y;
+}
+  function getTarget(enemies, crosshair) {
         let best = null;
         let minDist = Infinity;
 
@@ -11370,6 +11449,7 @@ function headMagnetLock(state, target) {
         AimLockEngine.aim(state);
   headMagnetLock(state, target);
   headMovingLock(state, target);
+microDragHeadBoost(state, target);
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
