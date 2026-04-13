@@ -11539,7 +11539,122 @@ const HEAD_LOCK_SYSTEM = {
         LOCK_BIAS: 1.3           // bias vào head thay vì body
     }
 };
+  const DISTANCE_HEAD_LOCK = {
+
+    ENABLE: true,
+
+    // ===== SCALE THEO KHOẢNG CÁCH =====
+    DISTANCE: {
+        ENABLE: true,
+
+        NEAR: 1.5,
+        MID: 1.4,
+        FAR: 1.0,
+
+        SCALE_NEAR: 2.0,   // gần → giảm lực
+        SCALE_MID: 1.1,     // trung → chuẩn
+        SCALE_FAR: 1.0     // xa → tăng lực mạnh
+    },
+
+    // ===== BÙ CHIỀU CAO HEAD =====
+    HEAD_OFFSET: {
+        ENABLE: true,
+
+        BASE_OFFSET: -0.12,   // nâng lên head
+        DISTANCE_BOOST: -0.08 // xa → nâng cao hơn
+    },
+
+    // ===== PRECISION =====
+    PRECISION: {
+        BASE: 1.0,
+        FAR_BOOST: 1.5,       // xa cần chính xác cao hơn
+
+        MICRO_STEP: 0.0012,
+        LOCK_THRESHOLD: 0.0015
+    },
+
+    // ===== SNAP =====
+    SNAP: {
+        ENABLE: true,
+
+        FORCE_NEAR: 99.2,
+        FORCE_FAR: 99.0,
+
+        RADIUS: 0.05
+    },
+
+    // ===== ANTI OVERSHOOT =====
+    OVERSHOOT: {
+        ENABLE: true,
+
+        DAMP_NEAR: 0.0,
+        DAMP_FAR: 0.0,
+
+        STOP_ZONE: 0.02
+    }
+};
+ 
     const AimLockHeadEngine = (() => {
+let scale = 1.0;
+
+if (dist < DISTANCE.NEAR) {
+    scale = DISTANCE.SCALE_NEAR;
+}
+else if (dist < DISTANCE.MID) {
+    scale = DISTANCE.SCALE_MID;
+}
+else {
+    scale = DISTANCE.SCALE_FAR;
+}
+        let headOffset = HEAD_OFFSET.BASE_OFFSET;
+
+if (dist > DISTANCE.MID) {
+    headOffset += HEAD_OFFSET.DISTANCE_BOOST;
+}
+
+let targetY = target.head.y + headOffset;
+        let dx = target.head.x - state.crosshairX;
+let dy = targetY - state.crosshairY;
+
+dx *= scale;
+dy *= scale;
+        if (SNAP.ENABLE) {
+
+    let snapForce = (dist < DISTANCE.MID)
+        ? SNAP.FORCE_NEAR
+        : SNAP.FORCE_FAR;
+
+    if (Math.abs(dx) < SNAP.RADIUS && Math.abs(dy) < SNAP.RADIUS) {
+        dx *= snapForce;
+        dy *= snapForce;
+    }
+}
+        if (OVERSHOOT.ENABLE) {
+
+    let damp = (dist < DISTANCE.MID)
+        ? OVERSHOOT.DAMP_NEAR
+        : OVERSHOOT.DAMP_FAR;
+
+    dx *= damp;
+    dy *= damp;
+
+    if (Math.abs(dx) < OVERSHOOT.STOP_ZONE) dx = 0;
+    if (Math.abs(dy) < OVERSHOOT.STOP_ZONE) dy = 0;
+}
+        if (Math.abs(dx) < PRECISION.MICRO_STEP) {
+    dx *= 0.8;
+}
+
+if (Math.abs(dy) < PRECISION.MICRO_STEP) {
+    dy *= 0.8;
+}
+        if (Math.abs(dx) < PRECISION.LOCK_THRESHOLD &&
+    Math.abs(dy) < PRECISION.LOCK_THRESHOLD) {
+
+    dx = 0;
+    dy = 0;
+}
+        
 let headX = target.head.x + target.velocity.x * POSITION.PREDICT;
 let headY = target.head.y + target.velocity.y * POSITION.PREDICT;
         let dx = headX - state.crosshairX;
