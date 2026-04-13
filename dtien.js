@@ -11481,7 +11481,119 @@ const FIRE_HEAD_LOCK_CONFIG = {
         PRIORITY_Y: 1.4         // ưu tiên trục Y (đầu)
     }
 };
+const HEAD_LOCK_SYSTEM = {
+
+    ENABLE: true,
+
+    // ===== POSITION LOCK =====
+    POSITION: {
+        ENABLE: true,
+
+        LERP_SPEED: 1.35,        // tốc độ kéo vào head
+        SNAP_FORCE: 1.6,         // lực hút
+
+        HARD_LOCK_RADIUS: 0.02,  // vào là khóa cứng
+        SOFT_ZONE: 0.05,         // vùng hỗ trợ
+
+        PREDICT: 1.0             // dự đoán vị trí head
+    },
+
+    // ===== ROTATION LOCK =====
+    ROTATION: {
+        ENABLE: true,
+
+        ALIGN_SPEED: 1.25,       // tốc độ xoay theo head
+        MAX_ANGLE: 45,           // giới hạn góc
+
+        SMOOTH: 0.2,             // làm mượt rotation
+        PRIORITY_YAW: 1.2,       // ưu tiên ngang
+        PRIORITY_PITCH: 1.4      // ưu tiên lên đầu
+    },
+
+    // ===== HOLD LOCK =====
+    HOLD: {
+        ENABLE: true,
+
+        STICK_FORCE: 1.5,        // độ dính cực mạnh
+        LOCK_DECAY: 0.9,         // giảm nhẹ theo frame
+
+        BREAK_DISTANCE: 0.08,    // xa quá thì nhả
+        HARD_HOLD: true          // giữ tuyệt đối khi đã lock
+    },
+
+    // ===== ANTI DRIFT =====
+    ANTI_DRIFT: {
+        ENABLE: true,
+
+        POSITION_DAMP: 0.85,     // chống trôi vị trí
+        ROTATION_DAMP: 0.8,      // chống rung góc
+
+        MICRO_FREEZE: 0.0015     // sai số nhỏ thì freeze
+    },
+
+    // ===== HEAD PRIORITY =====
+    PRIORITY: {
+        FORCE_HEAD: true,
+
+        Y_WEIGHT: 1.5,           // ưu tiên trục đầu
+        LOCK_BIAS: 1.3           // bias vào head thay vì body
+    }
+};
     const AimLockHeadEngine = (() => {
+let headX = target.head.x + target.velocity.x * POSITION.PREDICT;
+let headY = target.head.y + target.velocity.y * POSITION.PREDICT;
+        let dx = headX - state.crosshairX;
+let dy = headY - state.crosshairY;
+
+let dist = Math.sqrt(dx*dx + dy*dy);
+
+// vùng soft → hút vào
+if (dist < POSITION.SOFT_ZONE) {
+    dx *= POSITION.SNAP_FORCE;
+    dy *= POSITION.SNAP_FORCE;
+}
+
+// lerp vào head
+state.crosshairX += dx * POSITION.LERP_SPEED;
+state.crosshairY += dy * POSITION.LERP_SPEED;
+
+if (dist < POSITION.HARD_LOCK_RADIUS) {
+
+    state.crosshairX = headX;
+    state.crosshairY = headY;
+}
+        let targetYaw   = Math.atan2(dx, 1);
+let targetPitch = Math.atan2(dy, 1);
+
+// scale ưu tiên
+targetYaw   *= ROTATION.PRIORITY_YAW;
+targetPitch *= ROTATION.PRIORITY_PITCH;
+
+// smooth
+state.cameraYaw += (targetYaw - state.cameraYaw) * ROTATION.ALIGN_SPEED;
+state.cameraPitch += (targetPitch - state.cameraPitch) * ROTATION.ALIGN_SPEED;
+
+        if (HOLD.ENABLE && dist < HOLD.BREAK_DISTANCE) {
+
+    dx *= HOLD.STICK_FORCE;
+    dy *= HOLD.STICK_FORCE;
+
+    if (HOLD.HARD_HOLD) {
+        state.crosshairX += dx;
+        state.crosshairY += dy;
+    }
+}
+        dx *= ANTI_DRIFT.POSITION_DAMP;
+dy *= ANTI_DRIFT.POSITION_DAMP;
+
+if (Math.abs(dx) < ANTI_DRIFT.MICRO_FREEZE) dx = 0;
+if (Math.abs(dy) < ANTI_DRIFT.MICRO_FREEZE) dy = 0;
+
+        dy *= PRIORITY.Y_WEIGHT;
+
+
+
+        
 let dist = Math.sqrt(dx*dx + dy*dy);
 
 let precision = PRECISION.BASE;
