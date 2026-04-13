@@ -11379,7 +11379,7 @@ const FIRE_HEAD_LOCK_CONFIG = {
         DYNAMIC: true,          // tăng theo tốc độ kéo
         SPEED_SCALE: 1.2,       // scale theo lực tay
 
-        LOW_INPUT_BOOST: 1.6,   // kéo nhẹ vẫn bay nhanh
+        LOW_INPUT_BOOST: 3.6,   // kéo nhẹ vẫn bay nhanh
         HIGH_INPUT_DAMP: 0.85   // kéo mạnh thì giảm rung
     },
 
@@ -11387,10 +11387,10 @@ const FIRE_HEAD_LOCK_CONFIG = {
     DRAG: {
         ENABLE: true,
 
-        BASE_DRAG: 0.4,         // lực cản thấp (rất nhẹ)
+        BASE_DRAG: 0.0,         // lực cản thấp (rất nhẹ)
         ADAPTIVE: true,
 
-        HEAD_REDUCTION: 0.2,    // vào head giảm drag cực mạnh
+        HEAD_REDUCTION: 0.0,    // vào head giảm drag cực mạnh
         MOVE_REDUCTION: 0.3     // khi kéo thì giảm drag
     },
 
@@ -11398,8 +11398,8 @@ const FIRE_HEAD_LOCK_CONFIG = {
     UPWARD_ASSIST: {
         ENABLE: true,
 
-        BOOST: 1.8,             // lực kéo lên
-        PRIORITY: 1.5,          // ưu tiên hướng lên
+        BOOST: 3.8,             // lực kéo lên
+        PRIORITY: 2.5,          // ưu tiên hướng lên
 
         IGNORE_DOWN: true,      // bỏ lực kéo xuống
         SNAP_UP: true           // kéo là bật lên ngay
@@ -11444,7 +11444,7 @@ const FIRE_HEAD_LOCK_CONFIG = {
     OVERSHOOT: {
         ENABLE: true,
 
-        DAMPING: 0.7,           // giảm lực khi gần mục tiêu
+        DAMPING: 0.0,           // giảm lực khi gần mục tiêu
         HARD_CLAMP: true,       // không cho vượt head
 
         SLOW_ZONE: 0.035,       // vùng giảm tốc
