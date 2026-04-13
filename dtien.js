@@ -11101,7 +11101,37 @@ const HEAD_LOCK_CONFIG = {
         MAX_DRIFT: 0.0001
     }
 };
+const HEAD_MOVING_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== PHÁT HIỆN DI CHUYỂN =====
+    DETECT: {
+        MIN_VELOCITY: 0.002,   // ngưỡng coi là đang chạy
+        HORIZONTAL_WEIGHT: 1.8 // ưu tiên ngang
+    },
+
+    // ===== PREDICT =====
+    PREDICT: {
+        LEAD_BASE: 0.12,
+        LEAD_MAX: 0.25,
+        ADAPTIVE: true
+    },
+
+    // ===== TRACK =====
+    TRACK: {
+        FOLLOW_STRENGTH: 2.5,  // lực bám theo
+        SNAP_CORRECTION: 0.6   // sửa sai nhanh
+    },
+
+    // ===== HEAD PRIORITY =====
+    PRIORITY: {
+        LOCK_HEAD_ONLY: true,
+        IGNORE_BODY: true
+    }
+};
  const AimLockHeadEngine = (() => {
+  
 
     let lastTarget = null;
     let lastTime = Date.now();
@@ -11112,7 +11142,60 @@ const HEAD_LOCK_CONFIG = {
         lastTime = now;
         return dt;
     }
+function headMovingLock(state, target) {
 
+    if (!HEAD_MOVING_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+    const prev = target.prevHead || head;
+
+    // ===== 1. TÍNH VẬN TỐC =====
+    let vx = head.x - prev.x;
+    let vy = head.y - prev.y;
+
+    const speed = Math.hypot(vx, vy);
+
+    // ===== 2. PHÁT HIỆN DI CHUYỂN NGANG =====
+    const isMoving = speed > HEAD_MOVING_CONFIG.DETECT.MIN_VELOCITY;
+
+    // ===== 3. DỰ ĐOÁN =====
+    let predictX = head.x;
+    let predictY = head.y;
+
+    if (isMoving) {
+
+        // ưu tiên ngang (anti hụt)
+        vx *= HEAD_MOVING_CONFIG.DETECT.HORIZONTAL_WEIGHT;
+
+        let lead = HEAD_MOVING_CONFIG.PREDICT.LEAD_BASE;
+
+        if (HEAD_MOVING_CONFIG.PREDICT.ADAPTIVE) {
+            lead = Math.min(
+                HEAD_MOVING_CONFIG.PREDICT.LEAD_MAX,
+                speed * 3.0
+            );
+        }
+
+        predictX += vx * lead;
+        predictY += vy * lead;
+    }
+
+    // ===== 4. KÉO TÂM =====
+    let dx = predictX - crosshair.x;
+    let dy = predictY - crosshair.y;
+
+    // ===== 5. BÁM THEO MẠNH =====
+    crosshair.x += dx * HEAD_MOVING_CONFIG.TRACK.FOLLOW_STRENGTH;
+    crosshair.y += dy * HEAD_MOVING_CONFIG.TRACK.FOLLOW_STRENGTH;
+
+    // ===== 6. SỬA SAI (ANTI LỆCH) =====
+    const errorX = head.x - crosshair.x;
+    const errorY = head.y - crosshair.y;
+
+    crosshair.x += errorX * HEAD_MOVING_CONFIG.TRACK.SNAP_CORRECTION;
+    crosshair.y += errorY * HEAD_MOVING_CONFIG.TRACK.SNAP_CORRECTION;
+}
     function getTarget(enemies, crosshair) {
         let best = null;
         let minDist = Infinity;
@@ -11286,7 +11369,7 @@ function headMagnetLock(state, target) {
     try {
         AimLockEngine.aim(state);
   headMagnetLock(state, target);
-  
+  headMovingLock(state, target);
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
