@@ -11183,6 +11183,29 @@ const HEAD_PULL_FIX_CONFIG = {
         FORCE: 2.5
     }
 };
+const HEAD_HOLD_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== VÙNG HEAD =====
+    HEAD_ZONE: {
+        LOCK_RADIUS: 0.025,     // vào head là lock
+        RELEASE_RADIUS: 0.06    // ra xa mới nhả
+    },
+
+    // ===== GIỮ TÂM =====
+    HOLD: {
+        STRENGTH: 1.0,
+        ANTI_DROP_Y: true,
+        MAX_DOWN_FORCE: 0       // cấm kéo xuống
+    },
+
+    // ===== FILTER =====
+    FILTER: {
+        BLOCK_NEGATIVE_Y: true, // chặn lực kéo xuống
+        ALLOW_MICRO_ADJUST: 0.002
+    }
+};
  const AimLockHeadEngine = (() => {
   
 
@@ -11230,6 +11253,50 @@ function forceHeadPullUp(state, target) {
         // ===== 5. APPLY TRỰC TIẾP (BỎ SMOOTH) =====
         crosshair.x += dx;
         crosshair.y += dy;
+    }
+}
+let headLocked = false;
+
+function preventDropFromHead(state, target) {
+
+    if (!HEAD_HOLD_CONFIG.ENABLE || !target) return;
+
+    const crosshair = state.crosshair;
+    const head = target.head;
+
+    let dx = head.x - crosshair.x;
+    let dy = head.y - crosshair.y;
+
+    const dist = Math.hypot(dx, dy);
+
+    // ===== 1. KÍCH HOẠT LOCK =====
+    if (dist < HEAD_HOLD_CONFIG.HEAD_ZONE.LOCK_RADIUS) {
+        headLocked = true;
+    }
+
+    // ===== 2. NHẢ LOCK =====
+    if (dist > HEAD_HOLD_CONFIG.HEAD_ZONE.RELEASE_RADIUS) {
+        headLocked = false;
+    }
+
+    if (!headLocked) return;
+
+    // ===== 3. CHẶN LỰC KÉO XUỐNG =====
+    if (HEAD_HOLD_CONFIG.FILTER.BLOCK_NEGATIVE_Y) {
+        if (dy > 0) dy = 0; // không cho kéo xuống thân
+    }
+
+    // ===== 4. GIỮ TÂM TRÊN ĐẦU =====
+    crosshair.x += dx * HEAD_HOLD_CONFIG.HOLD.STRENGTH;
+    crosshair.y += dy * HEAD_HOLD_CONFIG.HOLD.STRENGTH;
+
+    // ===== 5. MICRO ADJUST =====
+    if (Math.abs(dx) < HEAD_HOLD_CONFIG.FILTER.ALLOW_MICRO_ADJUST) {
+        crosshair.x = head.x;
+    }
+
+    if (Math.abs(dy) < HEAD_HOLD_CONFIG.FILTER.ALLOW_MICRO_ADJUST) {
+        crosshair.y = head.y;
     }
 }
   function headMovingLock(state, target) {
@@ -11509,10 +11576,11 @@ function headMagnetLock(state, target) {
     try {
         AimLockEngine.aim(state);
   
-forceHeadPullUp(state, target);   // FIX KHÔNG LÊN ĐẦU
-microDragHeadBoost(state, target);
-headMovingLock(state, target);
-headMagnetLock(state, target);
+forceHeadPullUp(state, target);     // kéo lên đầu
+microDragHeadBoost(state, target);  // tăng tốc kéo
+headMovingLock(state, target);      // tracking
+preventDropFromHead(state, target); // 🚫 chặn tụt
+headMagnetLock(state, target);      // ghim cứng
     } catch (e) {}
 
     setTimeout(() => gameLoop(state), 8);
