@@ -11642,14 +11642,14 @@ const HEAD_LOCK_SYSTEM = {
         TARGET_HZ: 120,        // giả lập 120Hz
         BASE_HZ: 60,
 
-        INTERPOLATION: 0.5,    // nội suy giữa frame
+        INTERPOLATION: 0.0,    // nội suy giữa frame
         FRAME_BOOST: 2.0       // tăng số lần update
     },
 
     // ===== TĂNG ĐỘ NHẠY =====
     SENS: {
-        BASE: 1.2,
-        BOOST: 1.6,
+        BASE: 5.2,
+        BOOST: 5.6,
 
         INSTANT_RESPONSE: true,
         NO_DELAY: true
@@ -11660,7 +11660,7 @@ const HEAD_LOCK_SYSTEM = {
         ENABLE: true,
 
         RESPONSE_GAIN: 1.5,    // tăng phản hồi chạm
-        ACCELERATION: 3.3,     // tăng tốc vuốt
+        ACCELERATION: 10.3,     // tăng tốc vuốt
 
         MIN_INPUT: 0.001,      // chạm nhẹ vẫn nhận
         DEADZONE_REMOVE: true
@@ -11671,7 +11671,7 @@ const HEAD_LOCK_SYSTEM = {
         ENABLE: true,
 
         INPUT_DELAY: 0,        // loại bỏ delay
-        SMOOTH_DELAY: 0.05,    // giảm smoothing delay
+        SMOOTH_DELAY: 0.0,    // giảm smoothing delay
 
         FAST_PATH: true
     },
@@ -11680,7 +11680,7 @@ const HEAD_LOCK_SYSTEM = {
     MICRO: {
         ENABLE: true,
 
-        SMALL_INPUT_BOOST: 2.8,  // kéo nhẹ vẫn mạnh
+        SMALL_INPUT_BOOST: 4.8,  // kéo nhẹ vẫn mạnh
         MICRO_SMOOTH: 0.9
     }
 };
