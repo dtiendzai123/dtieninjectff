@@ -13242,16 +13242,16 @@ function predictHead(entity, deltaTime) {
 function getAimOffset(distance) {
 
     if (distance < 5) {
-        return 0.015; // gần → kéo nhẹ
+        return 1.0; // gần → kéo nhẹ
     }
     if (distance < 15) {
-        return 0.035;
+        return 0.9;
     }
     if (distance < 30) {
         return 0.06;
     }
 
-    return 0.08; // xa → kéo mạnh
+    return 0.001; // xa → kéo mạnh
 }
     // ===== MAIN AIM LOCK =====
 function aimLock(entity, crosshair, deltaTime) {
@@ -13308,7 +13308,7 @@ function dragToHead(crosshair, entity, deltaTime) {
     const head  = entity.bones?.head  || estimateBone(entity).head;
 
     // kéo từ chest lên head
-    const t = 0.15; // tốc độ kéo
+    const t = 1.0; // tốc độ kéo
 
     crosshair.y += (head.y - chest.y) * t;
 }
