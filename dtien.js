@@ -11729,7 +11729,7 @@ let deltaY = inputY;
 let interpX = prevX + (deltaX - prevX) * REFRESH.INTERPOLATION;
 let interpY = prevY + (deltaY - prevY) * REFRESH.INTERPOLATION;
         let dist = getDistance(state.playerPos, target.position);
-        let sens, drag, force, smooth;
+     
 
 if (dist < DISTANCE.NEAR) {
     sens = SENS.NEAR_BOOST;
@@ -12006,9 +12006,7 @@ if (RECOIL.ANTI_OVER_PULL) {
         aimY = targetHeadY;
     }
 }
-        let deltaX = targetX - crosshairX;
-let deltaY = targetY - crosshairY;
-
+        
 // deadzone
 if (Math.abs(deltaX) < CROSSHAIR.DEADZONE) deltaX = 0;
 if (Math.abs(deltaY) < CROSSHAIR.DEADZONE) deltaY = 0;
