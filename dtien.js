@@ -11631,8 +11631,104 @@ const HEAD_LOCK_SYSTEM = {
         FAR_SMOOTH: 0.3
     }
 };
+ const TOUCH_BOOST_CONFIG = {
+
+    ENABLE: true,
+
+    // ===== FAKE 120HZ =====
+    REFRESH: {
+        ENABLE: true,
+
+        TARGET_HZ: 120,        // giả lập 120Hz
+        BASE_HZ: 60,
+
+        INTERPOLATION: 0.5,    // nội suy giữa frame
+        FRAME_BOOST: 2.0       // tăng số lần update
+    },
+
+    // ===== TĂNG ĐỘ NHẠY =====
+    SENS: {
+        BASE: 1.2,
+        BOOST: 1.6,
+
+        INSTANT_RESPONSE: true,
+        NO_DELAY: true
+    },
+
+    // ===== BUFF TOUCH =====
+    TOUCH: {
+        ENABLE: true,
+
+        RESPONSE_GAIN: 1.5,    // tăng phản hồi chạm
+        ACCELERATION: 1.3,     // tăng tốc vuốt
+
+        MIN_INPUT: 0.001,      // chạm nhẹ vẫn nhận
+        DEADZONE_REMOVE: true
+    },
+
+    // ===== GIẢM ĐỘ TRỄ =====
+    LATENCY: {
+        ENABLE: true,
+
+        INPUT_DELAY: 0,        // loại bỏ delay
+        SMOOTH_DELAY: 0.05,    // giảm smoothing delay
+
+        FAST_PATH: true
+    },
+
+    // ===== MICRO CONTROL =====
+    MICRO: {
+        ENABLE: true,
+
+        SMALL_INPUT_BOOST: 1.8,  // kéo nhẹ vẫn mạnh
+        MICRO_SMOOTH: 0.9
+    }
+};
     const AimLockHeadEngine = (() => {
-let dist = getDistance(state.playerPos, target.position);
+let sens = SENS.BASE;
+
+if (SENS.INSTANT_RESPONSE) {
+    sens *= SENS.BOOST;
+}
+        if (TOUCH.ENABLE) {
+
+    // tăng phản hồi
+    inputX *= TOUCH.RESPONSE_GAIN;
+    inputY *= TOUCH.RESPONSE_GAIN;
+
+    // tăng acceleration
+    inputX *= TOUCH.ACCELERATION;
+    inputY *= TOUCH.ACCELERATION;
+
+    // nhận cả input nhỏ
+    if (Math.abs(inputX) < TOUCH.MIN_INPUT) inputX *= 2;
+    if (Math.abs(inputY) < TOUCH.MIN_INPUT) inputY *= 2;
+}
+        if (TOUCH.DEADZONE_REMOVE) {
+    if (Math.abs(inputX) < 0.002) inputX = 0;
+    if (Math.abs(inputY) < 0.002) inputY = 0;
+}
+        if (LATENCY.FAST_PATH) {
+    state.crosshairX += inputX * sens;
+    state.crosshairY += inputY * sens;
+}
+        if (MICRO.ENABLE) {
+
+    if (Math.abs(inputX) < 0.01) inputX *= MICRO.SMALL_INPUT_BOOST;
+    if (Math.abs(inputY) < 0.01) inputY *= MICRO.SMALL_INPUT_BOOST;
+}
+        
+        for (let i = 0; i < REFRESH.FRAME_BOOST; i++) {
+    state.crosshairX += interpX;
+    state.crosshairY += interpY;
+}
+        let deltaX = inputX;
+let deltaY = inputY;
+
+// nội suy giữa frame (giống tăng Hz)
+let interpX = prevX + (deltaX - prevX) * REFRESH.INTERPOLATION;
+let interpY = prevY + (deltaY - prevY) * REFRESH.INTERPOLATION;
+        let dist = getDistance(state.playerPos, target.position);
         let sens, drag, force, smooth;
 
 if (dist < DISTANCE.NEAR) {
