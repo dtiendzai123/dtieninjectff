@@ -11660,7 +11660,7 @@ const HEAD_LOCK_SYSTEM = {
         ENABLE: true,
 
         RESPONSE_GAIN: 1.5,    // tăng phản hồi chạm
-        ACCELERATION: 1.3,     // tăng tốc vuốt
+        ACCELERATION: 3.3,     // tăng tốc vuốt
 
         MIN_INPUT: 0.001,      // chạm nhẹ vẫn nhận
         DEADZONE_REMOVE: true
@@ -11680,7 +11680,7 @@ const HEAD_LOCK_SYSTEM = {
     MICRO: {
         ENABLE: true,
 
-        SMALL_INPUT_BOOST: 1.8,  // kéo nhẹ vẫn mạnh
+        SMALL_INPUT_BOOST: 2.8,  // kéo nhẹ vẫn mạnh
         MICRO_SMOOTH: 0.9
     }
 };
