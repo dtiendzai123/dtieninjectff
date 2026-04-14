@@ -13185,6 +13185,146 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
+   // ===== HEIGHT SYSTEM (2m chuẩn hóa) =====
+const HeightSystem = {
+
+    MODEL_HEIGHT: 1.7,   // chiều cao Unity model
+    REAL_HEIGHT: 2.0,    // bạn đặt 2m
+
+    scale: 2.0 / 1.7,    // ≈ 1.176
+
+    // lấy chiều cao từ ground
+    getHeight(boneY, groundY) {
+        return (boneY - groundY) * this.scale;
+    },
+
+    // clamp vùng đầu
+    clampHead(y) {
+        if (y < 1.7) return 1.7;
+        if (y > 1.9) return 1.9;
+        return y;
+    }
+
+};
+ // ===== AUTO BONE DETECTOR =====
+const BoneHeightMap = {
+
+    HEAD: 1.8,
+    NECK: 1.6,
+    CHEST: 1.4,
+    SPINE: 1.2,
+    HIPS: 0.9
+
+};
+
+// fallback nếu không có bone thật
+function estimateBone(entity) {
+    const baseY = entity.position.y;
+
+    return {
+        head: baseY + 1.8 / HeightSystem.scale,
+        chest: baseY + 1.4 / HeightSystem.scale,
+        hips: baseY + 0.9 / HeightSystem.scale
+    };
+}
+  // ===== HEAD PREDICTION =====
+function predictHead(entity, deltaTime) {
+
+    const vel = entity.velocity || { x: 0, y: 0, z: 0 };
+
+    return {
+        x: entity.head.x + vel.x * deltaTime,
+        y: entity.head.y + vel.y * deltaTime,
+        z: entity.head.z + vel.z * deltaTime
+    };
+}
+    // ===== SMART OFFSET =====
+function getAimOffset(distance) {
+
+    if (distance < 5) {
+        return 0.015; // gần → kéo nhẹ
+    }
+    if (distance < 15) {
+        return 0.035;
+    }
+    if (distance < 30) {
+        return 0.06;
+    }
+
+    return 0.08; // xa → kéo mạnh
+}
+    // ===== MAIN AIM LOCK =====
+function aimLock(entity, crosshair, deltaTime) {
+
+    if (!entity || !crosshair) return;
+
+    // lấy head (ưu tiên bone thật)
+    let head = entity.bones?.head || estimateBone(entity).head;
+
+    // predict chuyển động
+    const predicted = predictHead({
+        head: head,
+        velocity: entity.velocity
+    }, deltaTime);
+
+    // khoảng cách
+    const dx = predicted.x - crosshair.x;
+    const dy = predicted.y - crosshair.y;
+    const dz = predicted.z - crosshair.z;
+
+    const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+    // offset kéo lên đầu
+    const offsetY = getAimOffset(distance);
+
+    let targetY = predicted.y + offsetY;
+
+    // clamp vào vùng đầu
+    targetY = HeightSystem.clampHead(
+        HeightSystem.getHeight(targetY, 0)
+    );
+
+    // chuyển lại về world
+    targetY /= HeightSystem.scale;
+
+    return {
+        x: predicted.x,
+        y: targetY,
+        z: predicted.z
+    };
+}
+    // ===== SNAP HEAD LOCK =====
+function snapToHead(crosshair, target, strength = 0.9) {
+
+    crosshair.x += (target.x - crosshair.x) * strength;
+    crosshair.y += (target.y - crosshair.y) * strength;
+    crosshair.z += (target.z - crosshair.z) * strength;
+
+}
+    // ===== DRAG SYSTEM =====
+function dragToHead(crosshair, entity, deltaTime) {
+
+    const chest = entity.bones?.chest || estimateBone(entity).chest;
+    const head  = entity.bones?.head  || estimateBone(entity).head;
+
+    // kéo từ chest lên head
+    const t = 0.15; // tốc độ kéo
+
+    crosshair.y += (head.y - chest.y) * t;
+}
+    function update(entity, crosshair, deltaTime) {
+
+    const target = aimLock(entity, crosshair, deltaTime);
+
+    if (!target) return;
+
+    dragToHead(crosshair, entity, deltaTime);
+    snapToHead(crosshair, target, 0.85);
+
+}
+    
+
+    
     const AimLockHeadEngine = (() => {
 if (dist < SNAP.ACTIVATION_RADIUS) {
 
