@@ -11684,8 +11684,106 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_SMOOTH: 0.9
     }
 };
+    const ULTRA_SNAP_HEAD = {
+
+    ENABLE: true,
+
+    // ===== SNAP =====
+    SNAP: {
+        ENABLE: true,
+
+        FORCE: 999.2,              // lực snap cực mạnh
+        SPEED: 9999.6,              // tốc độ snap
+
+        ACTIVATION_RADIUS: 0.06, // vào vùng là snap
+        HARD_RADIUS: 0.025       // vào đây = khóa cứng
+    },
+
+    // ===== HARD LOCK =====
+    HARD_LOCK: {
+        ENABLE: true,
+
+        STICK_FORCE: 999.8,        // độ dính cực cao
+        LOCK_TIME: 999,          // giữ vô hạn
+
+        BREAK_DISTANCE: 0.0    // quá xa mới nhả
+    },
+
+    // ===== ANTI DROP =====
+    ANTI_DROP: {
+        ENABLE: true,
+
+        BLOCK_DOWN: true,        // cấm tụt xuống
+        Y_PRIORITY: 999.6,         // ưu tiên kéo lên head
+
+        HOLD_Y: true             // giữ trục Y
+    },
+
+    // ===== TRACKING =====
+    TRACK: {
+        ENABLE: true,
+
+        PREDICT: 9999.1,
+        FOLLOW_SPEED: 999.4,
+
+        VELOCITY_BOOST: 1.2
+    },
+
+    // ===== ANTI SHAKE =====
+    STABLE: {
+        ENABLE: true,
+
+        DAMP: 0.0,
+        MICRO_FREEZE: 0.0012
+    }
+};
     const AimLockHeadEngine = (() => {
-let sens = SENS.BASE;
+if (dist < SNAP.ACTIVATION_RADIUS) {
+
+    dx *= SNAP.FORCE;
+    dy *= SNAP.FORCE;
+
+    dx *= SNAP.SPEED;
+    dy *= SNAP.SPEED;
+}
+
+if (dist < SNAP.HARD_RADIUS) {
+
+    state.crosshairX = headX;
+    state.crosshairY = headY;
+
+    state.isLocked = true;
+}
+        if (state.isLocked && dist < HARD_LOCK.BREAK_DISTANCE) {
+
+    dx *= HARD_LOCK.STICK_FORCE;
+    dy *= HARD_LOCK.STICK_FORCE;
+
+    state.crosshairX += dx;
+    state.crosshairY += dy;
+}
+        if (ANTI_DROP.BLOCK_DOWN && dy > 0) {
+    dy = 0;
+}
+
+dy *= ANTI_DROP.Y_PRIORITY;
+        dx += target.velocity.x * TRACK.VELOCITY_BOOST;
+dy += target.velocity.y * TRACK.VELOCITY_BOOST;
+        dx *= STABLE.DAMP;
+dy *= STABLE.DAMP;
+
+if (Math.abs(dx) < STABLE.MICRO_FREEZE) dx = 0;
+if (Math.abs(dy) < STABLE.MICRO_FREEZE) dy = 0;
+
+state.crosshairX += dx;
+state.crosshairY += dy;
+        
+
+        
+
+
+
+        let sens = SENS.BASE;
 
 if (SENS.INSTANT_RESPONSE) {
     sens *= SENS.BOOST;
