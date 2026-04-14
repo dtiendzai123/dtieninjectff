@@ -11601,7 +11601,7 @@ const HEAD_LOCK_SYSTEM = {
     DISTANCE: {
         NEAR: 0.2,
         MID: 0.5,
-        FAR: 1.0
+        FAR: 9999.0
     },
 
     // ===== SENS THEO KHOẢNG CÁCH =====
@@ -11620,9 +11620,9 @@ const HEAD_LOCK_SYSTEM = {
 
     // ===== FORCE (LỰC KÉO) =====
     FORCE: {
-        NEAR: 0.7,         // gần → giảm lực thô (tránh giật)
+        NEAR: 2.7,         // gần → giảm lực thô (tránh giật)
         MID: 1.0,
-        FAR: 1.3           // xa → cần lực mạnh để kéo tới
+        FAR: 0.1           // xa → cần lực mạnh để kéo tới
     },
 
     // ===== STABILIZE =====
@@ -11639,17 +11639,17 @@ const HEAD_LOCK_SYSTEM = {
     REFRESH: {
         ENABLE: true,
 
-        TARGET_HZ: 120,        // giả lập 120Hz
-        BASE_HZ: 60,
+        TARGET_HZ: 244,        // giả lập 120Hz
+        BASE_HZ: 120,
 
         INTERPOLATION: 0.0,    // nội suy giữa frame
-        FRAME_BOOST: 2.0       // tăng số lần update
+        FRAME_BOOST: "infinity"      // tăng số lần update
     },
 
     // ===== TĂNG ĐỘ NHẠY =====
     SENS: {
-        BASE: 5.2,
-        BOOST: 5.6,
+        BASE: 40.2,
+        BOOST: 60.6,
 
         INSTANT_RESPONSE: true,
         NO_DELAY: true
@@ -11659,7 +11659,7 @@ const HEAD_LOCK_SYSTEM = {
     TOUCH: {
         ENABLE: true,
 
-        RESPONSE_GAIN: 1.5,    // tăng phản hồi chạm
+        RESPONSE_GAIN: 0.001,    // tăng phản hồi chạm
         ACCELERATION: 10.3,     // tăng tốc vuốt
 
         MIN_INPUT: 0.001,      // chạm nhẹ vẫn nhận
