@@ -11659,7 +11659,7 @@ const HEAD_LOCK_SYSTEM = {
     TOUCH: {
         ENABLE: true,
 
-        RESPONSE_GAIN: 0.001,    // tăng phản hồi chạm
+        RESPONSE_GAIN: 8.0,    // tăng phản hồi chạm
         ACCELERATION: 10.3,     // tăng tốc vuốt
 
         MIN_INPUT: 0.001,      // chạm nhẹ vẫn nhận
