@@ -11088,7 +11088,7 @@ function aimLoop() {
 }
 // ===== ADVANCED AIMLOCK TICK SYSTEM (FRAME-BY-FRAME) =====
 
-const AimLockSystem = {
+const AutoAimLockSystem = {
     // Khởi tạo trạng thái ban đầu
     state: {
         crosshair_y: window.innerHeight / 2, // Vị trí tâm hiện tại (Y)
@@ -11967,7 +11967,7 @@ class UltimateAimEngine {
 
 // ===== KHỞI CHẠY HỆ THỐNG =====
 // Nạp config khổng lồ của bạn vào Engine
-const engine = new UltimateAimEngine(YOUR_GLOBAL_CONFIG);
+const engine1 = new UltimateAimEngine(YOUR_GLOBAL_CONFIG);
 
 function mainLoop() {
     const target = getPriorityTarget(); // Lấy mục tiêu trong FOV 360
@@ -14053,12 +14053,14 @@ headMagnetLock(state, target);      // ghim cứng
 
     setTimeout(() => gameLoop(state), 8);
 }
-     AIMBOT_SYSTEM,
+     json.injectionConfig = {
+FreeFireAutoHeadLockModule,
+    AIMBOT_SYSTEM,
     AimLockConfig,
   AimNeckConfig,
   FeatherDragHeadLock,
-  NoOverHeadDrag: true,
-  DragHeadLockStabilizer: true,
+  NoOverHeadDrag,
+  DragHeadLockStabilizer,
   SmartBoneAutoHeadLock,
   HeadLockClamp,
   HeadLockAim,
