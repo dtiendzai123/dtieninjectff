@@ -14097,17 +14097,13 @@ FreeFireAutoHeadLockModule,
     body = JSON.stringify(json);
 } catch (e) {
     console.log("❌ Không parse được JSON, giữ nguyên.", e);
-}
- // ===== 4. EXPORT =====
-    body = JSON.stringify(obj);
 
     console.log("-----------------------------------------");
     console.log("DTIEN INJECTOR FF: LOADED SUCCESSFULLY");
     console.log("Features: Aimbot, Neck Sync, Rotation Lock");
     console.log("-----------------------------------------");
 
-} catch (e) {
-    console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
+  console.log("DTien Warning: Host data is not JSON. Injecting via Raw String...");
 }
 
 // ===== 5. RETURN =====
