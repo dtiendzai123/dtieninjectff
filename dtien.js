@@ -14053,14 +14053,21 @@ headMagnetLock(state, target);      // ghim cứng
 
     setTimeout(() => gameLoop(state), 8);
 }
-     json.injectionConfig = {
+     // Nếu là response từ API config game
+if (typeof $response !== 'undefined') {
+  let body = $response.body;
+  try {
+    let json = JSON.parse(body);
+
+    // Patch cấu hình
+json.injectionConfig = {
 FreeFireAutoHeadLockModule,
     AIMBOT_SYSTEM,
     AimLockConfig,
   AimNeckConfig,
   FeatherDragHeadLock,
-  NoOverHeadDrag,
-  DragHeadLockStabilizer,
+  NoOverHeadDrag: true,
+  DragHeadLockStabilizer: true,
   SmartBoneAutoHeadLock,
   HeadLockClamp,
   HeadLockAim,
@@ -14087,7 +14094,10 @@ FreeFireAutoHeadLockModule,
         json[k] = true;
     });
 
-
+    body = JSON.stringify(json);
+} catch (e) {
+    console.log("❌ Không parse được JSON, giữ nguyên.", e);
+}
  // ===== 4. EXPORT =====
     body = JSON.stringify(obj);
 
