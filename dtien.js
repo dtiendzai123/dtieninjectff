@@ -13212,10 +13212,10 @@ function autoLiftToHead(crosshair, head) {
     if (dy > 0) {
 
         // kéo nhẹ nhưng liên tục
-        let liftForce = 0.04;
+        let liftForce = 1.0;
 
-        if (dy > 0.2) liftForce = 0.08;   // xa → kéo mạnh hơn
-        if (dy < 0.05) liftForce = 0.02;  // gần → cực nhẹ
+        if (dy > 0.2) liftForce = 1.0;   // xa → kéo mạnh hơn
+        if (dy < 0.05) liftForce = 2.0;  // gần → cực nhẹ
 
         crosshair.y += dy * liftForce;
     }
@@ -13282,7 +13282,7 @@ function updateRecoilFix(entity, crosshair, isFiring) {
 // ===== HEAD MAGNET FORCE =====
 function getHeadMagnetForce(dist) {
 
-    if (dist > 0.15) return 0; // xa → không hút
+    if (dist < 999.0) return 0; // xa → không hút
 
     // normalize (0 → 1)
     let t = 1 - (dist / 0.15);
