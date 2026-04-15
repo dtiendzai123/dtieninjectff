@@ -13185,7 +13185,158 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
-// ===== BUILD BONE TREE =====
+// ===== ERROR DETECTION =====
+function getAimError(crosshair, head) {
+
+    return {
+        dx: head.x - crosshair.x,
+        dy: head.y - crosshair.y
+    };
+}
+    // ===== RECOIL FIX =====
+function compensateRecoil(crosshair, recoil) {
+
+    if (!recoil) return;
+
+    // bù ngược recoil
+    crosshair.x -= recoil.x * 0.9;
+    crosshair.y -= recoil.y * 0.9;
+}
+    
+    // ===== AUTO HEAD LIFT =====
+function autoLiftToHead(crosshair, head) {
+
+    const dy = head.y - crosshair.y;
+
+    // nếu chưa tới đầu
+    if (dy > 0) {
+
+        // kéo nhẹ nhưng liên tục
+        let liftForce = 0.04;
+
+        if (dy > 0.2) liftForce = 0.08;   // xa → kéo mạnh hơn
+        if (dy < 0.05) liftForce = 0.02;  // gần → cực nhẹ
+
+        crosshair.y += dy * liftForce;
+    }
+}
+    // ===== HORIZONTAL FIX =====
+function fixHorizontalDrift(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+
+    // sửa lệch ngang
+    crosshair.x += dx * 0.3;
+}
+    
+    // ===== AIM STABILIZER =====
+function stabilizeAim(crosshair, head, isFiring) {
+
+    if (!isFiring) return;
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    // giữ tâm ổn định
+    crosshair.x += dx * 0.6;
+    crosshair.y += dy * 0.6;
+}
+    // ===== AUTO CORRECT =====
+function autoCorrect(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // nếu lệch nhiều → sửa nhanh
+    if (dist > 0.1) {
+        crosshair.x += dx * 0.4;
+        crosshair.y += dy * 0.4;
+    }
+}
+    // ===== FULL RECOIL FIX SYSTEM =====
+function updateRecoilFix(entity, crosshair, isFiring) {
+
+    if (!entity?.head) return;
+
+    const head = entity.head;
+
+    // 1. chống recoil
+    compensateRecoil(crosshair, entity.recoil);
+
+    // 2. fix lệch ngang
+    fixHorizontalDrift(crosshair, head);
+
+    // 3. kéo lên đầu nếu chưa tới
+    autoLiftToHead(crosshair, head);
+
+    // 4. auto correction nếu lệch nhiều
+    autoCorrect(crosshair, head);
+
+    // 5. giữ tâm khi bắn
+    stabilizeAim(crosshair, head, isFiring);
+}
+    
+    
+// ===== HEAD MAGNET FORCE =====
+function getHeadMagnetForce(dist) {
+
+    if (dist > 0.15) return 0; // xa → không hút
+
+    // normalize (0 → 1)
+    let t = 1 - (dist / 0.15);
+
+    // curve mượt (ease-in)
+    return 0.2 * (t * t * t);
+}
+    // ===== APPLY MAGNET =====
+function applyHeadMagnet(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    const force = getHeadMagnetForce(dist);
+
+    crosshair.x += dx * force;
+    crosshair.y += dy * force;
+}
+    // giảm lực nếu quá gần
+function antiShake(dist) {
+
+    if (dist < 0.01) return 0.2;
+    if (dist < 0.03) return 0.5;
+
+    return 1.0;
+}
+    function softHeadLock(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    const force = getHeadMagnetForce(dist);
+    const reduce = antiShake(dist);
+
+    crosshair.x += dx * force * reduce;
+    crosshair.y += dy * force * reduce;
+}
+    function updateMagnetAim(entity, crosshair) {
+
+    if (!entity?.head) return;
+
+    // aim cơ bản
+    crosshair.x += (entity.head.x - crosshair.x) * 0.2;
+    crosshair.y += (entity.head.y - crosshair.y) * 0.15;
+
+    // hút khi gần đầu
+    softHeadLock(crosshair, entity.head);
+}
+    
+    // ===== BUILD BONE TREE =====
 function buildSkeleton(umaBones) {
 
     const bones = {};
