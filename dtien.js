@@ -14753,7 +14753,78 @@ function headMagnetLock(state, target) {
     return { aim };
 
 })();
- function gameLoop(state) {
+function isActiveAim(entity, isFiring) {
+    return isFiring && entity?.head;
+}
+// ===== PER SHOT FIX =====
+function perShotHeadFix(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    // correction cực nhanh
+    crosshair.x += dx * 0.65;
+    crosshair.y += dy * 0.65;
+}
+    // ===== RECOIL LOCK =====
+function recoilLock(crosshair, head, recoil) {
+
+    if (!recoil) return;
+
+    // bù recoil trước
+    crosshair.x -= recoil.x * 1.0;
+    crosshair.y -= recoil.y * 1.0;
+
+    // kéo lại head ngay
+    crosshair.x += (head.x - crosshair.x) * 0.5;
+    crosshair.y += (head.y - crosshair.y) * 0.5;
+}
+    // ===== MICRO LOCK =====
+function microHeadLock(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 0.05) {
+        // cực gần → giữ chặt
+        crosshair.x += dx * 0.9;
+        crosshair.y += dy * 0.9;
+    }
+}
+    // ===== ANTI DROP =====
+function preventHeadDrop(crosshair, head) {
+
+    if (crosshair.y < head.y) {
+        // nếu tụt xuống → kéo lên ngay
+        crosshair.y += (head.y - crosshair.y) * 0.7;
+    }
+}
+    
+// ===== FULL PER-SHOT HEAD LOCK =====
+function updateHeadShotLock(entity, crosshair, isFiring) {
+
+    if (!isActiveAim(entity, isFiring)) return;
+
+    const head = entity.head;
+
+    // 1. chống recoil + kéo lại
+    recoilLock(crosshair, head, entity.recoil);
+
+    // 2. fix từng viên đạn
+    perShotHeadFix(crosshair, head);
+
+    // 3. giữ dính khi đã gần
+    microHeadLock(crosshair, head);
+
+    // 4. không cho tụt xuống
+    preventHeadDrop(crosshair, head);
+}
+
+
+    
+    function gameLoop(state) {
 
     try {
         AimLockEngine.aim(state);
