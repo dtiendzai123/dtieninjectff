@@ -14821,8 +14821,79 @@ function updateHeadShotLock(entity, crosshair, isFiring) {
     // 4. không cho tụt xuống
     preventHeadDrop(crosshair, head);
 }
+// ===== BONE REGION =====
+function getBoneRegion(crosshairY, entity) {
 
+    const head  = entity.head.y;
+    const chest = entity.chest?.y || (head - 0.4);
+    const hips  = entity.hips?.y  || (head - 0.9);
 
+    if (crosshairY < hips) return "LOW";
+    if (crosshairY < chest) return "SPINE";
+    if (crosshairY < head) return "CHEST";
+
+    return "HEAD";
+}
+    // ===== SKIP BODY AIM =====
+function skipBodyAim(crosshair, entity) {
+
+    const region = getBoneRegion(crosshair.y, entity);
+
+    // nếu đang ở hips hoặc spine → KHÔNG aim tại đó
+    if (region === "LOW" || region === "SPINE") {
+
+        // kéo thẳng lên head (không dừng)
+        crosshair.y += (entity.head.y - crosshair.y) * 0.6;
+
+        return true; // đã xử lý
+    }
+
+    return false;
+}
+    // ===== HEAD PRIORITY =====
+function forceHeadPriority(crosshair, entity) {
+
+    const dx = entity.head.x - crosshair.x;
+    const dy = entity.head.y - crosshair.y;
+
+    // luôn kéo về head (không quan tâm bone khác)
+    crosshair.x += dx * 0.35;
+    crosshair.y += dy * 0.4;
+}
+    // ===== DIRECT HEAD SNAP =====
+function directHeadSnap(crosshair, entity) {
+
+    const dx = entity.head.x - crosshair.x;
+    const dy = entity.head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // nếu còn xa → snap nhanh
+    if (dist > 0.2) {
+        crosshair.x += dx * 0.5;
+        crosshair.y += dy * 0.6;
+    }
+}
+    
+// ===== ABSOLUTE HEAD AIM SYSTEM =====
+function updateHeadPriorityAim(entity, crosshair) {
+
+    if (!entity?.head) return;
+
+    // 1. skip hips + spine
+    const skipped = skipBodyAim(crosshair, entity);
+
+    // 2. nếu không ở body → aim head bình thường
+    if (!skipped) {
+        forceHeadPriority(crosshair, entity);
+    }
+
+    // 3. chống dính chest
+    preventChestLock(crosshair, entity);
+
+    // 4. snap nhanh lên head
+    directHeadSnap(crosshair, entity);
+}
     
     function gameLoop(state) {
 
