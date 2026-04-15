@@ -13185,7 +13185,89 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
-// ===== LIGHT DRAG CHEST → HEAD =====
+// ===== ANTI STRAFE PREDICT =====
+function predictStrafeHead(entity, deltaTime) {
+
+    const vel = entity.velocity || { x: 0, y: 0 };
+
+    // phát hiện strafe ngang mạnh
+    const isStrafing = Math.abs(vel.x) > 0.01;
+
+    let predictFactor = 1.0;
+
+    if (isStrafing) {
+        predictFactor = 1.5; // tăng đón đầu
+    }
+
+    return {
+        x: entity.head.x + vel.x * deltaTime * predictFactor,
+        y: entity.head.y + vel.y * deltaTime
+    };
+}
+    let lastVelX = 0;
+
+function antiStrafeBoost(entity) {
+
+    const vx = entity.velocity?.x || 0;
+
+    // đổi hướng đột ngột
+    const flip = (vx * lastVelX < 0);
+
+    lastVelX = vx;
+
+    if (flip) {
+        return 2.0; // boost mạnh để bắt lại đầu
+    }
+
+    return 1.0;
+}
+    // ===== FIRE LOCK =====
+function fireHeadLock(crosshair, target, isFiring) {
+
+    if (!isFiring) return;
+
+    // khóa cực mạnh
+    crosshair.x += (target.x - crosshair.x) * 0.98;
+    crosshair.y += (target.y - crosshair.y) * 0.98;
+}
+    function hardHeadClamp(crosshair, head) {
+
+    const dx = Math.abs(head.x - crosshair.x);
+    const dy = Math.abs(head.y - crosshair.y);
+
+    if (dx < 0.01 && dy < 0.01) {
+        // giữ nguyên → không cho lệch
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+    // ===== FULL TRACK SYSTEM =====
+function updateUltraTrack(entity, crosshair, deltaTime, isFiring) {
+
+    if (!entity || !entity.head) return;
+
+    // predict strafe
+    let predicted = predictStrafeHead(entity, deltaTime);
+
+    // boost khi đổi hướng
+    const boost = antiStrafeBoost(entity);
+
+    predicted.x += (predicted.x - crosshair.x) * 0.1 * boost;
+
+    // ===== TRACK MƯỢT =====
+    crosshair.x += (predicted.x - crosshair.x) * 0.25;
+    crosshair.y += (predicted.y - crosshair.y) * 0.2;
+
+    // ===== DRAG NHẸ LÊN ĐẦU =====
+    crosshair.y += 0.01;
+
+    // ===== FIRE LOCK =====
+    fireHeadLock(crosshair, predicted, isFiring);
+
+    // ===== KHÓA CỨNG =====
+    hardHeadClamp(crosshair, predicted);
+}
+    // ===== LIGHT DRAG CHEST → HEAD =====
 function getDynamicDragForce(crosshairY, headY, chestY) {
 
     const range = headY - chestY;
