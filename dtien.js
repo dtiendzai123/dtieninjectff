@@ -13185,8 +13185,145 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
-   // ===== HEIGHT SYSTEM (2m chuẩn hóa) =====
-const HeightSystem = {
+  // ===== KALMAN FILTER 2D =====
+class Kalman2D {
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+
+        this.alpha = 0.85;   // mượt
+        this.beta  = 0.005;  // dự đoán
+    }
+
+    update(measureX, measureY) {
+
+        // predict
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // error
+        const ex = measureX - this.x;
+        const ey = measureY - this.y;
+
+        // update
+        this.x += this.alpha * ex;
+        this.y += this.alpha * ey;
+
+        this.vx += this.beta * ex;
+        this.vy += this.beta * ey;
+
+        return { x: this.x, y: this.y };
+    }
+}
+    // ===== HYPER INPUT BOOST =====
+function hyperSmooth(current, target, speed) {
+
+    // tăng tốc phản ứng gần mục tiêu
+    let factor = speed;
+
+    const dx = target.x - current.x;
+    const dy = target.y - current.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 0.02) factor *= 1.8;     // gần → cực nhanh
+    else if (dist < 0.1) factor *= 1.4;
+
+    return {
+        x: current.x + dx * factor,
+        y: current.y + dy * factor
+    };
+}
+// ===== FIRE LOCK =====
+function hardLock(crosshair, target, isFiring) {
+
+    if (!isFiring) return;
+
+    // khóa cực mạnh vào đầu
+    crosshair.x += (target.x - crosshair.x) * 0.95;
+    crosshair.y += (target.y - crosshair.y) * 0.95;
+}
+    // ===== CLAMP HEAD =====
+function clampHeadY(y) {
+
+    if (y < 1.72) return 1.72;
+    if (y > 1.88) return 1.88;
+
+    return y;
+}
+    // ===== FULL AIMBOT ENGINE =====
+const kalman = new Kalman2D();
+
+function updateProMax(enemies, crosshair, deltaTime, isFiring) {
+
+    const targetEnemy = getBestTarget(enemies, crosshair);
+
+    if (!targetEnemy) return;
+
+    // lấy head
+    let head = targetEnemy.bones?.head || targetEnemy.head;
+
+    // predict
+    const predicted = {
+        x: head.x + (targetEnemy.velocity?.x || 0) * deltaTime,
+        y: head.y + (targetEnemy.velocity?.y || 0) * deltaTime
+    };
+
+    // kalman smooth
+    const smooth = kalman.update(predicted.x, predicted.y);
+
+    // clamp đầu
+    smooth.y = clampHeadY(smooth.y);
+
+    // hyper response (120Hz fake)
+    const fast = hyperSmooth(crosshair, smooth, 0.35);
+
+    // apply
+    crosshair.x = fast.x;
+    crosshair.y = fast.y;
+
+    // drag nhẹ lên đầu
+    crosshair.y += 0.01;
+
+    // hard lock khi bắn
+    hardLock(crosshair, smooth, isFiring);
+}
+    
+    
+    
+    
+    
+// ===== TARGET SELECTOR =====
+function getBestTarget(enemies, crosshair, fov = 360.0) {
+
+    let best = null;
+    let minDist = Infinity;
+
+    for (let e of enemies) {
+
+        if (!e || !e.head) continue;
+
+        const dx = e.head.x - crosshair.x;
+        const dy = e.head.y - crosshair.y;
+
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < fov && dist < minDist) {
+            minDist = dist;
+            best = e;
+        }
+    }
+
+    return best;
+}
+    
+    
+    
+// ===== HEIGHT SYSTEM (2m chuẩn hóa) =====
+
+    const HeightSystem = {
 
     MODEL_HEIGHT: 1.7,   // chiều cao Unity model
     REAL_HEIGHT: 2.0,    // bạn đặt 2m
