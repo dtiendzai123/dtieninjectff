@@ -13185,7 +13185,68 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
-  // ===== KALMAN FILTER 2D =====
+// ===== LIGHT DRAG CHEST → HEAD =====
+function getDynamicDragForce(crosshairY, headY, chestY) {
+
+    const range = headY - chestY;
+    const offset = headY - crosshairY;
+
+    // chuẩn hóa 0 → 1
+    let t = offset / range;
+
+    // clamp
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+
+    // curve siêu mượt (ease-out)
+    const force = 0.02 + (0.12 * t * t);
+
+    return force;
+}
+    function lightDragToHead(crosshair, head, chest) {
+
+    const force = getDynamicDragForce(
+        crosshair.y,
+        head.y,
+        chest.y
+    );
+
+    crosshair.y += (head.y - crosshair.y) * force;
+}
+    // giảm lực nếu gần head
+function reduceNearHead(crosshairY, headY) {
+
+    const dist = Math.abs(headY - crosshairY);
+
+    if (dist < 0.02) return 0.3;   // cực nhẹ
+    if (dist < 0.05) return 0.6;
+
+    return 1.0;
+}
+    function ultraSmoothHeadDrag(crosshair, entity) {
+
+    const head  = entity.bones?.head;
+    const chest = entity.bones?.chest;
+
+    if (!head || !chest) return;
+
+    // drag chính
+    lightDragToHead(crosshair, head, chest);
+
+    // giảm lực gần head
+    const reduce = reduceNearHead(crosshair.y, head.y);
+
+    crosshair.y += (head.y - crosshair.y) * 0.05 * reduce;
+}
+function updateAim(crosshair, entity) {
+
+    // kéo nhẹ từ thân lên đầu
+    ultraSmoothHeadDrag(crosshair, entity);
+
+    // snap nhẹ vào head
+    crosshair.x += (entity.head.x - crosshair.x) * 0.2;
+}
+    // ===== KALMAN FILTER 2D =====
 class Kalman2D {
     constructor() {
         this.x = 0;
