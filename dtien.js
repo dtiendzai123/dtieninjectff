@@ -13185,7 +13185,164 @@ const HEAD_LOCK_SYSTEM = {
         MICRO_FREEZE: 0.0012
     }
 };
-// ===== ANTI STRAFE PREDICT =====
+// ===== BUILD BONE TREE =====
+function buildSkeleton(umaBones) {
+
+    const bones = {};
+
+    // map hash → bone
+    for (let b of umaBones) {
+        bones[b.hash] = {
+            name: b.name,
+            parent: b.parent,
+            localPos: b.position,
+            worldPos: { x: 0, y: 0, z: 0 }
+        };
+    }
+
+    // tính world position (đệ quy)
+    function computeWorld(hash) {
+
+        const bone = bones[hash];
+        if (!bone) return { x: 0, y: 0, z: 0 };
+
+        if (bone._computed) return bone.worldPos;
+
+        if (!bones[bone.parent]) {
+            bone.worldPos = { ...bone.localPos };
+        } else {
+            const parentPos = computeWorld(bone.parent);
+
+            bone.worldPos = {
+                x: parentPos.x + bone.localPos.x,
+                y: parentPos.y + bone.localPos.y,
+                z: parentPos.z + bone.localPos.z
+            };
+        }
+
+        bone._computed = true;
+        return bone.worldPos;
+    }
+
+    // chạy compute
+    for (let hash in bones) {
+        computeWorld(hash);
+    }
+
+    return bones;
+}
+// ===== BUILD WORLD BONE =====
+function getWorldBone(bones, boneName) {
+
+    let bone = bones[boneName];
+    if (!bone) return null;
+
+    let pos = { ...bone.position };
+    let parent = bone.parent;
+
+    // cộng dồn chain
+    while (parent && bones[parent]) {
+        const p = bones[parent];
+        pos.x += p.position.x;
+        pos.y += p.position.y;
+        pos.z += p.position.z;
+
+        parent = p.parent;
+    }
+
+    return pos;
+}
+    // ===== HEIGHT SCALE =====
+const HEIGHT_SCALE = 2.0 / 1.7;
+
+function toRealHeight(y, groundY) {
+    return (y - groundY) * HEIGHT_SCALE;
+}
+    // ===== EXTRACT BONES =====
+function extractKeyBones(bones) {
+
+    const head  = getWorldBone(bones, "bone_Head");
+    const spine = getWorldBone(bones, "bone_Spine1");
+    const hips  = getWorldBone(bones, "bone_Hips");
+
+    return {
+        head,
+        chest: spine,
+        hips
+    };
+}
+    // ===== HITBOX OFFSET =====
+function getHeadOffset(distance) {
+
+    if (distance < 5) return 0.1;
+    if (distance < 15) return 0.1;
+    if (distance < 9999) return 0.1;
+
+    return 0.08;
+}
+    // ===== AIM ASSIST CORE =====
+function aimAssist(entity, crosshair, deltaTime) {
+
+    if (!entity?.bones) return;
+
+    const { head, chest } = extractKeyBones(entity.bones);
+
+    if (!head) return;
+
+    // ===== PREDICT =====
+    const vel = entity.velocity || { x: 0, y: 0 };
+
+    const predicted = {
+        x: head.x + vel.x * deltaTime,
+        y: head.y + vel.y * deltaTime
+    };
+
+    // ===== DISTANCE =====
+    const dx = predicted.x - crosshair.x;
+    const dy = predicted.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // ===== OFFSET =====
+    const offset = getHeadOffset(dist);
+
+    let targetY = predicted.y + offset;
+
+    // ===== CLAMP HEAD =====
+    const realY = toRealHeight(targetY, 0);
+
+    if (realY < 1.7) targetY = 1.7 / HEIGHT_SCALE;
+    if (realY > 1.9) targetY = 1.9 / HEIGHT_SCALE;
+
+    // ===== SMOOTH AIM =====
+    crosshair.x += (predicted.x - crosshair.x) * 0.25;
+    crosshair.y += (targetY - crosshair.y) * 0.2;
+
+    // ===== LIGHT DRAG CHEST → HEAD =====
+    if (chest) {
+        crosshair.y += (head.y - chest.y) * 0.05;
+    }
+}
+    // ===== REAL HEAD LOCK =====
+function boneHeadLock(crosshair, entity, isFiring) {
+
+    if (!isFiring) return;
+
+    const head = getWorldBone(entity.bones, "bone_Head");
+    if (!head) return;
+
+    crosshair.x += (head.x - crosshair.x) * 0.95;
+    crosshair.y += (head.y - crosshair.y) * 0.95;
+}
+    function updateAimSystem(entity, crosshair, deltaTime, isFiring) {
+
+    aimAssist(entity, crosshair, deltaTime);
+    boneHeadLock(crosshair, entity, isFiring);
+
+}
+
+    
+    // ===== ANTI STRAFE PREDICT =====
 function predictStrafeHead(entity, deltaTime) {
 
     const vel = entity.velocity || { x: 0, y: 0 };
