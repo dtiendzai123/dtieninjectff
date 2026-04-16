@@ -15378,7 +15378,112 @@ if ($response) {
 
     $done({ body: JSON.stringify(body) });
 }
-    
+    // ===== STICKY HEAD SYSTEM =====
+
+// ===== STATE =====
+let HEAD_STATE = {
+    mode: "SCAN", // SCAN | MAGNET | STICK
+    boost: 1.0,
+    stability: 1.0
+};
+
+// ===== DETECT (giả lập kéo tâm lên) =====
+function detectAimBehavior() {
+    const pullUp = Math.random() > 0.5;
+    const nearHead = Math.random() > 0.7;
+
+    if (nearHead) {
+        HEAD_STATE.mode = "STICK";
+    } else if (pullUp) {
+        HEAD_STATE.mode = "MAGNET";
+    } else {
+        HEAD_STATE.mode = "SCAN";
+    }
+}
+
+// ===== APPLY STATE =====
+function updateHeadState() {
+
+    switch (HEAD_STATE.mode) {
+
+        case "SCAN":
+            HEAD_STATE.boost = 2.5;   // kéo nhanh lên
+            HEAD_STATE.stability = 0.6;
+            break;
+
+        case "MAGNET":
+            HEAD_STATE.boost = 3.5;   // hút mạnh
+            HEAD_STATE.stability = 0.8;
+            break;
+
+        case "STICK":
+            HEAD_STATE.boost = 0.6;   // giảm sens để giữ
+            HEAD_STATE.stability = 1.5; // giữ cực chặt
+            break;
+    }
+}
+
+// ===== CORE STICKY HEAD LOGIC =====
+function applyStickyHead(obj) {
+    for (let key in obj) {
+
+        if (typeof obj[key] === "object") {
+            applyStickyHead(obj[key]);
+            continue;
+        }
+
+        const k = key.toLowerCase();
+
+        // 🔥 sensitivity control
+        if (k.includes("sens")) {
+            obj[key] = 200 * HEAD_STATE.boost;
+        }
+
+        // 🔥 aim assist
+        if (k.includes("aim")) {
+            obj[key] = Math.min(1.0, 0.9 * HEAD_STATE.stability);
+        }
+
+        // 🔥 recoil = 0 (giữ head)
+        if (k.includes("recoil")) {
+            obj[key] = 0;
+        }
+
+        // 🔥 drag tracking
+        if (k.includes("drag")) {
+            obj[key] = 2.0 * HEAD_STATE.stability;
+        }
+
+        // 🔥 head lock priority
+        if (k.includes("head")) {
+            obj[key] = 1.0;
+        }
+    }
+}
+
+// ===== MAIN =====
+if ($response && $response.body) {
+
+    let body;
+
+    try {
+        body = JSON.parse($response.body);
+    } catch (e) {
+        $done({});
+    }
+
+    if (body) {
+
+        detectAimBehavior();   // phát hiện trạng thái
+        updateHeadState();     // cập nhật lực
+
+        applyStickyHead(body); // áp dụng
+
+        console.log("🎯 STICKY HEAD:", HEAD_STATE.mode);
+
+        $done({ body: JSON.stringify(body) });
+    }
+}
     // Nếu là response từ API config game
 if (typeof $response !== 'undefined') {
   let body = $response.body;
