@@ -15061,6 +15061,93 @@ function updateUpwardAim(entity, crosshair, prevCrosshair, deltaTime) {
     // giữ không vượt head
     clampHeadLock(crosshair, entity.head);
 }
+// ===== INPUT FORCE DETECTOR =====
+function getInputForce(crosshair, prevCrosshair) {
+
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    const speed = Math.sqrt(dx*dx + dy*dy);
+
+    // normalize lực kéo (0 → 1)
+    let force = speed * 50;
+
+    if (force > 1) force = 1;
+
+    return force;
+}
+function getUpwardForce(crosshair, prevCrosshair) {
+
+    const dy = crosshair.y - prevCrosshair.y;
+
+    if (dy <= 0) return 0;
+
+    return Math.min(dy * 80, 1);
+}
+    // ===== AI SNAP =====
+function adaptiveSnap(crosshair, head, inputForce) {
+
+    // scale tốc độ snap theo lực tay
+    let snapSpeed = 0.2 + (0.8 * inputForce);
+
+    crosshair.x += (head.x - crosshair.x) * snapSpeed;
+    crosshair.y += (head.y - crosshair.y) * snapSpeed;
+}
+    // ===== EXACT HEAD LOCK =====
+function exactHeadLock(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 9999.0) {
+        // dính tuyệt đối vào head
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+// ===== MICRO FIX =====
+function microCorrection(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 0.4;
+    crosshair.y += dy * 0.4;
+}
+// ===== ADAPTIVE AI HEAD SYSTEM =====
+function updateAIHeadSnap(entity, crosshair, prevCrosshair) {
+
+    if (!entity?.head) return;
+
+    // 1. đọc lực kéo tay
+    const inputForce = getInputForce(crosshair, prevCrosshair);
+
+    // 2. kiểm tra kéo lên
+    const upwardForce = getUpwardForce(crosshair, prevCrosshair);
+
+    if (upwardForce <= 0) return;
+
+    // combine lực
+    const finalForce = Math.max(inputForce, upwardForce);
+
+    // 3. snap theo lực
+    adaptiveSnap(crosshair, entity.head, finalForce);
+
+    // 4. fix lệch nhỏ
+    microCorrection(crosshair, entity.head);
+
+    // 5. khóa tuyệt đối khi gần
+    exactHeadLock(crosshair, entity.head);
+}
+    
+
+    
+
+
+    
+
 
 
     function gameLoop(state) {
