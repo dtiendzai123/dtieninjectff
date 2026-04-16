@@ -15204,8 +15204,73 @@ function updateDynamicAim(entity, crosshair, prevCrosshair) {
         stabilizeHead(crosshair, entity.head);
     }
 }
-    
+    // ===== GET REAL HEAD WORLD =====
+function getRealHeadWorld(bones) {
 
+    let bestHead = null;
+
+    for (let key in bones) {
+
+        const b = bones[key];
+
+        if (b.name !== "bone_Head") continue;
+
+        // chọn head có scale lớn nhất = head thật
+        const scale = b.scale?.x || 1;
+
+        if (!bestHead || scale > bestHead.scale) {
+            bestHead = {
+                bone: b,
+                scale: scale
+            };
+        }
+    }
+
+    if (!bestHead) return null;
+
+    // build world pos
+    let pos = { ...bestHead.bone.position };
+    let parent = bestHead.bone.parent;
+
+    while (parent && bones[parent]) {
+        const p = bones[parent];
+        pos.x += p.position.x;
+        pos.y += p.position.y;
+        pos.z += p.position.z;
+
+        parent = p.parent;
+    }
+
+    return pos;
+}
+    // ===== HEAD HITBOX OFFSET =====
+function getTrueHeadHitbox(headPos) {
+
+    return {
+        x: headPos.x,
+        y: headPos.y + 0.08, // đỉnh đầu thật
+        z: headPos.z
+    };
+}
+    const SCALE = 2.0 / 1.7;
+
+function toRealHead(head) {
+    return {
+        x: head.x,
+        y: head.y * SCALE,
+        z: head.z
+    };
+}
+// ===== FINAL REAL HEAD =====
+function getExactHead(bones) {
+
+    const rawHead = getRealHeadWorld(bones);
+    if (!rawHead) return null;
+
+    const hitbox = getTrueHeadHitbox(rawHead);
+
+    return toRealHead(hitbox);
+}
 
 
     function gameLoop(state) {
