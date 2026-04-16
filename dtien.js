@@ -14996,11 +14996,71 @@ function updateHeadOnlySystem(entity, crosshair, deltaTime) {
     // 5. hút vào head
     magnetHead3D(crosshair, head);
 }
+// ===== DETECT UPWARD INPUT =====
+function isPullingUp(crosshair, prevCrosshair) {
 
+    const dy = crosshair.y - prevCrosshair.y;
 
+    // kéo lên (tuỳ hệ toạ độ có thể đảo dấu)
+    return dy > 0.002;
+}
+    // ===== ULTRA SNAP =====
+function ultraSnapToHead(crosshair, head) {
+
+    // gần như instant (0.001s cảm giác)
+    crosshair.x = crosshair.x + (head.x - crosshair.x) * 0.95;
+    crosshair.y = crosshair.y + (head.y - crosshair.y) * 0.95;
+}
+// ===== FULL HEAD TRACK =====
+function trackHeadMovement(crosshair, entity, deltaTime) {
+
+    const vel = entity.velocity || { x: 0, y: 0 };
+
+    const predicted = {
+        x: entity.head.x + vel.x * deltaTime,
+        y: entity.head.y + vel.y * deltaTime
+    };
+
+    crosshair.x += (predicted.x - crosshair.x) * 0.6;
+    crosshair.y += (predicted.y - crosshair.y) * 0.6;
+}
+    // ===== UPWARD HEAD LOCK =====
+function upwardHeadLock(crosshair, prevCrosshair, entity, deltaTime) {
+
+    if (!entity?.head) return;
+
+    const pullingUp = isPullingUp(crosshair, prevCrosshair);
+
+    if (!pullingUp) return;
+
+    // 1. snap cực nhanh lên head
+    ultraSnapToHead(crosshair, entity.head);
+
+    // 2. giữ tracking liên tục
+    trackHeadMovement(crosshair, entity, deltaTime);
+}
     
+// ===== HEAD CLAMP =====
+function clampHeadLock(crosshair, head) {
 
+    const diff = crosshair.y - head.y;
 
+    if (diff > 0.02) {
+        // nếu vượt đầu → kéo xuống lại
+        crosshair.y -= diff * 0.7;
+    }
+}
+// ===== FULL UPWARD AIM SYSTEM =====
+function updateUpwardAim(entity, crosshair, prevCrosshair, deltaTime) {
+
+    if (!entity) return;
+
+    // kích hoạt khi kéo lên
+    upwardHeadLock(crosshair, prevCrosshair, entity, deltaTime);
+
+    // giữ không vượt head
+    clampHeadLock(crosshair, entity.head);
+}
 
 
     function gameLoop(state) {
