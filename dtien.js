@@ -14894,7 +14894,115 @@ function updateHeadPriorityAim(entity, crosshair) {
     // 4. snap nhanh lên head
     directHeadSnap(crosshair, entity);
 }
+
+// ===== HEAD 3D DETECTION =====
+function detectHead3D(entity) {
+
+    const pos = entity.position;
+
+    const height = entity.height || 1.7;
+
+    return {
+        x: pos.x,
+        y: pos.y + height * 0.9, // đầu nằm ~90%
+        z: pos.z
+    };
+}
+
+// ===== HEAD HITBOX =====
+function getHeadHitbox(headPos) {
+
+    const radius = 1.0; // bán kính đầu
+
+    return {
+        center: headPos,
+        radius: radius
+    };
+}
+// ===== IGNORE BODY =====
+function isValidTarget(crosshair, headHitbox) {
+
+    const dx = crosshair.x - headHitbox.center.x;
+    const dy = crosshair.y - headHitbox.center.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // chỉ tính nếu gần head
+    return dist < 0.5;
+}
     
+    // ===== ADVANCED PREDICT =====
+function predictMovement(entity, deltaTime) {
+
+    const vel = entity.velocity || { x: 0, y: 0, z: 0 };
+
+    const gravity = -9.8;
+
+    return {
+        x: entity.position.x + vel.x * deltaTime,
+        y: entity.position.y + vel.y * deltaTime + 0.5 * gravity * deltaTime * deltaTime,
+        z: entity.position.z + vel.z * deltaTime
+    };
+}
+    function predictHead3D(entity, deltaTime) {
+
+    const futurePos = predictMovement(entity, deltaTime);
+
+    return {
+        x: futurePos.x,
+        y: futurePos.y + (entity.height || 1.7) * 0.9,
+        z: futurePos.z
+    };
+}
+    // ===== HARD TRACK =====
+function hardTrackHead(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.6;
+    crosshair.y += (head.y - crosshair.y) * 0.6;
+}
+
+    // ===== 3D HEAD MAGNET =====
+function magnetHead3D(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 0.3) {
+        const force = 0.4 * (1 - dist);
+
+        crosshair.x += dx * force;
+        crosshair.y += dy * force;
+    }
+}
+    // ===== HEAD ONLY AIM SYSTEM =====
+function updateHeadOnlySystem(entity, crosshair, deltaTime) {
+
+    if (!entity) return;
+
+    // 1. detect head
+    const head = predictHead3D(entity, deltaTime);
+
+    // 2. tạo hitbox
+    const hitbox = getHeadHitbox(head);
+
+    // 3. ignore body
+    if (!isValidTarget(crosshair, hitbox)) return;
+
+    // 4. tracking
+    hardTrackHead(crosshair, head);
+
+    // 5. hút vào head
+    magnetHead3D(crosshair, head);
+}
+
+
+    
+
+
+
+
     function gameLoop(state) {
 
     try {
