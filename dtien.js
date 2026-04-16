@@ -15141,11 +15141,69 @@ function updateAIHeadSnap(entity, crosshair, prevCrosshair) {
     // 5. khóa tuyệt đối khi gần
     exactHeadLock(crosshair, entity.head);
 }
+    // ===== UPWARD DETECTION =====
+function isPullingUp(crosshair, prevCrosshair) {
+
+    const dy = crosshair.y - prevCrosshair.y;
+
+    return dy > 0.002;
+}
+// ===== HEAD CONTACT =====
+function isOnHead(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    return dist < 1.0; // vùng head chính xác
+}
     
+// ===== SENSITIVITY BOOST =====
+function applyHighSensitivity(crosshair, head) {
 
-    
+    // tăng tốc cực mạnh
+    crosshair.x += (head.x - crosshair.x) * 0.9;
+    crosshair.y += (head.y - crosshair.y) * 0.9;
+}
+    // ===== HOLD HEAD LOCK =====
+function holdHeadLock(crosshair, head) {
 
+    // tắt nhạy → giữ cố định
+    crosshair.x = head.x;
+    crosshair.y = head.y;
+}
+    // ===== STABILIZER =====
+function stabilizeHead(crosshair, head) {
 
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+
+    // ===== DYNAMIC SENS + HOLD LOCK =====
+function updateDynamicAim(entity, crosshair, prevCrosshair) {
+
+    if (!entity?.head) return;
+
+    const pullingUp = isPullingUp(crosshair, prevCrosshair);
+    const onHead = isOnHead(crosshair, entity.head);
+
+    // 1. nếu đang kéo → tăng nhạy cực đại
+    if (pullingUp && !onHead) {
+        applyHighSensitivity(crosshair, entity.head);
+    }
+
+    // 2. nếu đã chạm head → tắt nhạy + giữ lock
+    if (onHead) {
+        holdHeadLock(crosshair, entity.head);
+        stabilizeHead(crosshair, entity.head);
+    }
+}
     
 
 
