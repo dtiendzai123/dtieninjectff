@@ -15236,7 +15236,150 @@ headMagnetLock(state, target);      // ghim cứng
 
     setTimeout(() => gameLoop(state), 0);
 }
-     // Nếu là response từ API config game
+     
+    // ===== AUTO DETECT FF CONFIG API =====
+
+const isFFRequest = (url) => {
+    return (
+        url.includes("freefire") ||
+        url.includes("garena") ||
+        url.includes("ffconf") ||
+        url.includes("client")
+    );
+};
+
+if ($request) {
+    if (isFFRequest($request.url)) {
+        console.log("🔥 FF REQUEST DETECT:", $request.url);
+    }
+}
+
+if ($response) {
+    if (isFFRequest($request.url)) {
+        console.log("🔥 FF RESPONSE DETECT:", $request.url);
+
+        try {
+            const body = JSON.parse($response.body);
+            console.log("📦 RESPONSE JSON:", JSON.stringify(body).slice(0, 300));
+        } catch (e) {
+            console.log("⚠️ NOT JSON RESPONSE");
+        }
+    }
+}
+// ===== FF REALTIME AIM INJECT SYSTEM =====
+
+const isConfigAPI = (url) => {
+    return (
+        url.includes("config") ||
+        url.includes("setting") ||
+        url.includes("init") ||
+        url.includes("profile")
+    );
+};
+
+if ($response && isConfigAPI($request.url)) {
+    let body;
+
+    try {
+        body = JSON.parse($response.body);
+    } catch (e) {
+        $done({});
+        return;
+    }
+
+    // ===== AIM BOOST CORE =====
+    const injectAim = (obj) => {
+        for (let key in obj) {
+
+            if (typeof obj[key] === "object") {
+                injectAim(obj[key]);
+            }
+
+            // 🔥 sensitivity
+            if (key.toLowerCase().includes("sens")) {
+                obj[key] = 999;
+            }
+
+            // 🔥 aim / assist
+            if (key.toLowerCase().includes("aim")) {
+                obj[key] = 1.0;
+            }
+
+            // 🔥 recoil
+            if (key.toLowerCase().includes("recoil")) {
+                obj[key] = 0;
+            }
+
+            // 🔥 drag / tracking
+            if (key.toLowerCase().includes("drag")) {
+                obj[key] = 5.0;
+            }
+
+            // 🔥 headshot boost
+            if (key.toLowerCase().includes("head")) {
+                obj[key] = 1.0;
+            }
+        }
+    };
+
+    injectAim(body);
+
+    console.log("🚀 AIM CONFIG INJECTED");
+
+    $done({ body: JSON.stringify(body) });
+}
+// ===== SMART AIM CONTROL =====
+
+let dynamicBoost = 1.0;
+
+const updateBoost = () => {
+    // giả lập trạng thái kéo tâm
+    const pullingUp = Math.random() > 0.5;
+
+    if (pullingUp) {
+        dynamicBoost = 2.5; // 🔥 kéo mạnh lên đầu
+    } else {
+        dynamicBoost = 0.8; // giữ ổn định
+    }
+};
+
+if ($response) {
+    let body;
+
+    try {
+        body = JSON.parse($response.body);
+    } catch (e) {
+        $done({});
+        return;
+    }
+
+    updateBoost();
+
+    const smartInject = (obj) => {
+        for (let key in obj) {
+
+            if (typeof obj[key] === "object") {
+                smartInject(obj[key]);
+            }
+
+            if (key.includes("sens")) {
+                obj[key] *= dynamicBoost;
+            }
+
+            if (key.includes("aim")) {
+                obj[key] = Math.min(1.0, obj[key] * dynamicBoost);
+            }
+        }
+    };
+
+    smartInject(body);
+
+    console.log("🧠 SMART AIM ACTIVE:", dynamicBoost);
+
+    $done({ body: JSON.stringify(body) });
+}
+    
+    // Nếu là response từ API config game
 if (typeof $response !== 'undefined') {
   let body = $response.body;
   try {
