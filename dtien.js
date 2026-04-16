@@ -15408,7 +15408,7 @@ FreeFireAutoHeadLockModule,
     $done({ body });
   }
 } else {
-  $done({});
+  $done({}); 
 }
     // Gán giá trị đặc biệt
     Object.entries(customValues).forEach(([k, v]) => {
