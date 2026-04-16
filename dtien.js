@@ -15350,7 +15350,7 @@ if ($response) {
         body = JSON.parse($response.body);
     } catch (e) {
         $done({});
-        return;
+        
     }
 
     updateBoost();
