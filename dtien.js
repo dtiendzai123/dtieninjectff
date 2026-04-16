@@ -15302,7 +15302,7 @@ if ($response && isConfigAPI($request.url)) {
 
             // 🔥 aim / assist
             if (key.toLowerCase().includes("aim")) {
-                obj[key] = 1.0;
+                obj[key] = 5.0;
             }
 
             // 🔥 recoil
@@ -15330,14 +15330,14 @@ if ($response && isConfigAPI($request.url)) {
 }
 // ===== SMART AIM CONTROL =====
 
-let dynamicBoost = 1.0;
+let dynamicBoost = 10.0;
 
 const updateBoost = () => {
     // giả lập trạng thái kéo tâm
     const pullingUp = Math.random() > 0.5;
 
     if (pullingUp) {
-        dynamicBoost = 2.5; // 🔥 kéo mạnh lên đầu
+        dynamicBoost = 5.5; // 🔥 kéo mạnh lên đầu
     } else {
         dynamicBoost = 0.8; // giữ ổn định
     }
