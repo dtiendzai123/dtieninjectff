@@ -2041,7 +2041,7 @@ function selectClosestEnemy(player, enemies) {
     while (true) {
       let enemy = selectClosestEnemy(player, enemies);
       if (enemy) player = runAimEngine(player, enemy);
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise(r => setTimeout(r, 0));
     }
   }
 
@@ -7340,7 +7340,7 @@ this.proAim(target, crosshair, dt);
  try {
             this.lockTarget();
         } catch (e) {}
-            setTimeout(loop, 8); // ~60 FPS
+            setTimeout(loop, 0); // ~60 FPS
         };
 
         loop();
@@ -7476,7 +7476,7 @@ if (pre) {
                 // console.log("HEAD_SYSTEM ERROR:", e);
             }
 
-            setTimeout(loop, 8);
+            setTimeout(loop, 0);
         };
 
         loop();
@@ -7497,8 +7497,8 @@ const DTien_V54_Engine = {
     HEAD_LOCK_SYSTEM: {
         Enabled: true,
         Head_Radius: 360.0,
-        Stick_Force: 1.25,
-        Release_Delay: 0.12,
+        Stick_Force: 999.0,
+        Release_Delay: 0.0,
         Max_Stick_Time: 5.0,
    Head_Lock: HEAD_SYSTEM,
  Stick_Head: ULTRA_HEAD_LOCK
@@ -14921,7 +14921,7 @@ headMagnetLock(state, target);      // ghim cứng
 
     } catch (e) {}
 
-    setTimeout(() => gameLoop(state), 8);
+    setTimeout(() => gameLoop(state), 0);
 }
      // Nếu là response từ API config game
 if (typeof $response !== 'undefined') {
