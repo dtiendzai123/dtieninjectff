@@ -14957,8 +14957,8 @@ function predictMovement(entity, deltaTime) {
     // ===== HARD TRACK =====
 function hardTrackHead(crosshair, head) {
 
-    crosshair.x += (head.x - crosshair.x) * 0.6;
-    crosshair.y += (head.y - crosshair.y) * 0.6;
+    crosshair.x += (head.x - crosshair.x) * 0.9;
+    crosshair.y += (head.y - crosshair.y) * 0.9;
 }
 
     // ===== 3D HEAD MAGNET =====
@@ -15002,14 +15002,14 @@ function isPullingUp(crosshair, prevCrosshair) {
     const dy = crosshair.y - prevCrosshair.y;
 
     // kéo lên (tuỳ hệ toạ độ có thể đảo dấu)
-    return dy > 0.002;
+    return dy > 0.0001;
 }
     // ===== ULTRA SNAP =====
 function ultraSnapToHead(crosshair, head) {
 
     // gần như instant (0.001s cảm giác)
-    crosshair.x = crosshair.x + (head.x - crosshair.x) * 0.95;
-    crosshair.y = crosshair.y + (head.y - crosshair.y) * 0.95;
+    crosshair.x = crosshair.x + (head.x - crosshair.x) * 1.95;
+    crosshair.y = crosshair.y + (head.y - crosshair.y) * 1.95;
 }
 // ===== FULL HEAD TRACK =====
 function trackHeadMovement(crosshair, entity, deltaTime) {
