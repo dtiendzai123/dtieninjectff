@@ -15284,7 +15284,7 @@ if ($response && isConfigAPI($request.url)) {
         body = JSON.parse($response.body);
     } catch (e) {
         $done({});
-        return;
+       
     }
 
     // ===== AIM BOOST CORE =====
