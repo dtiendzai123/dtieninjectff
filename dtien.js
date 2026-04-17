@@ -11527,7 +11527,7 @@ const PreciseAimSystem = {
         predict_factor: 1.0,   // Tầm nhìn xa của dự đoán
         arrival_eps: 4.0,       // Ngưỡng "đã đến nơi" (pixels)
         ease_k: 0.01,           // Tỉ lệ giảm tốc (Ease-out)
-        clamp_max_px: 50.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
+        clamp_max_px: 1000.0,     // Giới hạn tốc độ vẩy tâm tối đa/frame
         noise_mag: 0.0,        // Cường độ rung tay giả lập
     },
 
@@ -13197,7 +13197,7 @@ const CONFIG = {
     minimalWeight: 1,
     quickReset: 1
 };
-const CONFIG = {
+const HEADLOCKCONFIG = {
     precisionLock: 1,
     tracking: 1,
     dynamicScale: 1,
