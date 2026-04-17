@@ -13212,10 +13212,10 @@ const HEADLOCKCONFIG = {
    const PARAM = {
     // kéo
     dragX: 0.42,
-    dragY: 0.58,
+    dragY: 0.9,
 
     // lock
-    lockStrength: 0.82,
+    lockStrength: 1.82,
 
     // correction
     correction: 0.45,
@@ -13229,7 +13229,72 @@ const HEADLOCKCONFIG = {
     // limiter
     maxDrag: 0.95
 };
-   
+   function isOnHead(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    return dist < 0.035;
+}
+function holdHeadLock(crosshair, head) {
+
+    crosshair.x = head.x;
+    crosshair.y = head.y;
+}
+    function microTrack(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 0.25;
+    crosshair.y += dy * 0.3;
+}
+    function preventDrop(crosshair, head) {
+
+    if (crosshair.y < head.y) {
+        crosshair.y += (head.y - crosshair.y) * 0.6;
+    }
+}
+    function zeroShake(crosshair, head) {
+
+    const dx = crosshair.x - head.x;
+    const dy = crosshair.y - head.y;
+
+    if (Math.abs(dx) < 0.01) crosshair.x = head.x;
+    if (Math.abs(dy) < 0.01) crosshair.y = head.y;
+}
+    function softHold(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 1.5;
+    crosshair.y += (head.y - crosshair.y) * 1.5;
+}
+
+// ===== HEAD HOLD SYSTEM =====
+function updateHeadHold(entity, crosshair) {
+
+    if (!entity?.head) return;
+
+    const head = entity.head;
+
+    const onHead = isOnHead(crosshair, head);
+
+    if (!onHead) return;
+
+    // 1. giữ mềm (tránh snap giả)
+    softHold(crosshair, head);
+
+    // 2. tracking nhẹ
+    microTrack(crosshair, head);
+
+    // 3. chống tụt
+    preventDrop(crosshair, head);
+
+    // 4. khóa chính xác
+    zeroShake(crosshair, head);
+}
+    
     function precisionLock(crosshair, head) {
 
     const dx = head.x - crosshair.x;
