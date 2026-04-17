@@ -13184,8 +13184,108 @@ const HEAD_LOCK_SYSTEM = {
         DAMP: 0.0,
         MICRO_FREEZE: 0.0012
     }
+};// ===== CONFIG =====
+const CONFIG = {
+    quickScope: 1,
+    realTimeSync: 1,
+    smartFire: 1,
+    lowDrag: 1,
+    featherAim: 1,
+    autoFocus: 1,
+    dynamicFlow: 1,
+    fastLock: 1,
+    minimalWeight: 1,
+    quickReset: 1
 };
-// ===== ERROR DETECTION =====
+function quickScopeSnap(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.95;
+    crosshair.y += (head.y - crosshair.y) * 0.95;
+}
+    function realTimeSync(entity, deltaTime) {
+
+    const vel = entity.velocity || {x:0,y:0};
+
+    return {
+        x: entity.head.x + vel.x * deltaTime,
+        y: entity.head.y + vel.y * deltaTime
+    };
+}
+    // ===== SIÊU NHẸ NHƯNG NHANH =====
+function featherAim(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 0.25;
+    crosshair.y += dy * 0.2;
+}
+    function autoFocus(entity) {
+    return entity.head; // luôn chọn head
+}
+    function dynamicFlow(crosshair, head) {
+
+    const dist = Math.abs(head.y - crosshair.y);
+
+    let speed = 0.2;
+
+    if (dist > 0.2) speed = 0.5;   // xa → nhanh
+    if (dist < 0.05) speed = 0.1;  // gần → mượt
+
+    crosshair.y += (head.y - crosshair.y) * speed;
+}
+    function fastLock(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.6;
+    crosshair.y += (head.y - crosshair.y) * 0.6;
+}
+    function reduceWeight(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 0.15;
+    crosshair.y += dy * 0.15;
+}
+    function quickReset(crosshair, defaultPos, hasTarget) {
+
+    if (hasTarget) return;
+
+    crosshair.x += (defaultPos.x - crosshair.x) * 0.3;
+    crosshair.y += (defaultPos.y - crosshair.y) * 0.3;
+}
+    // ===== FULL AIM ENGINE =====
+function updateFullAim(entity, crosshair, deltaTime, isFiring, prevCrosshair) {
+
+    if (!entity) return;
+
+    // 1. focus head
+    const head = autoFocus(entity);
+
+    // 2. sync movement
+    const predicted = realTimeSync(entity, deltaTime);
+
+    // 3. feather + low drag
+    featherAim(crosshair, predicted);
+
+    // 4. dynamic flow
+    dynamicFlow(crosshair, predicted);
+
+    // 5. fast lock
+    fastLock(crosshair, predicted);
+
+    // 6. quick scope nếu kéo lên
+    if (crosshair.y > prevCrosshair.y) {
+        quickScopeSnap(crosshair, predicted);
+    }
+
+    // 7. smart fire
+    smartFireLock(crosshair, predicted, isFiring);
+
+    // 8. giảm nặng tâm
+    reduceWeight(crosshair, predicted);
+}
+    // ===== ERROR DETECTION =====
 function getAimError(crosshair, head) {
 
     return {
