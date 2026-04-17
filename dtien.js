@@ -15845,9 +15845,9 @@ function ultraSnap(crosshair, head) {
 
     const dy = head.y - crosshair.y;
 
-    // nếu đang ở body → kéo cực mạnh lên
-    if (dy > 0.15) {
-        crosshair.y += dy * 1.0; // gần như instant
+    // nếu còn dưới đầu → kéo cực mạnh
+    if (dy > 0.1) {
+        crosshair.y += dy * 1.05;
     }
 }
     function instantHeadLock(crosshair, head) {
@@ -15868,6 +15868,16 @@ function ultraSnap(crosshair, head) {
     function clampToHead(crosshair, head) {
 
     if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+}
+function hardLockHead(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    if (Math.abs(dx) < 0.035 && Math.abs(dy) < 0.035) {
+        crosshair.x = head.x;
         crosshair.y = head.y;
     }
 }
@@ -15893,7 +15903,9 @@ function updateUltraSnap(entity, crosshair, prevCrosshair) {
 
     // 4. lock ngay khi gần
     instantHeadLock(crosshair, head);
+hardLockHead(crosshair, head);
 
+ 
     // 5. giữ ổn định
     microHold(crosshair, head);
 }
