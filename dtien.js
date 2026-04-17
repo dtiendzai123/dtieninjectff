@@ -15881,6 +15881,87 @@ function hardLockHead(crosshair, head) {
         crosshair.y = head.y;
     }
 }
+    function hardLock(crosshair, head, dist) {
+
+    const k = getLockStrength(dist);
+
+    crosshair.x += (head.x - crosshair.x) * k;
+    crosshair.y += (head.y - crosshair.y) * k;
+}
+
+    function predictHead(entity, dt) {
+
+    const v = entity.velocity || {x:0,y:0};
+
+    return {
+        x: entity.head.x + v.x * dt * 1.2,
+        y: entity.head.y + v.y * dt * 1.2
+    };
+}
+    function getLockStrength(dist) {
+
+    if (dist > 0.2) return 0.85;  // xa → mạnh
+    if (dist > 0.1) return 0.75;
+    if (dist > 0.05) return 0.65;
+
+    return 1.0; // gần → ổn định
+}
+function antiStrafe(crosshair, head, prevHead) {
+
+    const vx = head.x - prevHead.x;
+
+    crosshair.x += vx * 0.8;
+}
+    function preventDrop(crosshair, head) {
+
+    if (crosshair.y < head.y) {
+        crosshair.y += (head.y - crosshair.y) * 0.7;
+    }
+}
+    function stabilize(crosshair, prevCrosshair) {
+
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    if (Math.abs(dx) < 0.002) crosshair.x = prevCrosshair.x;
+    if (Math.abs(dy) < 0.002) crosshair.y = prevCrosshair.y;
+}
+    function zeroDrift(crosshair, head) {
+
+    if (Math.abs(crosshair.x - head.x) < 0.01)
+        crosshair.x = head.x;
+
+    if (Math.abs(crosshair.y - head.y) < 0.01)
+        crosshair.y = head.y;
+}
+    // ===== ULTIMATE HEAD LOCK =====
+function updateHeadLock(entity, crosshair, prevCrosshair, prevHead, dt) {
+
+    if (!entity?.head) return;
+
+    // 1. predict head
+    const head = predictHead(entity, dt);
+
+    // 2. distance
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // 3. lock chính
+    hardLock(crosshair, head, dist);
+
+    // 4. chống strafe
+    antiStrafe(crosshair, head, prevHead);
+
+    // 5. chống tụt
+    preventDrop(crosshair, head);
+
+    // 6. fix lệch nhỏ
+    zeroDrift(crosshair, head);
+
+    // 7. chống rung
+    stabilize(crosshair, prevCrosshair);
+}
     // ===== ULTRA HEAD SNAP SYSTEM =====
 function updateUltraSnap(entity, crosshair, prevCrosshair) {
 
