@@ -13285,7 +13285,125 @@ function updateFullAim(entity, crosshair, deltaTime, isFiring, prevCrosshair) {
     // 8. giảm nặng tâm
     reduceWeight(crosshair, predicted);
 }
-    // ===== ERROR DETECTION =====
+ // ===== INPUT FORCE =====
+function getInputStrength(crosshair, prevCrosshair) {
+
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    const speed = Math.sqrt(dx*dx + dy*dy);
+
+    return Math.min(speed * 60, 1);
+}
+    function realTimeSensitivity(baseSens, inputForce) {
+
+    return baseSens * (1 + inputForce * 1.5);
+}
+    function dynamicTouchScale(force) {
+
+    // lực nhỏ → mượt
+    // lực lớn → nhanh
+    return 0.2 + (force * 0.8);
+}
+    function applyFluidity(crosshair, target, sens) {
+
+    crosshair.x += (target.x - crosshair.x) * sens;
+    crosshair.y += (target.y - crosshair.y) * sens;
+}
+    function feedbackCorrection(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const error = Math.sqrt(dx*dx + dy*dy);
+
+    let correction = 0.1;
+
+    if (error > 0.2) correction = 0.4;
+    if (error < 0.05) correction = 0.05;
+
+    crosshair.x += dx * correction;
+    crosshair.y += dy * correction;
+}
+    function getZoomSensitivity(baseSens, zoomLevel) {
+
+    // zoom cao → giảm nhạy
+    return baseSens / (1 + zoomLevel * 0.5);
+}
+    function motionBoost(entity) {
+
+    const vel = entity.velocity || {x:0,y:0};
+
+    const speed = Math.sqrt(vel.x*vel.x + vel.y*vel.y);
+
+    return Math.min(speed * 2, 1);
+}
+    function dragSpeedTune(force, distance) {
+
+    let speed = force * 0.5;
+
+    if (distance > 0.2) speed += 0.3;
+    if (distance < 0.05) speed *= 0.5;
+
+    return speed;
+}
+    function gyroStabilize(crosshair, prevCrosshair) {
+
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002) {
+        crosshair.x = prevCrosshair.x;
+        crosshair.y = prevCrosshair.y;
+    }
+}
+    function resetSensitivity(state) {
+
+    state.currentSens = state.baseSens;
+}
+    // ===== FULL ASC ENGINE =====
+function updateSensitivityEngine(entity, crosshair, prevCrosshair, state) {
+
+    if (!entity?.head) return;
+
+    const head = entity.head;
+
+    // 1. input lực tay
+    const inputForce = getInputStrength(crosshair, prevCrosshair);
+
+    // 2. base sens
+    let sens = realTimeSensitivity(state.baseSens, inputForce);
+
+    // 3. zoom
+    sens = getZoomSensitivity(sens, state.zoom || 0);
+
+    // 4. motion boost
+    sens += motionBoost(entity) * 0.3;
+
+    // 5. dynamic touch
+    sens *= dynamicTouchScale(inputForce);
+
+    // 6. drag tuning
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    sens *= dragSpeedTune(inputForce, dist);
+
+    // clamp
+    sens = Math.min(sens, 1.2);
+
+    // 7. apply movement
+    applyFluidity(crosshair, head, sens);
+
+    // 8. fix lệch
+    feedbackCorrection(crosshair, head);
+
+    // 9. chống rung
+    gyroStabilize(crosshair, prevCrosshair);
+}
+    
+// ===== ERROR DETECTION =====
 function getAimError(crosshair, head) {
 
     return {
