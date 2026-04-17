@@ -13209,6 +13209,154 @@ const HEADLOCKCONFIG = {
     recoilControl: 1,
     reset: 1
 };
+   const PARAM = {
+    // kéo
+    dragX: 0.42,
+    dragY: 0.58,
+
+    // lock
+    lockStrength: 0.82,
+
+    // correction
+    correction: 0.45,
+
+    // recoil
+    recoilFix: 1.05,
+
+    // stabilizer
+    stability: 0.9,
+
+    // limiter
+    maxDrag: 0.95
+};
+   
+    function precisionLock(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * PARAM.lockStrength;
+    crosshair.y += dy * PARAM.lockStrength;
+}
+    function axisFix(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    // ưu tiên kéo lên đầu
+    crosshair.y += dy * PARAM.dragY;
+
+    // hạn chế lệch ngang
+    crosshair.x += dx * PARAM.dragX;
+}
+    function dragEngine(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    let dragX = PARAM.dragX;
+    let dragY = PARAM.dragY;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // xa → kéo cực nhanh
+    if (dist > 0.2) {
+        dragX = 0.5;
+        dragY = 0.7;
+    }
+
+    // gần → giảm để không rung
+    if (dist < 0.05) {
+        dragX = 0.25;
+        dragY = 0.3;
+    }
+
+    crosshair.x += dx * dragX;
+    crosshair.y += dy * dragY;
+}
+    
+    function autoFix(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * PARAM.correction;
+    crosshair.y += dy * PARAM.correction;
+}
+    function dragLimiter(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 0.02) {
+        // không cho vượt head
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+    
+    function recoilFix(crosshair, recoil) {
+
+    if (!recoil) return;
+
+    crosshair.x -= recoil.x * PARAM.recoilFix;
+    crosshair.y -= recoil.y * PARAM.recoilFix;
+}
+    function zeroDrift(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    if (Math.abs(dx) < 0.01) crosshair.x = head.x;
+    if (Math.abs(dy) < 0.01) crosshair.y = head.y;
+}
+    
+    function stabilize(crosshair, prevCrosshair) {
+
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002) {
+        crosshair.x = prevCrosshair.x;
+        crosshair.y = prevCrosshair.y;
+    }
+}
+    function updateUltimateAim(entity, crosshair, prevCrosshair, recoil) {
+
+    if (!entity?.head) return;
+
+    const head = entity.head;
+
+    // 1. kéo mạnh
+    dragEngine(crosshair, head);
+
+    // 2. fix trục
+    axisFix(crosshair, head);
+
+    // 3. recoil
+    recoilFix(crosshair, recoil);
+
+    // 4. ghim head
+    precisionLock(crosshair, head);
+
+    // 5. sửa lệch
+    autoFix(crosshair, head);
+
+    // 6. limiter
+    dragLimiter(crosshair, head);
+
+    // 7. zero drift
+    zeroDrift(crosshair, head);
+
+    // 8. chống rung
+    stabilize(crosshair, prevCrosshair);
+}
+    
+
+    
+
     function getHeadTarget(entity) {
     return entity.head; // luôn ưu tiên tuyệt đối head
 }
