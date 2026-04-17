@@ -13197,7 +13197,138 @@ const CONFIG = {
     minimalWeight: 1,
     quickReset: 1
 };
-function quickScopeSnap(crosshair, head) {
+const CONFIG = {
+    precisionLock: 1,
+    tracking: 1,
+    dynamicScale: 1,
+    headFocus: 1,
+    feedback: 1,
+    aimZones: 1,
+    correction: 1,
+    snapSpeed: 1,
+    recoilControl: 1,
+    reset: 1
+};
+    function getHeadTarget(entity) {
+    return entity.head; // luôn ưu tiên tuyệt đối head
+}
+    function realTimeTracking(entity, deltaTime) {
+
+    const vel = entity.velocity || {x:0,y:0};
+
+    return {
+        x: entity.head.x + vel.x * deltaTime,
+        y: entity.head.y + vel.y * deltaTime
+    };
+}
+    function getSnapSpeed(dist) {
+
+    if (dist > 0.2) return 1.0;
+    if (dist > 0.1) return 1.0;
+    if (dist > 0.05) return 1.0;
+
+    return 1.0; // gần → mượt
+}
+    function dynamicScaling(dist, inputForce) {
+
+    let scale = 0.3 + inputForce * 0.7;
+
+    if (dist > 0.2) scale += 0.3;
+    if (dist < 0.05) scale *= 0.5;
+
+    return Math.min(scale, 1);
+}
+    function getAimZone(head, crosshair) {
+
+    const dy = head.y - crosshair.y;
+
+    if (dy > 0.2) return "LOW";      // dưới đầu
+    if (dy > 0.05) return "MID";     // gần đầu
+    return "HEAD";                   // trong head
+}
+    function precisionHeadLock(crosshair, head, dist) {
+
+    const speed = getSnapSpeed(dist);
+
+    crosshair.x += (head.x - crosshair.x) * speed;
+    crosshair.y += (head.y - crosshair.y) * speed;
+}
+    function aimFeedback(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    const error = Math.sqrt(dx*dx + dy*dy);
+
+    let fix = 0.2;
+
+    if (error > 0.2) fix = 1.0;
+    if (error < 0.05) fix = 1.0;
+
+    crosshair.x += dx * fix;
+    crosshair.y += dy * fix;
+}
+
+function realTimeCorrection(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 1.0;
+    crosshair.y += dy * 1.0;
+}
+    function recoilControl(crosshair, recoil) {
+
+    if (!recoil) return;
+
+    crosshair.x -= recoil.x * 1.0;
+    crosshair.y -= recoil.y * 1.0;
+}
+    function quickReset(crosshair, defaultPos, hasTarget) {
+
+    if (hasTarget) return;
+
+    crosshair.x += (defaultPos.x - crosshair.x) * 1.0;
+    crosshair.y += (defaultPos.y - crosshair.y) * 1.0;
+}
+function updatePHA(entity, crosshair, prevCrosshair, deltaTime, inputForce, recoil, hasTarget) {
+
+    if (!entity) return;
+
+    // 1. lấy head
+    const head = getHeadTarget(entity);
+
+    // 2. tracking
+    const predicted = realTimeTracking(entity, deltaTime);
+
+    // 3. khoảng cách
+    const dx = predicted.x - crosshair.x;
+    const dy = predicted.y - crosshair.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    // 4. dynamic scale
+    const scale = dynamicScaling(dist, inputForce);
+
+    // 5. recoil control
+    recoilControl(crosshair, recoil);
+
+    // 6. precision lock
+    precisionHeadLock(crosshair, predicted, dist);
+
+    // 7. apply scaling
+    crosshair.x += dx * scale;
+    crosshair.y += dy * scale;
+
+    // 8. correction
+    realTimeCorrection(crosshair, predicted);
+
+    // 9. feedback fix
+    aimFeedback(crosshair, predicted);
+
+    // 10. reset nếu mất target
+    quickReset(crosshair, {x:0,y:0}, hasTarget);
+}
+    function quickScopeSnap(crosshair, head) {
 
     crosshair.x += (head.x - crosshair.x) * 0.95;
     crosshair.y += (head.y - crosshair.y) * 0.95;
@@ -13217,8 +13348,8 @@ function featherAim(crosshair, head) {
     const dx = head.x - crosshair.x;
     const dy = head.y - crosshair.y;
 
-    crosshair.x += dx * 0.25;
-    crosshair.y += dy * 0.2;
+    crosshair.x += dx * 0.1;
+    crosshair.y += dy * 0.6;
 }
     function autoFocus(entity) {
     return entity.head; // luôn chọn head
@@ -13236,8 +13367,8 @@ function featherAim(crosshair, head) {
 }
     function fastLock(crosshair, head) {
 
-    crosshair.x += (head.x - crosshair.x) * 0.6;
-    crosshair.y += (head.y - crosshair.y) * 0.6;
+    crosshair.x += (head.x - crosshair.x) * 1.0;
+    crosshair.y += (head.y - crosshair.y) * 1.0;
 }
     function reduceWeight(crosshair, head) {
 
@@ -13303,7 +13434,7 @@ function getInputStrength(crosshair, prevCrosshair) {
 
     // lực nhỏ → mượt
     // lực lớn → nhanh
-    return 0.2 + (force * 0.8);
+    return 0.2 + (force * 1.0);
 }
     function applyFluidity(crosshair, target, sens) {
 
@@ -14981,8 +15112,8 @@ function perShotHeadFix(crosshair, head) {
     const dy = head.y - crosshair.y;
 
     // correction cực nhanh
-    crosshair.x += dx * 0.65;
-    crosshair.y += dy * 0.65;
+    crosshair.x += dx * 2.0;
+    crosshair.y += dy * 2.0;
 }
     // ===== RECOIL LOCK =====
 function recoilLock(crosshair, head, recoil) {
@@ -14994,8 +15125,8 @@ function recoilLock(crosshair, head, recoil) {
     crosshair.y -= recoil.y * 1.0;
 
     // kéo lại head ngay
-    crosshair.x += (head.x - crosshair.x) * 0.5;
-    crosshair.y += (head.y - crosshair.y) * 0.5;
+    crosshair.x += (head.x - crosshair.x) * 1.0;
+    crosshair.y += (head.y - crosshair.y) * 1.0;
 }
     // ===== MICRO LOCK =====
 function microHeadLock(crosshair, head) {
@@ -15007,8 +15138,8 @@ function microHeadLock(crosshair, head) {
 
     if (dist < 0.05) {
         // cực gần → giữ chặt
-        crosshair.x += dx * 0.9;
-        crosshair.y += dy * 0.9;
+        crosshair.x += dx * 1.0;
+        crosshair.y += dy * 1.0;
     }
 }
     // ===== ANTI DROP =====
