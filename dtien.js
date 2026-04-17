@@ -15833,6 +15833,74 @@ function getExactHead(bones) {
 
     return toRealHead(hitbox);
 }
+function isPullingUp(crosshair, prevCrosshair) {
+    return (crosshair.y - prevCrosshair.y) > 0.001;
+}
+function ultraSnap(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.98;
+    crosshair.y += (head.y - crosshair.y) * 0.995; // ưu tiên kéo lên đầu
+}
+    function snapBoost(crosshair, head) {
+
+    const dy = head.y - crosshair.y;
+
+    // nếu đang ở body → kéo cực mạnh lên
+    if (dy > 0.15) {
+        crosshair.y += dy * 1.0; // gần như instant
+    }
+}
+    function instantHeadLock(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    if (Math.abs(dx) < 0.03 && Math.abs(dy) < 0.03) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+    function microHold(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.3;
+    crosshair.y += (head.y - crosshair.y) * 0.35;
+}
+    function clampToHead(crosshair, head) {
+
+    if (crosshair.y > head.y) {
+        crosshair.y = head.y;
+    }
+}
+    // ===== ULTRA HEAD SNAP SYSTEM =====
+function updateUltraSnap(entity, crosshair, prevCrosshair) {
+
+    if (!entity?.head) return;
+
+    const head = entity.head;
+
+    const pullingUp = isPullingUp(crosshair, prevCrosshair);
+
+    if (!pullingUp) return;
+
+    // 1. snap cực nhanh
+    ultraSnap(crosshair, head);
+
+    // 2. boost nếu ở body
+    snapBoost(crosshair, head);
+
+    // 3. clamp tránh vượt đầu
+    clampToHead(crosshair, head);
+
+    // 4. lock ngay khi gần
+    instantHeadLock(crosshair, head);
+
+    // 5. giữ ổn định
+    microHold(crosshair, head);
+}
+
+
+    
+
 
 
     function gameLoop(state) {
