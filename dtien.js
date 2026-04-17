@@ -13425,7 +13425,7 @@ function realTimeCorrection(crosshair, head) {
     crosshair.x += dx * 1.0;
     crosshair.y += dy * 1.0;
 }
-    function recoilControl(crosshair, recoil) {
+    function recoilControlLock(crosshair, recoil) {
 
     if (!recoil) return;
 
