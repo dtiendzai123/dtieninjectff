@@ -16553,7 +16553,119 @@ headMagnetLock(state, target);      // ghim cứng
 
     setTimeout(() => gameLoop(state), 0);
 }
-     
+// ===== Movement Pattern Analyzer =====
+class MovementAnalyzer {
+    constructor(size = 60) {
+        this.buf = [];
+        this.size = size;
+    }
+
+    push(sample) { // {x,y,vx,vy,t}
+        this.buf.push(sample);
+        if (this.buf.length > this.size) this.buf.shift();
+    }
+
+    // đặc trưng cơ bản
+    features() {
+        if (this.buf.length < 3) return null;
+
+        let ax = 0, ay = 0, flips = 0;
+        for (let i = 2; i < this.buf.length; i++) {
+            const v0 = this.buf[i-2], v1 = this.buf[i-1], v2 = this.buf[i];
+            const dvx1 = v1.vx - v0.vx;
+            const dvx2 = v2.vx - v1.vx;
+            ax += dvx2;
+
+            // đếm đổi hướng ngang
+            if (Math.sign(v1.vx) !== Math.sign(v2.vx)) flips++;
+        }
+        const n = this.buf.length;
+        return {
+            avgVx: this.buf.reduce((s,p)=>s+p.vx,0)/n,
+            avgVy: this.buf.reduce((s,p)=>s+p.vy,0)/n,
+            avgAx: ax / Math.max(1, n-2),
+            strafeRate: flips / n
+        };
+    }
+
+    // dự đoán ngắn hạn (EMA + gia tốc)
+    predict(dt = 0.016) {
+        const f = this.features();
+        const last = this.buf[this.buf.length - 1];
+        if (!f || !last) return null;
+
+        // blend vận tốc + gia tốc (ổn định, rẻ)
+        const vx = last.vx * 0.7 + f.avgVx * 0.3 + f.avgAx * dt;
+        const vy = last.vy * 0.7 + f.avgVy * 0.3;
+
+        return {
+            x: last.x + vx * dt,
+            y: last.y + vy * dt
+        };
+    }
+}
+
+    // world position từ bone (đơn giản hoá)
+function getHeadWorld(boneHead, modelMatrix) {
+    // boneHead: local (x,y,z)
+    // modelMatrix: 4x4
+    return multiplyMat4Vec3(modelMatrix, boneHead);
+}
+    // ===== Capsule Head =====
+function makeHeadCapsule(headPos, upDir, height = 0.22, radius = 0.09) {
+    // upDir: vector đơn vị hướng lên của nhân vật
+    const p0 = {
+        x: headPos.x - upDir.x * height * 0.5,
+        y: headPos.y - upDir.y * height * 0.5,
+        z: headPos.z - upDir.z * height * 0.5
+    };
+    const p1 = {
+        x: headPos.x + upDir.x * height * 0.5,
+        y: headPos.y + upDir.y * height * 0.5,
+        z: headPos.z + upDir.z * height * 0.5
+    };
+    return { p0, p1, r: radius };
+}
+    // trả về true nếu ray trúng capsule
+function intersectRayCapsule(rayOrigin, rayDir, cap) {
+    // chuẩn hoá rayDir
+    const d = normalize(rayDir);
+
+    // thuật toán rút gọn: khoảng cách ngắn nhất từ ray đến segment (p0-p1)
+    const {p0, p1, r} = cap;
+
+    // vector
+    const v = sub(p1, p0);
+    const w0 = sub(rayOrigin, p0);
+
+    const a = dot(d, d);
+    const b = dot(d, v);
+    const c = dot(v, v);
+    const d0 = dot(d, w0);
+    const e = dot(v, w0);
+
+    const denom = a*c - b*b;
+    let sc = 0, tc = 0;
+
+    if (denom !== 0) {
+        sc = (b*e - c*d0) / denom;
+        tc = (a*e - b*d0) / denom;
+    }
+
+    // clamp tc vào đoạn [0,1]
+    tc = Math.max(0, Math.min(1, tc));
+
+    const pRay = add(rayOrigin, mul(d, sc));
+    const pSeg = add(p0, mul(v, tc));
+
+    const dist2 = lengthSq(sub(pRay, pSeg));
+    return dist2 <= r*r;
+}
+
+
+
+
+    
  
     // Nếu là response từ API config game
 if (typeof $response !== 'undefined') {
