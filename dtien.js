@@ -16186,8 +16186,8 @@ function updateMemory(entity) {
 }
     
 const Assist = {
-  baseSensX: 1.0,
-  baseSensY: 1.0,
+  baseSensX: 10.0,
+  baseSensY: 10.0,
 
   boostY: 100.45,   // tăng mạnh kéo lên
   boostX: 0.0,    // giữ ngang ổn định
@@ -16249,11 +16249,11 @@ function updateAssist(currInput) {
   return out;
 }
 const SensConfig = {
-    baseX: 1.0,
-    baseY: 1.0,
+    baseX: 10.0,
+    baseY: 10.0,
 
     // giả lập DPI boost
-    dpiScale: 8.3,
+    dpiScale: 1000.3,
 
     // tăng nhạy khi kéo
     boostX: 0.0,
@@ -16322,7 +16322,7 @@ const sensState = {
 }
     
 const HzBoost = {
-    inputBoost: 2.0,      // xử lý input nhiều hơn
+    inputBoost: 5.0,      // xử lý input nhiều hơn
     smoothing: 0.06,      // giảm delay
     response: 1.0,        // phản hồi nhanh
     microAdjust: 0.001     // chỉnh vi sai
@@ -16428,8 +16428,8 @@ function updateAimFix(currInput) {
 }
 
     const GlideCfg = {
-  baseX: 1.0,
-  baseY: 1.0,
+  baseX: 10.0,
+  baseY: 10.0,
 
   // tăng theo tầng khi kéo lên
   boostY: [1.15, 1.3, 1.45, 1.2], // hips, chest, neck, near-stop
