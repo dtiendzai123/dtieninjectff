@@ -16355,9 +16355,81 @@ function applyInput(input) {
 
     return out;
 }
+    function detectStuckZone(deltaY) {
+    // đang kéo lên nhưng lực yếu → dễ kẹt
+    return deltaY > 0.002 && deltaY < 0.02;
+}
+    function forcePushUp(out, delta) {
+
+    if (detectStuckZone(delta.dy)) {
+        // 🔥 đẩy mạnh lên
+        out.y += delta.dy * 1.6;
+    }
+
+    return out;
+}
+function verticalPriority(out, delta) {
+
+    if (delta.dy > 0.002) {
+        // giảm lực ngang
+        out.x *= 0.001;
+
+        // tăng lực dọc
+        out.y *= 100.25;
+    }
+
+    return out;
+}
+function getDynamicSmooth(delta) {
+
+    if (delta.dy > 0.002) {
+        return 0.001; // 🔥 giảm delay khi kéo lên
+    }
+
+    return 0.0001; // bình thường
+}
+function microSnapUp(out, delta) {
+
+    if (delta.dy > 0.003) {
+        out.y += delta.dy * 10.3;
+    }
+
+    return out;
+}
+
+function updateAimFix(currInput) {
+
+    const delta = getInputDelta(currInput, sensState.prevInput);
+
+    let out = {
+        x: delta.dx * sensState.sensX,
+        y: delta.dy * sensState.sensY
+    };
+
+    // 🔥 ưu tiên kéo lên
+    out = verticalPriority(out, delta);
+
+    // 🔥 đẩy qua vùng cổ/ngực
+    out = forcePushUp(out, delta);
+
+    // 🔥 snap nhẹ lên
+    out = microSnapUp(out, delta);
+
+    // 🔥 smoothing động
+    const smooth = getDynamicSmooth(delta);
+
+    out.x = sensState.prevOut.x + (out.x - sensState.prevOut.x) * (1 - smooth);
+    out.y = sensState.prevOut.y + (out.y - sensState.prevOut.y) * (1 - smooth);
+
+    sensState.prevOut = out;
+    sensState.prevInput = currInput;
+
+    return out;
+}
+
     
 
-
+    
 
     function gameLoop(state) {
 
