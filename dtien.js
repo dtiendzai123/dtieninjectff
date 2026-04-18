@@ -16994,7 +16994,7 @@ snapKillFrameReset(context, context.frameCount || 0);
  vector = holdIfCamDirectionStable(context, vector);
  vector = snapLoopForce(vector, predicted, 5);
 
-	const zone = selectSnapZoneByDistance(context, predicted);
+	const headzone = selectSnapZoneByDistance(context, predicted);
 const override = overrideHardHeadLockIfMissed(context, predicted);
 if (override) vector = override;
 else vector = { x: predicted.x, y: predicted.y + HEADSHOT_PIPELINE_CONFIG.headZones[zone] };
