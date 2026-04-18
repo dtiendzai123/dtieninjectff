@@ -16661,7 +16661,625 @@ function intersectRayCapsule(rayOrigin, rayDir, cap) {
     const dist2 = lengthSq(sub(pRay, pSeg));
     return dist2 <= r*r;
 }
+let lastKillFrame = -1;
+let lastCameraAngleX = 0;
+let consecutiveMiss = 0;
 
+function selectSnapZoneByDistance(context, target) {
+  const dx = Math.abs(context.cameraCenter.x - target.x);
+  const dy = Math.abs(context.cameraCenter.y - target.y);
+  const dist = Math.hypot(dx, dy);
+  if (dist < 90) return 'forehead';
+  if (dist < 170) return 'crown';
+  return 'temple';
+}
+
+function dynamicAngleZoneCompensate(context, target) {
+  const angle = Math.abs(context.angleX || 0);
+  if (angle > 15) return 'crown';
+  return selectSnapZoneByDistance(context, target);
+}
+
+function overrideHardHeadLockIfMissed(context, target) {
+  if (context.lastSnapMissed || context.hasHelmet) {
+    return { x: target.x, y: target.y + HEADSHOT_PIPELINE_CONFIG.headZones['crown'] };
+  }
+  return null;
+}
+
+function forcedHardSnapFallback(context, target) {
+  if (context.lastSnapMissed) consecutiveMiss++;
+  else consecutiveMiss = 0;
+  if (consecutiveMiss >= 2) return { x: target.x, y: target.y + HEADSHOT_PIPELINE_CONFIG.headZones['crown'] };
+  return null;
+}
+
+function chainSnapZonesRetry(target) {
+  const zones = ['crown', 'forehead', 'eye'];
+  for (let z of zones) {
+    const y = target.y + HEADSHOT_PIPELINE_CONFIG.headZones[z];
+    if (y < 200) return { x: target.x, y };
+  }
+  return target;
+}
+
+function correctDownwardFlick(vector, target, context) {
+  const dy = vector.y - (target.y + HEADSHOT_PIPELINE_CONFIG.headZones.forehead);
+  if (dy > 10) return { x: vector.x, y: vector.y - 8 };
+  return vector;
+}
+
+function recheckSnapLoopIfMissed(vector, target, context) {
+  if (context.lastSnapMissed) return chainSnapZonesRetry(target);
+  return vector;
+}
+
+function holdSnapAfterKill(frame, context, vector) {
+  if (context.headshot && context.confirmedKill) lastKillFrame = frame;
+  if (frame - lastKillFrame <= 4) return vector;
+  return vector;
+}
+
+function snapKillFrameReset(context, frame) {
+  if (context.confirmedKill && context.headshot) {
+    lastKillFrame = frame;
+    HeadshotAIBrain.reset();
+    updateSnapState(frame);
+  }
+}
+
+function holdIfCamDirectionStable(context, vector) {
+  const deltaAngle = Math.abs((context.angleX || 0) - lastCameraAngleX);
+  lastCameraAngleX = context.angleX || 0;
+  if (deltaAngle < 0.8) return vector;
+  return vector;
+}
+
+function dynamicLeadBoost(context) {
+  const velocity = context.velocity || { x: 0, y: 0 };
+  const speed = Math.hypot(velocity.x, velocity.y);
+  HEADSHOT_PIPELINE_CONFIG.firePredictLead = speed > 4.2 ? 8.9 : 7.6;
+}
+let lockFrame = 0;
+let lastStableVector = null;
+
+function stabilizeLockIfCentered(vector, target, context, frame) {
+  const dx = Math.abs(vector.x - target.x);
+  const dy = Math.abs(vector.y - (target.y + HEADSHOT_PIPELINE_CONFIG.headZones.forehead));
+  if (dx < 2 && dy < 2) {
+    lockFrame = frame;
+    lastStableVector = vector;
+    return vector;
+  }
+  if (frame - lockFrame <= 5 && lastStableVector) return lastStableVector;
+  return vector;
+}
+function clampSubpixelDrift(vector, lastVector) {
+  const dx = Math.abs(vector.x - lastVector.x);
+  const dy = Math.abs(vector.y - lastVector.y);
+  if (dx < 0.3 && dy < 0.3) return lastVector;
+  return vector;
+}
+function lockIfCenterSnapped(vector, target, context) {
+  const dx = Math.abs(vector.x - context.cameraCenter.x);
+  const dy = Math.abs(vector.y - context.cameraCenter.y);
+  if (dx < 2 && dy < 2) {
+    return {
+      x: target.x,
+      y: target.y + HEADSHOT_PIPELINE_CONFIG.headZones.forehead
+    };
+  }
+  return vector;
+}
+function onHeadshotKillDetected(context) {
+  if (context.headshot === true) {
+    HeadshotAIBrain.reset();
+    updateSnapState(Date.now());
+  }
+}
+function overrideHeadIfHelmet(target, context) {
+  if (context.hasHelmet) {
+    const offset = HEADSHOT_PIPELINE_CONFIG.headZones["crown"];
+    return { x: target.x, y: target.y + offset };
+  }
+  return null; // không override nếu không có giáp
+}
+function applyHelmetSnapBias(vector, context) {
+  if (context.hasHelmet) {
+    return { x: vector.x, y: vector.y - 6 }; // kéo cao hơn
+  }
+  return vector;
+}
+function retryMultiZoneSnap(target, context) {
+  const zones = ["crown", "temple", "forehead"];
+  for (let z of zones) {
+    const y = target.y + HEADSHOT_PIPELINE_CONFIG.headZones[z];
+    if (y < context.cameraCenter.y) return { x: target.x, y };
+  }
+  return { x: target.x, y: target.y + HEADSHOT_PIPELINE_CONFIG.headZones.forehead };
+}
+function forceAbsoluteHeadLock(target) {
+  const y = target.y + HEADSHOT_PIPELINE_CONFIG.headZones["forehead"];
+  return { x: target.x, y };
+}
+
+function snapLoopForce(vector, target, times = 5) {
+  for (let i = 0; i < times; i++) {
+    vector = forceAbsoluteHeadLock(target);
+  }
+  return vector;
+}
+
+function forceAbsoluteHeadLock(target) {
+  const lockY = target.y + HEADSHOT_PIPELINE_CONFIG.headZones["forehead"];
+  return { x: target.x, y: lockY };
+}
+function snapLoopLock(vector, target, times = 3) {
+  for (let i = 0; i < times; i++) {
+    vector = forceAbsoluteHeadLock(target);
+  }
+  return vector;
+}
+function applySnapCurveTrajectory(vector, target, context) {
+  const dx = target.x - context.cameraCenter.x;
+  const dy = target.y - context.cameraCenter.y;
+  const curve = Math.atan2(dy, dx) * HEADSHOT_PIPELINE_CONFIG.snapCurveFactor;
+  return {
+    x: vector.x + Math.sin(curve) * 4,
+    y: vector.y + Math.cos(curve) * -3
+  };
+}
+function predictNextPose(context) {
+  if (context.velocity.y > 1.5) return 'jump';
+  if (context.pose === 'prone' && context.recentHitFrameDelta < 10) return 'stand';
+  return context.pose;
+}
+function dynamicZoneSelect(target, context) {
+  if (context.pose === 'jump') return 'crown';
+  if (context.hasHelmet === false) return 'temple';
+  if (context.velocity.x > 5) return 'eye';
+  return 'forehead';
+}
+function chainSnapZones(vector, target) {
+  const zones = ['crown', 'forehead', 'eye'];
+  for (let zone of zones) {
+    const offset = HEADSHOT_PIPELINE_CONFIG.headZones[zone] || -42;
+    vector = { x: target.x, y: target.y + offset };
+  }
+  return vector;
+}
+function correctOvershoot(vector, target) {
+  const dy = vector.y - target.y;
+  if (dy < -50) return { x: vector.x, y: vector.y + 10 };
+  return vector;
+}
+function resolvePoseJumpHead(target, context) {
+  if (context.pose === 'jump') {
+    const jumpBiasY = -HEADSHOT_PIPELINE_CONFIG.jumpCurveFactor * 2;
+    return { x: target.x, y: target.y + jumpBiasY };
+  }
+  return target;
+}
+let lastLockTarget = null;
+function applyGhostSnapMemoryLock(target, context) {
+  const dist = Math.hypot(target.x - context.cameraCenter.x, target.y - context.cameraCenter.y);
+  if (dist > 100 && lastLockTarget) return lastLockTarget;
+  lastLockTarget = target;
+  return target;
+}
+function forceHardLockAfterMiss(vector, target) {
+  if (HeadshotAIBrain.memory.missCount >= 2) {
+    const headY = target.y + HEADSHOT_PIPELINE_CONFIG.headZones["forehead"];
+    return { x: target.x, y: headY };
+  }
+  return vector;
+}
+function enforceHardHeadLock(vector, target, context) {
+  if (context.pose === 'stand' || context.streak >= 2) {
+    const zoneY = HEADSHOT_PIPELINE_CONFIG.headZones[HeadshotAIBrain.memory.lockedZone] || -36;
+    return { x: target.x, y: target.y + zoneY };
+  }
+  return vector;
+}
+function forceSnapIfCenterLocked(vector, target, context) {
+  const dx = Math.abs(target.x - context.cameraCenter.x);
+  const dy = Math.abs(target.y - context.cameraCenter.y);
+  const dist = Math.hypot(dx, dy);
+  if (dist < 20) {
+    const headY = target.y + HEADSHOT_PIPELINE_CONFIG.headZones['forehead'];
+    return { x: target.x, y: headY };
+  }
+  return vector;
+}
+function rejectIfDriftTooHigh(v, target) {
+  return null; // Cho phép snap luôn
+}
+const HeadshotAIBrain = {
+  memory: { lastVector: null, lastTargetId: null, hitHistory: [], missCount: 0, mode: "adaptive", lockedZone: "forehead" },
+  analyzeTarget(target, context) {
+    if (!target || !context) return null;
+    const isJumping = context.pose === 'jump';
+    const isZigzag = Math.abs(context.velocity.x) > 5;
+    const isClose = context.distance < 80;
+    let zone = "forehead";
+    if (isJumping) zone = "eye";
+    else if (isZigzag) zone = "temple";
+    else if (context.hasHelmet) zone = "chin";
+    else if (isClose) zone = "crown";
+    this.memory.lockedZone = zone;
+    return zone;
+  },
+  adjustVector(vector, target, context) {
+    const zone = this.analyzeTarget(target, context);
+    const yOffset = HEADSHOT_PIPELINE_CONFIG.headZones[zone] || -36;
+    const result = { x: vector.x, y: target.y + yOffset };
+    this.memory.lastVector = result;
+    return result;
+  },
+  updateResult(hit, offsetY) {
+    if (hit) {
+      this.memory.hitHistory.push(offsetY);
+      if (this.memory.hitHistory.length > 20) this.memory.hitHistory.shift();
+      this.memory.missCount = 0;
+    } else {
+      this.memory.missCount++;
+    }
+  },
+  getAdaptiveBias() {
+    const data = this.memory.hitHistory;
+    if (data.length === 0) return 0;
+    const avg = data.reduce((a, b) => a + b, 0) / data.length;
+    return avg * HEADSHOT_PIPELINE_CONFIG.heatBiasFactor;
+  },
+  reset() {
+    this.memory.hitHistory = [];
+    this.memory.missCount = 0;
+    this.memory.lastVector = null;
+    this.memory.mode = "adaptive";
+  }
+};
+
+function prioritizeTargets(targets, center) {
+  return targets.reduce((best, cur) => {
+    const d1 = Math.hypot(best.x - center.x, best.y - center.y);
+    const d2 = Math.hypot(cur.x - center.x, cur.y - center.y);
+    return d2 < d1 ? cur : best;
+  });
+}
+function applyFirePrediction(t, v) {
+  return { x: t.x + v.x * HEADSHOT_PIPELINE_CONFIG.firePredictLead, y: t.y + v.y * HEADSHOT_PIPELINE_CONFIG.firePredictLead };
+}
+function adaptiveCorrection(v) { return v; }
+function adjustByWeaponType(v) { return v; }
+function refineWithRecoilPattern(v) { return v; }
+function applyPoseResolver(v) { return v; }
+function applySnapCurve(v) { return v; }
+function applyGhostLockCheck(v) { return v; }
+function applyMapRegionBias(v) { return v; }
+function applyShieldCheck(v, shield) { return shield ? { x: v.x, y: v.y + HEADSHOT_PIPELINE_CONFIG.shieldYBias } : v; }
+function applyFlickResolver(v) { return v; }
+function applyChainLock(v) { return v; }
+function applyDynamicSnapPriority(v) { return v; }
+function applySubpixelPoseAiming(v) { return v; }
+function applyAntiAimResolver(v) { return v; }
+function applyZigzagResolver(v) { return v; }
+function applyBurstFireOverride(v) { return v; }
+function applySnapLoopAI(v) { return v; }
+function applyReactionCurve(v) { return v; }
+function updateHeatMapBias(v) { return v; }
+function applySnapTimingAI(v) { return v; }
+function applyJumpCurvePredict(v) { return v; }
+function applySwayTracker(v) { return v; }
+function rejectIfDriftTooHigh(v) { return v; }
+function estimateTrajectoryFromHistory() { return { x: 0, y: 0 }; }
+function stabilizeFinalVector(v) { return v; }
+function updateSnapState() {}
+function logSnapResult(res) {}
+function computeUnifiedHeadshotVector(predicted, context, history) { return { x: predicted.x, y: predicted.y }; }
+function computeConfidenceScore(context) { return 1.0; }
+
+function fullAdvancedHeadshot(targets, context, history = [], lastTarget = null) {
+	dynamicLeadBoost(context);
+ const zone = dynamicAngleZoneCompensate(context, predicted);
+ const override = overrideHardHeadLockIfMissed(context, predicted);
+const forceSnap = forcedHardSnapFallback(context, predicted);
+ if (forceSnap) vector = forceSnap;
+else if (override) vector = override;
+else vector = { x: predicted.x, y: predicted.y + HEADSHOT_PIPELINE_CONFIG.headZones[zone] };
+ vector = chainSnapZonesRetry(vector);
+vector = recheckSnapLoopIfMissed(vector, predicted, context);
+ vector = correctDownwardFlick(vector, predicted, context);
+vector = holdSnapAfterKill(context.frameCount || 0, context, vector);
+snapKillFrameReset(context, context.frameCount || 0);
+ vector = holdIfCamDirectionStable(context, vector);
+ vector = snapLoopForce(vector, predicted, 5);
+
+	const zone = selectSnapZoneByDistance(context, predicted);
+const override = overrideHardHeadLockIfMissed(context, predicted);
+if (override) vector = override;
+else vector = { x: predicted.x, y: predicted.y + HEADSHOT_PIPELINE_CONFIG.headZones[zone] };
+vector = chainSnapZonesRetry(vector);
+vector = snapLoopForce(vector, predicted, 5);
+	const frame = context.frameCount || 0;
+vector = clampSubpixelDrift(vector, history[0] || vector);
+vector = stabilizeLockIfCentered(vector, predicted, context, frame);
+vector = retryMultiZoneSnap(predicted, context);
+	vector = lockIfCenterSnapped(vector, predicted, context);
+vector = clampSubpixelDrift(vector, history[0] || vector);
+vector = stabilizeLockIfCentered(vector, predicted, context, context.frameCount || 0);
+	const helmetOverride = overrideHeadIfHelmet(predicted, context);
+if (helmetOverride) vector = helmetOverride;
+vector = applyHelmetSnapBias(vector, context);
+vector = retryMultiZoneSnap(predicted, context);
+vector = snapLoopForce(vector, predicted, 5);
+	context.pose = predictNextPose(context);
+const zone = dynamicZoneSelect(predicted, context);
+vector = HeadshotAIBrain.adjustVector(vector, predicted, { ...context, zone });
+vector = chainSnapZones(vector, predicted);
+vector = correctOvershoot(vector, predicted);
+vector = snapLoopForce(vector, predicted, 5);
+  const target = prioritizeTargets(targets, context.cameraCenter);
+  const predicted = applyFirePrediction(target, context.velocity);
+  context.target = predicted;
+  vector = forceSnapIfCenterLocked(vector, predicted, context);
+  let vector = computeUnifiedHeadshotVector(predicted, context, history);
+  let ghostTarget = applyGhostSnapMemoryLock(predicted, context);
+ghostTarget = resolvePoseJumpHead(ghostTarget, context);
+let lockedTarget = resolvePoseJumpHead(predicted, context);
+lockedTarget = applyGhostSnapMemoryLock(lockedTarget, context);
+stabilized = snapLoopForce(stabilized, predicted, 5);
+vector = forceAbsoluteHeadLock(lockedTarget);
+vector = snapLoopLock(vector, lockedTarget, 3);
+vector = computeUnifiedHeadshotVector(ghostTarget, context, history);
+vector = HeadshotAIBrain.adjustVector(vector, ghostTarget, context);
+vector = applySnapCurveTrajectory(vector, ghostTarget, context);
+vector = forceHardLockAfterMiss(vector, ghostTarget);
+  vector = enforceHardHeadLock(vector, predicted, context);
+  vector = HeadshotAIBrain.adjustVector(vector, predicted, context);
+  vector = adaptiveCorrection(vector);
+  vector = adjustByWeaponType(vector, context.weaponType);
+  vector = refineWithRecoilPattern(vector, context.recoilPattern);
+  vector = applyPoseResolver(vector, context.pose);
+  vector = applySnapCurve(vector, predicted);
+  vector = applyGhostLockCheck(vector, history);
+  vector = applyMapRegionBias(vector, context.mapRegion);
+  vector = applyShieldCheck(vector, context.hasShield);
+  vector = applyFlickResolver(vector, predicted, context);
+  vector = applyChainLock(vector, lastTarget, predicted);
+  vector = applyDynamicSnapPriority(vector, context);
+  vector = applySubpixelPoseAiming(vector, context.pose);
+  vector = applyAntiAimResolver(vector, history);
+  vector = applyZigzagResolver(vector, context.velocity.x);
+  vector = applyBurstFireOverride(vector, context.frameHold);
+  vector = applySnapLoopAI(vector);
+  vector = applyReactionCurve(vector, context);
+  vector = updateHeatMapBias(vector, predicted);
+  vector = applySnapTimingAI(vector, context);
+  vector = applyJumpCurvePredict(vector, context);
+  vector = applySwayTracker(vector, context.swayX, context.swayY);
+  const rejected = rejectIfDriftTooHigh(vector, predicted);
+  vector = rejected || vector;
+  const drift = estimateTrajectoryFromHistory();
+  vector = { x: vector.x + drift.x * 0.5, y: vector.y + drift.y * 0.5 };
+  const final = stabilizeFinalVector(vector, context, history[0] || vector);
+  updateSnapState(context.timestamp || Date.now());
+  HeadshotAIBrain.updateResult(true, final.y - predicted.y);
+  logSnapResult({ status: { finalOffsetY: final.y - predicted.y, confidence: computeConfidenceScore(context) } });
+  return final;
+  if (context.confirmedKill && context.headshot) {
+  onHeadshotKillDetected(context);
+}
+
+function enrichContext(raw) {
+  return {
+    ...raw,
+    weaponType: raw.weaponType || 'smg',
+    recoilPattern: raw.recoilPattern || [0, -1, -2, -1, 0],
+    velocity: raw.velocity || { x: 0, y: 0 },
+    cameraCenter: raw.cameraCenter || { x: 0, y: 0 },
+    pose: raw.pose || 'stand',
+    mapRegion: raw.mapRegion || 'urban',
+    hasShield: raw.hasShield || false,
+    swayX: raw.swayX || 0,
+    swayY: raw.swayY || 0,
+    zone: raw.zone || 'forehead',
+    reactionSpeed: raw.reactionSpeed || 0.8,
+    frameHold: raw.frameHold || 0,
+    timestamp: raw.timestamp || Date.now()
+  };
+}
+function computeDynamicHeadVector(target, context) {
+  const {
+    isJumping = false,
+    missed = false,
+    streak = 0,
+    crossColor = 'white',
+    distance = 30,
+    velocity = { x: 0, y: 0 },
+    verticalDrift = 0,
+    horizontalJerk = 0,
+    peekPattern = false,
+    zigzag = false,
+    frameHold = 0,
+    tiltAngle = 0,
+    cameraCenter = { x: target.x, y: target.y }
+  } = context
+
+  let offsetY = HEADSHOT_PIPELINE_CONFIG.baseOffsetY
+
+  if (isJumping && HEADSHOT_PIPELINE_CONFIG.jumpSnap) offsetY -= 5
+  if (missed && HEADSHOT_PIPELINE_CONFIG.missedSnap) offsetY -= 3
+  if (distance < 20) offsetY -= 6
+  if (streak > 0) offsetY -= 2 + streak * HEADSHOT_PIPELINE_CONFIG.streakBoostFactor
+  if (crossColor !== 'red' && HEADSHOT_PIPELINE_CONFIG.whiteCrossFallback) offsetY -= 3
+  if (verticalDrift < 0 && HEADSHOT_PIPELINE_CONFIG.velocityPredictY) offsetY += verticalDrift * 5
+  if (peekPattern && HEADSHOT_PIPELINE_CONFIG.peekMemoryEnabled) offsetY -= 2
+  if (frameHold > 250 && HEADSHOT_PIPELINE_CONFIG.holdFrameStreakBonus) offsetY -= 2
+
+  if (offsetY < HEADSHOT_PIPELINE_CONFIG.maxBoostY)
+    offsetY = HEADSHOT_PIPELINE_CONFIG.maxBoostY
+
+  let vectorY = target.y + offsetY
+  vectorY = Math.max(target.y + HEADSHOT_PIPELINE_CONFIG.minClampY, Math.min(vectorY, target.y + HEADSHOT_PIPELINE_CONFIG.maxClampY))
+
+  let vectorX = target.x
+  const xDrift = Math.abs(target.x - cameraCenter.x)
+
+  if (xDrift > 2 && HEADSHOT_PIPELINE_CONFIG.adaptiveDragX) {
+    vectorX = (target.x * 2 + cameraCenter.x) / 3
+  }
+
+  if (zigzag && HEADSHOT_PIPELINE_CONFIG.zigzagRedirectX) {
+    vectorX = (vectorX + velocity.x * 2) / 3
+  }
+
+  if (tiltAngle > 12 && HEADSHOT_PIPELINE_CONFIG.gyroTiltCorrection) {
+    vectorX -= tiltAngle * 0.2
+  }
+
+  return { x: vectorX, y: vectorY }
+}
+
+function fullHeadshotPipeline(target, currentContext) {
+  const vector = computeDynamicHeadVector(target, currentContext)
+  return {
+    pullVector: vector,
+    status: {
+      confidence: computeConfidenceScore(currentContext),
+      finalOffsetY: vector.y - target.y
+    }
+  }
+}
+
+function computeConfidenceScore(ctx) {
+  let score = 1.0
+  if (ctx.isJumping) score += 0.2
+  if (ctx.crossColor !== 'red') score -= 0.1
+  if (ctx.streak >= 3) score += 0.25
+  if (ctx.verticalDrift < 0) score += 0.15
+  if (ctx.zigzag) score -= 0.05
+  if (ctx.velocity.y < -3) score += 0.1
+  if (ctx.frameHold > 300) score += 0.05
+  return Math.min(1.5, Math.max(0.4, score))
+}
+
+function microHeadBiasAdjust(vector, target) {
+  return { x: vector.x, y: vector.y - 1.5 }
+}
+
+function eyeLineLock(vector, target) {
+  return { x: vector.x, y: Math.max(vector.y, target.y - 34) }
+}
+
+function foreheadVectorClamp(vector, target) {
+  const minY = target.y - 40
+  return { x: vector.x, y: Math.max(vector.y, minY) }
+}
+
+function missCorrectionBoost(vector, missed) {
+  return missed ? { x: vector.x, y: vector.y - 2 } : vector
+}
+
+function autoRecenter(vector, cameraCenter, target) {
+  const drift = target.x - cameraCenter.x
+  return Math.abs(drift) > 3 ? { x: (target.x * 2 + cameraCenter.x) / 3, y: vector.y } : vector
+}
+
+function streakPullEnhance(vector, streak) {
+  return streak >= 2 ? { x: vector.x, y: vector.y - 1.5 * streak } : vector
+}
+
+function decayOffsetByTime(vector, holdTime = 0) {
+  return holdTime > 300 ? { x: vector.x, y: vector.y - 1 } : vector
+}
+
+function poseAwareAdjust(vector, pose = 'stand') {
+  if (pose === 'crouch') return { x: vector.x, y: vector.y + 3 }
+  if (pose === 'jump') return { x: vector.x, y: vector.y - 4 }
+  return vector
+}
+
+function softTrack(vector, driftX) {
+  return Math.abs(driftX) > 2 ? { x: vector.x - driftX * 0.2, y: vector.y } : vector
+}
+
+function taperByHold(vector, holdFrames) {
+  return holdFrames > 400 ? { x: vector.x, y: vector.y - 1.5 } : vector
+}
+
+function armorAvoidanceAdjust(vector, hasHelmet) {
+  return !hasHelmet ? { x: vector.x, y: vector.y - 2 } : vector
+}
+
+function reactiveOffsetToContact(vector, contactFrameDelta) {
+  return contactFrameDelta < 2 ? { x: vector.x, y: vector.y - 2 } : vector
+}
+
+function noTouchShift(vector, hitCount) {
+  return hitCount === 0 ? { x: vector.x, y: vector.y - 2 } : vector
+}
+
+function lateralHoldCorrection(vector, velocityX) {
+  if (Math.abs(velocityX) > 4) {
+    return { x: vector.x, y: vector.y - 1.5 }
+  }
+  return vector
+}
+
+function deepAimCurve(current, target) {
+  return {
+    x: (current.x + target.x) / 2,
+    y: (current.y + target.y) / 2 - 2
+  }
+}
+
+function redZoneHardLock(crossColor, vector, target) {
+  return crossColor === 'red' ? { x: target.x, y: target.y - 28 } : vector
+}
+
+function crossSyncTimerLock(nearHeadTime, vector, target) {
+  return nearHeadTime > 150 ? { x: target.x, y: target.y - 30 } : vector
+}
+
+function autoFocusRecalibration(missCount, vector, target) {
+  return missCount >= 2 ? { x: target.x, y: target.y - 26 } : vector
+}
+
+function lockFrontalZone(targetAngle, vector) {
+  return targetAngle < 25 ? { x: vector.x, y: vector.y - 1.5 } : vector
+}
+
+function shiftLockControl(directionChanged, vector) {
+  return directionChanged ? { x: vector.x, y: vector.y - 1.5 } : vector
+}
+
+function hapticMatch(userPullBias, vector) {
+  return { x: vector.x + userPullBias.x, y: vector.y + userPullBias.y }
+}
+
+function layerLocking(region = 'forehead', target) {
+  const yOffset = region === 'eye' ? -32 : region === 'full' ? -24 : -36
+  return { x: target.x, y: target.y + yOffset }
+}
+
+function driftClamp(cameraDrift, vector, target) {
+  return cameraDrift < 1.5 ? vector : { x: target.x, y: target.y - 26 }
+}
+
+function trackEyeAxis(vector, eyeDelta) {
+  return { x: vector.x + eyeDelta.x * 0.5, y: vector.y + eyeDelta.y * 0.5 }
+}
+
+function adjustForHeadTurn(headAngle, vector) {
+  return { x: vector.x + Math.sin(headAngle * Math.PI / 180) * 2, y: vector.y }
+}
+
+function applySubpixelBias(vector) {
+  return {
+    x: Math.round(vector.x * 10) / 10,
+    y: Math.round(vector.y * 10) / 10
+  }
+}
 
 
 
