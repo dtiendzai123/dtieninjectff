@@ -16427,7 +16427,101 @@ function updateAimFix(currInput) {
     return out;
 }
 
-    
+    const GlideCfg = {
+  baseX: 1.0,
+  baseY: 1.0,
+
+  // tăng theo tầng khi kéo lên
+  boostY: [1.15, 1.3, 1.45, 1.2], // hips, chest, neck, near-stop
+  reduceX: [0.0, 0.0, 0.0, 0.0],
+
+  // phản hồi nhanh
+  ramp: 0.6,
+  decay: 0.35,
+
+  // bỏ delay đầu
+  instant: 0.28,
+
+  // ổn định khi gần dừng
+  smoothBase: 0.1,
+  smoothUp: 0.04,
+  brake: 0.5,          // phanh khi gần dừng
+
+  // ngưỡng phân tầng theo độ mạnh vuốt lên
+  zone: {
+    hips: 0.002,
+    chest: 0.006,
+    neck: 0.012
+  }
+};
+    const glideState = {
+  sensX: GlideCfg.baseX,
+  sensY: GlideCfg.baseY,
+  prevIn: {x:0,y:0},
+  prevOut: {x:0,y:0}
+};
+
+function getDelta(curr, prev){
+  return { dx: curr.x - prev.x, dy: curr.y - prev.y };
+}
+function isUp(d){ return d.dy > 0.001; }
+
+
+    function pickZone(dy){
+  if (dy < GlideCfg.zone.hips)  return 0; // hips
+  if (dy < GlideCfg.zone.chest) return 1; // chest
+  if (dy < GlideCfg.zone.neck)  return 2; // neck
+  return 3; // gần điểm dừng (chuẩn bị hãm)
+}
+
+    function updateGlide(currInput){
+
+  const d = getDelta(currInput, glideState.prevIn);
+  const up = isUp(d);
+
+  let targetX = GlideCfg.baseX;
+  let targetY = GlideCfg.baseY;
+
+  if (up){
+    const z = pickZone(d.dy);
+
+    // chọn hệ số theo tầng
+    targetY = GlideCfg.baseY * GlideCfg.boostY[z];
+    targetX = GlideCfg.baseX * GlideCfg.reduceX[z];
+
+    // ramp nhanh để “bật” ngay
+    glideState.sensY += (targetY - glideState.sensY) * GlideCfg.ramp;
+    glideState.sensX += (targetX - glideState.sensX) * GlideCfg.ramp;
+  } else {
+    // trả về bình thường nhanh
+    glideState.sensY += (GlideCfg.baseY - glideState.sensY) * GlideCfg.decay;
+    glideState.sensX += (GlideCfg.baseX - glideState.sensX) * GlideCfg.decay;
+  }
+
+  // áp dụng nhạy
+  let out = {
+    x: d.dx * glideState.sensX,
+    y: d.dy * glideState.sensY
+  };
+
+  // 🔥 instant burst bỏ trễ đầu
+  if (up) out.y += d.dy * GlideCfg.instant;
+
+  // 🧱 “phanh” khi gần điểm dừng (zone 3)
+  if (up && pickZone(d.dy) === 3){
+    out.y *= GlideCfg.brake;
+  }
+
+  // 🎛 smoothing động (giảm khi kéo lên, tăng khi bình thường)
+  const sm = up ? GlideCfg.smoothUp : GlideCfg.smoothBase;
+  out.x = glideState.prevOut.x + (out.x - glideState.prevOut.x) * (1 - sm);
+  out.y = glideState.prevOut.y + (out.y - glideState.prevOut.y) * (1 - sm);
+
+  glideState.prevOut = out;
+  glideState.prevIn = currInput;
+
+  return out;
+}
 
     
 
