@@ -16090,7 +16090,7 @@ function updateCombatAI(entity, crosshair, prevCrosshair, prevHead, prevVel, rec
 }
     const MovementMemory = {
     history: [],
-    max: 20
+    max: 9999
 };
 
 function updateMemory(entity) {
