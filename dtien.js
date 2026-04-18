@@ -15990,8 +15990,104 @@ hardLockHead(crosshair, head);
     // 5. giữ ổn định
     microHold(crosshair, head);
 }
+function predictAdvancedHead(entity, prevVel, dt) {
 
+    const vel = entity.velocity || {x:0,y:0};
 
+    const ax = vel.x - prevVel.x;
+    const ay = vel.y - prevVel.y;
+
+    return {
+        x: entity.head.x + vel.x * dt * 1.2 + ax * dt * 2.0,
+        y: entity.head.y + vel.y * dt * 1.2 + ay * dt * 2.0
+    };
+}
+    function ultraSnapAI(crosshair, head) {
+
+    crosshair.x += (head.x - crosshair.x) * 0.97;
+    crosshair.y += (head.y - crosshair.y) * 1.0;
+}
+    function recoilControlAI(crosshair, recoil, head) {
+
+    if (!recoil) return;
+
+    // bù giật + giữ head
+    crosshair.x -= recoil.x * 1.1;
+    crosshair.y -= recoil.y * 1.15;
+
+    // anti tụt
+    if (crosshair.y < head.y) {
+        crosshair.y += (head.y - crosshair.y) * 0.6;
+    }
+}
+    
+function trackingAI(crosshair, head) {
+
+    const dx = head.x - crosshair.x;
+    const dy = head.y - crosshair.y;
+
+    crosshair.x += dx * 0.7;
+    crosshair.y += dy * 0.75;
+}
+    function antiStrafeAI(crosshair, head, prevHead) {
+
+    const vx = head.x - prevHead.x;
+
+    // kéo theo hướng đổi
+    crosshair.x += vx * 0.9;
+}
+    function hardLockAI(crosshair, head) {
+
+    const dx = Math.abs(head.x - crosshair.x);
+    const dy = Math.abs(head.y - crosshair.y);
+
+    if (dx < 0.03 && dy < 0.03) {
+        crosshair.x = head.x;
+        crosshair.y = head.y;
+    }
+}
+    function stabilizeAI(crosshair, prevCrosshair, head) {
+
+    // zero drift
+    if (Math.abs(crosshair.x - head.x) < 0.01)
+        crosshair.x = head.x;
+
+    if (Math.abs(crosshair.y - head.y) < 0.01)
+        crosshair.y = head.y;
+
+    // chống rung
+    const dx = crosshair.x - prevCrosshair.x;
+    const dy = crosshair.y - prevCrosshair.y;
+
+    if (Math.abs(dx) < 0.002) crosshair.x = prevCrosshair.x;
+    if (Math.abs(dy) < 0.002) crosshair.y = prevCrosshair.y;
+}
+    // ===== FULL COMBAT AI AIM =====
+function updateCombatAI(entity, crosshair, prevCrosshair, prevHead, prevVel, recoil, dt) {
+
+    if (!entity?.head) return;
+
+    // 1. predict head nâng cao
+    const head = predictAdvancedHead(entity, prevVel, dt);
+
+    // 2. snap cực nhanh
+    ultraSnapAI(crosshair, head);
+
+    // 3. tracking
+    trackingAI(crosshair, head);
+
+    // 4. chống strafe
+    antiStrafeAI(crosshair, head, prevHead);
+
+    // 5. recoil control
+    recoilControlAI(crosshair, recoil, head);
+
+    // 6. lock head
+    hardLockAI(crosshair, head);
+
+    // 7. stabilize
+    stabilizeAI(crosshair, prevCrosshair, head);
+}
     
 
 
