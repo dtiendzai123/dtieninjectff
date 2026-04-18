@@ -16186,13 +16186,18 @@ function updateMemory(entity) {
 }
     
 const Assist = {
-  baseSensX: 10.0,
-  baseSensY: 10.0,
-  boostY: 5.25,        // tăng lực kéo lên
-  boostX: 0.0,        // giữ ngang ổn định
-  ramp: 1.15,          // tăng dần khi đang kéo
-  decay: 0.2,          // giảm nhanh khi thả
-  smooth: 0.001         // làm mượt vi sai
+  baseSensX: 1.0,
+  baseSensY: 1.0,
+
+  boostY: 100.45,   // tăng mạnh kéo lên
+  boostX: 0.0,    // giữ ngang ổn định
+
+  ramp: 10.55,     // tăng cực nhanh (gần như tức thì)
+  decay: 0.35,    // trả về nhanh khi thả
+
+  smooth: 0.0,   // giảm delay smoothing
+
+  instantBurst: 1.25 // 🔥 lực boost ngay frame đầu
 };
 
 let state = {
@@ -16200,15 +16205,25 @@ let state = {
   sensY: Assist.baseSensY,
   prev: { x: 0, y: 0 }
 };
+function applyInstantBurst(curr, prev, out) {
 
+  const pullingUp = (curr.y - prev.y) > 0.001;
+
+  if (pullingUp) {
+    out.y += curr.y * Assist.instantBurst;
+  }
+
+  return out;
+}
 function isPullingUp(curr, prev) {
   return (curr.y - prev.y) > 0.001;
 }
 
-function updateAssist(currInput /* {x,y} */) {
-  const pullingUp = isPullingUp(currInput, state.prev);
+function updateAssist(currInput) {
 
-  // ramp / decay
+  const pullingUp = (currInput.y - state.prev.y) > 0.001;
+
+  // 🔥 ramp cực nhanh
   if (pullingUp) {
     state.sensY += (Assist.baseSensY * Assist.boostY - state.sensY) * Assist.ramp;
     state.sensX += (Assist.baseSensX * Assist.boostX - state.sensX) * Assist.ramp;
@@ -16217,18 +16232,131 @@ function updateAssist(currInput /* {x,y} */) {
     state.sensX += (Assist.baseSensX - state.sensX) * Assist.decay;
   }
 
-  // áp dụng + smoothing nhẹ
+  // apply sensitivity
   let out = {
     x: currInput.x * state.sensX,
     y: currInput.y * state.sensY
   };
 
+  // 🔥 burst ngay frame đầu
+  out = applyInstantBurst(currInput, state.prev, out);
+
+  // smoothing nhẹ (giảm delay)
   out.x = state.prev.x + (out.x - state.prev.x) * (1 - Assist.smooth);
   out.y = state.prev.y + (out.y - state.prev.y) * (1 - Assist.smooth);
 
   state.prev = out;
   return out;
 }
+const SensConfig = {
+    baseX: 1.0,
+    baseY: 1.0,
+
+    // giả lập DPI boost
+    dpiScale: 8.3,
+
+    // tăng nhạy khi kéo
+    boostX: 0.0,
+    boostY: 100.5,
+
+    // phản hồi nhanh
+    ramp: 100.6,
+    decay: 0.35,
+
+    // burst ngay frame đầu
+    instant: 0.28,
+    // chống rung
+    smooth: 0.08
+};
+    
+function getInputDelta(curr, prev) {
+    return {
+        dx: curr.x - prev.x,
+        dy: curr.y - prev.y
+    };
+}
+
+function isPullingUp(delta) {
+    return delta.dy > 0.001;
+}
+    
+const sensState = {
+    sensX: SensConfig.baseX,
+    sensY: SensConfig.baseY,
+    prevOut: {x: 0, y: 0},
+    prevInput: {x: 0, y: 0}
+};
+    function updateSensitivity(currInput) {
+
+    const delta = getInputDelta(currInput, sensState.prevInput);
+    const pullingUp = isPullingUp(delta);
+
+    // 🔥 ramp nhanh
+    if (pullingUp) {
+        sensState.sensY += (SensConfig.baseY * SensConfig.boostY - sensState.sensY) * SensConfig.ramp;
+        sensState.sensX += (SensConfig.baseX * SensConfig.boostX - sensState.sensX) * SensConfig.ramp;
+    } else {
+        sensState.sensY += (SensConfig.baseY - sensState.sensY) * SensConfig.decay;
+        sensState.sensX += (SensConfig.baseX - sensState.sensX) * SensConfig.decay;
+    }
+
+    // apply DPI scale
+    let out = {
+        x: delta.dx * sensState.sensX * SensConfig.dpiScale,
+        y: delta.dy * sensState.sensY * SensConfig.dpiScale
+    };
+
+    // 🔥 instant boost (cắt delay)
+    if (pullingUp) {
+        out.y += delta.dy * SensConfig.instant;
+    }
+
+    // smoothing nhẹ (tránh rung)
+    out.x = sensState.prevOut.x + (out.x - sensState.prevOut.x) * (1 - SensConfig.smooth);
+    out.y = sensState.prevOut.y + (out.y - sensState.prevOut.y) * (1 - SensConfig.smooth);
+
+    sensState.prevOut = out;
+    sensState.prevInput = currInput;
+
+    return out;
+}
+    
+const HzBoost = {
+    inputBoost: 2.0,      // xử lý input nhiều hơn
+    smoothing: 0.06,      // giảm delay
+    response: 1.0,        // phản hồi nhanh
+    microAdjust: 0.001     // chỉnh vi sai
+};
+    function processInput120Hz(currInput) {
+
+    // chạy 2 lần / frame
+    let out = applyInput(currInput);
+    out = applyInput(out);
+
+    return out;
+}
+    
+function applyInput(input) {
+
+    let out = {
+        x: input.x * HzBoost.inputBoost,
+        y: input.y * HzBoost.inputBoost
+    };
+
+    // giảm delay
+    out.x = state.prev.x + (out.x - state.prev.x) * HzBoost.response;
+    out.y = state.prev.y + (out.y - state.prev.y) * HzBoost.response;
+
+    // micro adjust (mượt hơn)
+    out.x += (input.x - out.x) * HzBoost.microAdjust;
+    out.y += (input.y - out.y) * HzBoost.microAdjust;
+
+    state.prev = out;
+
+    return out;
+}
+    
+
 
 
     function gameLoop(state) {
