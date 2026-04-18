@@ -16088,8 +16088,147 @@ function updateCombatAI(entity, crosshair, prevCrosshair, prevHead, prevVel, rec
     // 7. stabilize
     stabilizeAI(crosshair, prevCrosshair, head);
 }
-    
+    const MovementMemory = {
+    history: [],
+    max: 20
+};
 
+function updateMemory(entity) {
+
+    MovementMemory.history.push({
+        x: entity.head.x,
+        y: entity.head.y,
+        vx: entity.velocity.x,
+        vy: entity.velocity.y
+    });
+
+    if (MovementMemory.history.length > MovementMemory.max) {
+        MovementMemory.history.shift();
+    }
+}
+    function detectStrafePattern() {
+
+    const h = MovementMemory.history;
+    if (h.length < 6) return 0;
+
+    let flips = 0;
+
+    for (let i = 2; i < h.length; i++) {
+        if (Math.sign(h[i].vx) !== Math.sign(h[i-1].vx)) {
+            flips++;
+        }
+    }
+
+    return flips / h.length; // càng cao = càng spam strafe
+}
+    function predictDirectionShift() {
+
+    const h = MovementMemory.history;
+    if (h.length < 3) return {x:0,y:0};
+
+    const last = h[h.length - 1];
+    const prev = h[h.length - 2];
+
+    const dvx = last.vx - prev.vx;
+    const dvy = last.vy - prev.vy;
+
+    return {
+        x: dvx * 2.0,
+        y: dvy * 2.0
+    };
+}
+    function predictHeadAI(entity, dt) {
+
+    const vel = entity.velocity;
+    const shift = predictDirectionShift();
+    const strafe = detectStrafePattern();
+
+    let boost = 1.2;
+
+    // nếu spam strafe → tăng predict
+    if (strafe > 0.3) {
+        boost = 1.5;
+    }
+
+    return {
+        x: entity.head.x + vel.x * dt * boost + shift.x,
+        y: entity.head.y + vel.y * dt * boost + shift.y
+    };
+}
+    function antiStrafeBoost(crosshair, head) {
+
+    const h = MovementMemory.history;
+    if (h.length < 2) return;
+
+    const last = h[h.length - 1];
+    const prev = h[h.length - 2];
+
+    const vx = last.vx - prev.vx;
+
+    crosshair.x += vx * 1.0;
+}
+    function updateMovementAI(entity, crosshair, dt) {
+
+    if (!entity?.head) return;
+
+    // 1. lưu lịch sử
+    updateMemory(entity);
+
+    // 2. predict head
+    const predicted = predictHeadAI(entity, dt);
+
+    // 3. kéo theo predict
+    crosshair.x += (predicted.x - crosshair.x) * 0.75;
+    crosshair.y += (predicted.y - crosshair.y) * 0.8;
+
+    // 4. anti strafe
+    antiStrafeBoost(crosshair, predicted);
+}
+    
+const Assist = {
+  baseSensX: 1.0,
+  baseSensY: 1.0,
+  boostY: 2.25,        // tăng lực kéo lên
+  boostX: 0.0,        // giữ ngang ổn định
+  ramp: 0.15,          // tăng dần khi đang kéo
+  decay: 0.2,          // giảm nhanh khi thả
+  smooth: 0.001         // làm mượt vi sai
+};
+
+let state = {
+  sensX: Assist.baseSensX,
+  sensY: Assist.baseSensY,
+  prev: { x: 0, y: 0 }
+};
+
+function isPullingUp(curr, prev) {
+  return (curr.y - prev.y) > 0.001;
+}
+
+function updateAssist(currInput /* {x,y} */) {
+  const pullingUp = isPullingUp(currInput, state.prev);
+
+  // ramp / decay
+  if (pullingUp) {
+    state.sensY += (Assist.baseSensY * Assist.boostY - state.sensY) * Assist.ramp;
+    state.sensX += (Assist.baseSensX * Assist.boostX - state.sensX) * Assist.ramp;
+  } else {
+    state.sensY += (Assist.baseSensY - state.sensY) * Assist.decay;
+    state.sensX += (Assist.baseSensX - state.sensX) * Assist.decay;
+  }
+
+  // áp dụng + smoothing nhẹ
+  let out = {
+    x: currInput.x * state.sensX,
+    y: currInput.y * state.sensY
+  };
+
+  out.x = state.prev.x + (out.x - state.prev.x) * (1 - Assist.smooth);
+  out.y = state.prev.y + (out.y - state.prev.y) * (1 - Assist.smooth);
+
+  state.prev = out;
+  return out;
+}
 
 
     function gameLoop(state) {
