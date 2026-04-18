@@ -16186,11 +16186,11 @@ function updateMemory(entity) {
 }
     
 const Assist = {
-  baseSensX: 1.0,
-  baseSensY: 1.0,
-  boostY: 2.25,        // tăng lực kéo lên
+  baseSensX: 10.0,
+  baseSensY: 10.0,
+  boostY: 5.25,        // tăng lực kéo lên
   boostX: 0.0,        // giữ ngang ổn định
-  ramp: 0.15,          // tăng dần khi đang kéo
+  ramp: 1.15,          // tăng dần khi đang kéo
   decay: 0.2,          // giảm nhanh khi thả
   smooth: 0.001         // làm mượt vi sai
 };
