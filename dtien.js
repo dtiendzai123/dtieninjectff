@@ -13229,13 +13229,20 @@ const HEADLOCKCONFIG = {
     // limiter
     maxDrag: 0.95
 };
-  const HEAD_CENTER_Y = -0.0096;   // thay vì -0.0102 (mép trên)
-   const ENTER_TOP = -0.0118;
+const HEAD_CENTER_Y = -0.0096;
+
+const HEAD_TOP = -0.0115;
+const HEAD_BOT = -0.0088;
+
+// ngưỡng cổ (gate)
+const NECK_GATE = -0.0085;
+
+// vùng vào/giữ
+const ENTER_TOP = -0.0118;
 const ENTER_BOT = -0.0085;
 
 const HOLD_TOP  = -0.0115;
 const HOLD_BOT  = -0.0088;
-
 function inRange(y, top, bot) {
   return y >= top && y <= bot;
 }
@@ -13301,8 +13308,55 @@ function recoilComp(y, recoilY) {
 
     
 function updateAimY(state) {
-  const y = holdLockHeadY(state);
-  state.prevY = y;
+
+  let y = state.currentY;
+  const dyInput = state.inputDeltaY; // lực kéo tay (âm = kéo lên)
+
+  // ===== 1. MOMENTUM BOOST (kéo nhẹ vẫn bay qua cổ)
+  let velocity = state.velocityY || 0;
+
+  // tăng tốc khi kéo lên
+  if (dyInput < 0) {
+    velocity += dyInput * 2.8;   // boost mạnh
+  } else {
+    velocity += dyInput * 0.6;   // kéo xuống yếu hơn
+  }
+
+  // ===== 2. DAMPING gần head (tránh vọt)
+  const distToHead = Math.abs(y - HEAD_CENTER_Y);
+  if (distToHead < 0.002) {
+    velocity *= 0.5; // giảm tốc khi gần
+  }
+
+  // ===== 3. APPLY VELOCITY
+  y += velocity;
+
+  // ===== 4. ONE-WAY GATE (đã qua cổ → không tụt)
+  if (state.passedNeck) {
+    if (y > NECK_GATE) y = NECK_GATE; // cấm xuống dưới cổ
+  } else {
+    if (y < NECK_GATE) state.passedNeck = true;
+  }
+
+  // ===== 5. ENTER / HOLD HEAD
+  if (!state.locked) {
+    if (y >= ENTER_TOP && y <= ENTER_BOT) {
+      state.locked = true;
+    }
+  } else {
+    // giữ chặt trong head window
+    if (y > HOLD_BOT) y = HOLD_BOT;
+    if (y < HOLD_TOP) y = HOLD_TOP;
+  }
+
+  // ===== 6. CLAMP CUỐI
+  if (y > HEAD_BOT) y = HEAD_BOT;
+  if (y < HEAD_TOP) y = HEAD_TOP;
+
+  // ===== 7. LƯU STATE
+  state.velocityY = velocity * 0.85; // decay
+  state.currentY = y;
+
   return y;
 }
 
