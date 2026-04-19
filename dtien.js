@@ -13229,7 +13229,55 @@ const HEADLOCKCONFIG = {
     // limiter
     maxDrag: 0.95
 };
-   function isOnHead(crosshair, head) {
+  const HEAD_CENTER_Y = -0.0096;   // thay vì -0.0102 (mép trên)
+   
+function clampHead(y) {
+  const TOP = -0.0115;   // đỉnh đầu
+  const BOT = -0.0088;   // đáy vùng head
+  return Math.max(TOP, Math.min(BOT, y));
+}
+
+function predictY(state, baseY) {
+  const t = state.distance / state.bulletSpeed; // time-of-flight
+  return baseY + state.velocityY * t;
+}
+    function smoothY(prevY, targetY) {
+  const alpha = 0.65; // 0.5–0.8
+  return prevY * (1 - alpha) + targetY * alpha;
+}
+    function compensateRecoil(y, recoilY) {
+  return y - recoilY * 0.8; // scale theo súng
+}
+
+function lockHead(currentY, targetY, locked) {
+  return locked ? Math.min(currentY, targetY) : targetY;
+}
+    
+    
+
+
+function getStableHeadY(state) {
+  // 1. base center
+  let y = HEAD_CENTER_Y;
+
+  // 2. predict theo time-of-flight
+  y = predictY(state, y);
+
+  // 3. bù recoil
+  y = compensateRecoil(y, state.recoilY);
+
+  // 4. clamp trong vùng head
+  y = clampHead(y);
+
+  // 5. smooth chống rung
+  y = smoothY(state.prevY, y);
+
+  // 6. lock cứng khi đã dính
+  y = lockHead(state.currentY, y, state.locked);
+
+  return y;
+}
+    function isOnHead(crosshair, head) {
 
     const dx = head.x - crosshair.x;
     const dy = head.y - crosshair.y;
