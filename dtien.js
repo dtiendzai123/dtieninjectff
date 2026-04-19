@@ -14376,7 +14376,31 @@ const BODY_Y_OFFSETS = {
 };
 const targetY = BODY_Y_OFFSETS.HEAD;
     // fallback nếu không có bone thật
-function estimateBone(entity) {
+function getPerfectHeadY(state) {
+
+    let targetY = BASE_HEAD_Y;
+
+    // 🔥 predict chuyển động
+    targetY += state.velocityY * 0.6;
+
+    // 🔥 anti over gần
+    if (state.distance < 5) {
+        targetY += 0.0015;
+    }
+
+    // 🔥 drag nhỏ vẫn hút head
+    if (state.dragForce < 0.01) {
+        targetY = BASE_HEAD_Y;
+    }
+
+    // 🔥 lock rồi là không tụt
+    if (state.locked) {
+        targetY = Math.min(state.currentY, targetY);
+    }
+
+    return targetY;
+}
+    function estimateBone(entity) {
     const baseY = entity.position.y;
 
     return {
