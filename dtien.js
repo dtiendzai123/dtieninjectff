@@ -13230,7 +13230,48 @@ const HEADLOCKCONFIG = {
     maxDrag: 0.95
 };
   const HEAD_CENTER_Y = -0.0096;   // thay vì -0.0102 (mép trên)
-   
+   const ENTER_TOP = -0.0118;
+const ENTER_BOT = -0.0085;
+
+const HOLD_TOP  = -0.0115;
+const HOLD_BOT  = -0.0088;
+
+function inRange(y, top, bot) {
+  return y >= top && y <= bot;
+}
+function holdLockHeadY(state) {
+
+  // 1. base + offset động
+  let targetY = HEAD_CENTER_Y + dynamicOffset(state);
+
+  // 2. quyết định vào/giữ lock
+  if (!state.locked) {
+    // chỉ lock khi vào vùng ENTER
+    if (inRange(targetY, ENTER_TOP, ENTER_BOT)) {
+      state.locked = true;
+    }
+  } else {
+    // đã lock → luôn ép trong HOLD window
+    if (!inRange(targetY, HOLD_TOP, HOLD_BOT)) {
+      // kéo về biên gần nhất của window
+      targetY = Math.max(HOLD_TOP, Math.min(HOLD_BOT, targetY));
+    }
+  }
+
+  // 3. clamp an toàn cuối
+  if (targetY > HEAD_BOT) targetY = HEAD_BOT;
+  if (targetY < HEAD_TOP) targetY = HEAD_TOP;
+
+  // 4. smoothing nhẹ để tránh jitter
+  const alpha = state.distance < 6 ? 0.75 : 0.6;
+  const y = state.prevY * (1 - alpha) + targetY * alpha;
+
+  return y;
+}
+    
+
+
+    
 function clampHead(y) {
   const TOP = -0.0115;   // đỉnh đầu
   const BOT = -0.0088;   // đáy vùng head
@@ -13259,7 +13300,11 @@ function recoilComp(y, recoilY) {
     
 
     
-
+function updateAimY(state) {
+  const y = holdLockHeadY(state);
+  state.prevY = y;
+  return y;
+}
 
     
 
