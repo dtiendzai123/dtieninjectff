@@ -13319,7 +13319,7 @@ function updateAimY(state) {
 
   // tăng tốc khi kéo lên
   if (dyInput < 0) {
-    velocity += dyInput * 2.8;   // boost mạnh
+    velocity += dyInput * 10.8;   // boost mạnh
   } else {
     velocity += dyInput * 0.6;   // kéo xuống yếu hơn
   }
