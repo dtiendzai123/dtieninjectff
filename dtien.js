@@ -13236,6 +13236,36 @@ function clampHead(y) {
   const BOT = -0.0088;   // đáy vùng head
   return Math.max(TOP, Math.min(BOT, y));
 }
+function smoothY(prevY, targetY, distance) {
+  // xa → mượt hơn, gần → phản hồi nhanh hơn
+  const alpha = distance < 6 ? 0.75 : 0.55;
+  return prevY * (1 - alpha) + targetY * alpha;
+}
+function microAdjust(y, velocityY) {
+  return y + velocityY * 0.2; // nhẹ, tránh over-predict
+}
+    
+function antiOver(y, distance) {
+  if (distance < 5) return y + 0.001; 
+  return y;
+}
+
+
+function recoilComp(y, recoilY) {
+  return y - recoilY * 1.0;
+}
+    
+
+    
+
+    
+
+
+    
+
+
+
+
 
 function predictY(state, baseY) {
   const t = state.distance / state.bulletSpeed; // time-of-flight
@@ -13254,7 +13284,27 @@ function lockHead(currentY, targetY, locked) {
 }
     
     
+function getStableAimY(state) {
 
+  let y = HEAD_CENTER_Y;
+
+  // 1. micro adjust theo chuyển động
+  y = microAdjust(y, state.velocityY);
+
+  // 2. chống vọt gần
+  y = antiOver(y, state.distance);
+
+  // 3. bù recoil
+  y = recoilComp(y, state.recoilY);
+
+  // 4. clamp vùng head
+  y = clampHead(y);
+
+  // 5. smoothing mượt
+  y = smoothY(state.prevY, y, state.distance);
+
+  return y;
+}
 
 function getStableHeadY(state) {
   // 1. base center
