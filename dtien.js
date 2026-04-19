@@ -16942,8 +16942,6 @@ function applySubpixelBias(vector) {
   }
 }
 
-const fs = require('fs');
-const { execSync } = require('child_process');
 
 // 🛠️ [1] MASTER CONFIGURATION (Hợp nhất từ tất cả các file)
 const GOD_CONFIG = {
