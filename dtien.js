@@ -17034,68 +17034,6 @@ const GOD_CONFIG = {
     }
 };
 
-// 🧠 [2] CORE ENGINE - BỘ NÃO XỬ LÝ TRUNG TÂM
-class OmniverseUltimate {
-    constructor() {
-        this.path = "/sdcard/mtriet_genesis";
-        this.lastAimPos = { x: 0, y: 0 };
-        this.currentWeapon = "rifle";
-        if (!fs.existsSync(this.path)) fs.mkdirSync(this.path);
-    }
-
-    // ⚡ KÍCH HOẠT 70 MODULES & KERNEL TWEAKS
-    applyKernelTweaks() {
-        console.log("[+] Đang kích hoạt 70 Modules Fusion & Ép xung 32000Hz...");
-        try {
-            for (let i = 1; i <= 70; i++) {
-                execSync(`setprop persist.sys.opt.${i} 1`);
-            }
-            const props = [
-                `setprop persist.sys.recoil.kill ${GOD_CONFIG.system.recoilKill}`,
-                `setprop persist.sys.touch.sampling 32000`,
-                `setprop persist.sys.y_axis_multiplier 2500000.0`,
-                `setprop persist.sys.friction.negative ${GOD_CONFIG.system.friction}`,
-                `setprop persist.sys.aim.lock_strength 1.0`
-            ];
-            props.forEach(p => execSync(p));
-            console.log("✅ Kernel Tweaks: SUCCESS");
-        } catch (e) { console.log("[-] Kernel Tweaks: FAILED (Check Root)"); }
-    }
-
-    // 🎯 THUẬT TOÁN NEURAL 4D AIMLOCK (Hợp nhất AI & C#)
-    calculateAim(current, target, isJumping, isDucking) {
-        let headY = target.y - 45; // Vị trí đầu cơ bản
-        
-        // Bù trừ vị trí theo trạng thái (Từ AIMLOCK-DEv.js)
-        if (isJumping) headY += GOD_CONFIG.prediction.jumpOffset;
-        if (isDucking) headY += GOD_CONFIG.prediction.duckOffset;
-
-        // Dự đoán Neural 4D (Từ AIMKILL.js)
-        const predictX = target.x + (target.vx * GOD_CONFIG.prediction.intensity);
-        const predictY = headY + (target.vy * GOD_CONFIG.prediction.intensity);
-
-        // Tính toán độ bám (Hợp nhất Logic 75% bám của C# và Hardlock 100%)
-        const deltaX = predictX - current.x;
-        const deltaY = predictY - current.y;
-
-        // Áp dụng Smoothing & iOS Motion
-        const smooth = GOD_CONFIG.physics.smoothness;
-        const finalX = current.x + (deltaX * smooth * GOD_CONFIG.aim.lockStrength);
-        const finalY = current.y + (deltaY * smooth * GOD_CONFIG.aim.lockStrength);
-
-        return this.applyAntiShake({ x: finalX, y: finalY });
-    }
-
-    // 🌊 HỆ THỐNG CHỐNG RUNG (ANTI-SHAKE 98.5%)
-    applyAntiShake(aimPos) {
-        const reduction = GOD_CONFIG.physics.antiShake;
-        const stabilized = {
-            x: aimPos.x * (1 - reduction) + this.lastAimPos.x * reduction,
-            y: aimPos.y * (1 - reduction) + this.lastAimPos.y * reduction
-        };
-        this.lastAimPos = stabilized;
-        return stabilized;
-    }
 
     
  
