@@ -13211,14 +13211,14 @@ const HEADLOCKCONFIG = {
 };
    const PARAM = {
     // kéo
-    dragX: 0.42,
-    dragY: 0.9,
+    dragX: 0.0,
+    dragY: 10.9,
 
     // lock
     lockStrength: 1.82,
 
     // correction
-    correction: 0.45,
+    correction: 1.45,
 
     // recoil
     recoilFix: 1.05,
@@ -13227,7 +13227,7 @@ const HEADLOCKCONFIG = {
     stability: 0.9,
 
     // limiter
-    maxDrag: 0.95
+    maxDrag: 10.95
 };
 const HEAD_CENTER_Y = -0.0096;
 
@@ -13319,7 +13319,7 @@ function updateAimY(state) {
 
   // tăng tốc khi kéo lên
   if (dyInput < 0) {
-    velocity += dyInput * 10.8;   // boost mạnh
+    velocity += dyInput * 5.8;   // boost mạnh
   } else {
     velocity += dyInput * 0.6;   // kéo xuống yếu hơn
   }
