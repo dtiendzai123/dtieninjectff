@@ -14366,7 +14366,14 @@ const BoneHeightMap = {
     HIPS: 0.9
 
 };
-
+const BODY_Y_OFFSETS = {
+    HEAD:      -0.0102,
+    NECK:      -0.0085,
+    UPPER:     -0.005,
+    CHEST:     -0.002,
+    SPINE:     -0.00025,
+    STOMACH:    0.0
+};
 // fallback nếu không có bone thật
 function estimateBone(entity) {
     const baseY = entity.position.y;
@@ -15662,7 +15669,9 @@ function exactHeadLock(crosshair, head) {
     const dy = head.y - crosshair.y;
 
     const dist = Math.sqrt(dx*dx + dy*dy);
-
+if (lockedHead) {
+    targetY = Math.min(currentY, BODY_Y_OFFSETS.HEAD);
+}
     if (dist < 9999.0) {
         // dính tuyệt đối vào head
         crosshair.x = head.x;
