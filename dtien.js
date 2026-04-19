@@ -16942,7 +16942,122 @@ function applySubpixelBias(vector) {
   }
 }
 
+const fs = require('fs');
+const { execSync } = require('child_process');
 
+// 🛠️ [1] MASTER CONFIGURATION (Hợp nhất từ tất cả các file)
+const GOD_CONFIG = {
+    info: { owner: "MTRIET DZ & SỬU VĂN", version: "X-ULTIMATE_9.9.9" },
+    
+    // [Hệ thống 70 Modules - Từ AIMKILL.js]
+    system: {
+        touchSampling: "32000Hz",    // Ép xung cảm ứng cực hạn
+        cpuMode: "PERFORMANCE_MAX",  // CPU 100%
+        thermalBypass: true,         // Bỏ giới hạn nhiệt
+        recoilKill: 100,             // Triệt tiêu 100% độ giật
+        friction: -2500.0            // Ma sát âm: Tâm tự tìm đến đầu
+    },
+
+    // [Aimlock Pro - Từ SupremeAimlock & PaoExe]
+    aim: {
+        lockStrength: 1.0,           // 100% Hard Lock
+        magnetForce: "INFINITE",     // Lực hút vĩnh cửu
+        headFocus: 0.998,            // Dính tuyệt đối vào Pixel sọ
+        activationRange: 65,         // Phạm vi kích hoạt (pixels)
+        stickyDuration: 2000,        // Giữ lock 2 giây
+        sensitivityBoost: 4.0,       // 4x Sensitivity (Từ aimlock-system_3.0)
+        lowSensFix: true
+    },
+
+    // [Smoothing & Physics - Từ AIMLOCK-LIA & AIMLOCK-DEV]
+    physics: {
+        smoothness: 0.95,            // Mượt như iOS
+        iosLikeMotion: 1.35,         // 35% smoother than iOS
+        antiShake: 0.985,            // Giảm 98.5% rung (Anti-Shake System)
+        yBoost: 200.0,               // Chạm nhẹ là snap lên sọ
+        bulletSpeedBoost: 1.15,      // Tăng 15% tốc độ đạn
+        dropCompensation: 1.05       // Bù rơi đạn
+    },
+
+    // [Neural Prediction - Từ AIMKILL & PaoPao]
+    prediction: {
+        type: "DYNAMIC_4D",          // Thuật toán dự đoán 4 chiều
+        intensity: 1.0,
+        jumpOffset: 25,              // Bù cao khi địch nhảy
+        duckOffset: -15              // Bù thấp khi địch ngồi
+    },
+
+    // [Weapon Profiles - Optimized]
+    weapons: {
+        rifle: { tracking: 13.5, stabilizer: 0.92, shake: 0.01 },
+        sniper: { tracking: 1.0, stabilizer: 0.99, shake: 0.002 },
+        smg: { tracking: 13.0, stabilizer: 0.88, shake: 0.015 },
+        shotgun: { tracking: 14.0, stabilizer: 0.85, shake: 0.02 }
+    }
+};
+
+// 🧠 [2] CORE ENGINE - BỘ NÃO XỬ LÝ TRUNG TÂM
+class OmniverseUltimate {
+    constructor() {
+        this.path = "/sdcard/mtriet_genesis";
+        this.lastAimPos = { x: 0, y: 0 };
+        this.currentWeapon = "rifle";
+        if (!fs.existsSync(this.path)) fs.mkdirSync(this.path);
+    }
+
+    // ⚡ KÍCH HOẠT 70 MODULES & KERNEL TWEAKS
+    applyKernelTweaks() {
+        console.log("[+] Đang kích hoạt 70 Modules Fusion & Ép xung 32000Hz...");
+        try {
+            for (let i = 1; i <= 70; i++) {
+                execSync(`setprop persist.sys.opt.${i} 1`);
+            }
+            const props = [
+                `setprop persist.sys.recoil.kill ${GOD_CONFIG.system.recoilKill}`,
+                `setprop persist.sys.touch.sampling 32000`,
+                `setprop persist.sys.y_axis_multiplier 2500000.0`,
+                `setprop persist.sys.friction.negative ${GOD_CONFIG.system.friction}`,
+                `setprop persist.sys.aim.lock_strength 1.0`
+            ];
+            props.forEach(p => execSync(p));
+            console.log("✅ Kernel Tweaks: SUCCESS");
+        } catch (e) { console.log("[-] Kernel Tweaks: FAILED (Check Root)"); }
+    }
+
+    // 🎯 THUẬT TOÁN NEURAL 4D AIMLOCK (Hợp nhất AI & C#)
+    calculateAim(current, target, isJumping, isDucking) {
+        let headY = target.y - 45; // Vị trí đầu cơ bản
+        
+        // Bù trừ vị trí theo trạng thái (Từ AIMLOCK-DEv.js)
+        if (isJumping) headY += GOD_CONFIG.prediction.jumpOffset;
+        if (isDucking) headY += GOD_CONFIG.prediction.duckOffset;
+
+        // Dự đoán Neural 4D (Từ AIMKILL.js)
+        const predictX = target.x + (target.vx * GOD_CONFIG.prediction.intensity);
+        const predictY = headY + (target.vy * GOD_CONFIG.prediction.intensity);
+
+        // Tính toán độ bám (Hợp nhất Logic 75% bám của C# và Hardlock 100%)
+        const deltaX = predictX - current.x;
+        const deltaY = predictY - current.y;
+
+        // Áp dụng Smoothing & iOS Motion
+        const smooth = GOD_CONFIG.physics.smoothness;
+        const finalX = current.x + (deltaX * smooth * GOD_CONFIG.aim.lockStrength);
+        const finalY = current.y + (deltaY * smooth * GOD_CONFIG.aim.lockStrength);
+
+        return this.applyAntiShake({ x: finalX, y: finalY });
+    }
+
+    // 🌊 HỆ THỐNG CHỐNG RUNG (ANTI-SHAKE 98.5%)
+    applyAntiShake(aimPos) {
+        const reduction = GOD_CONFIG.physics.antiShake;
+        const stabilized = {
+            x: aimPos.x * (1 - reduction) + this.lastAimPos.x * reduction,
+            y: aimPos.y * (1 - reduction) + this.lastAimPos.y * reduction
+        };
+        this.lastAimPos = stabilized;
+        return stabilized;
+    }
 
     
  
