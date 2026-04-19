@@ -14374,7 +14374,8 @@ const BODY_Y_OFFSETS = {
     SPINE:     -0.00025,
     STOMACH:    0.0
 };
-// fallback nếu không có bone thật
+const targetY = BODY_Y_OFFSETS.HEAD;
+    // fallback nếu không có bone thật
 function estimateBone(entity) {
     const baseY = entity.position.y;
 
@@ -14457,6 +14458,30 @@ function snapToHead(crosshair, target, strength = 0.9) {
     crosshair.y += (target.y - crosshair.y) * strength;
     crosshair.z += (target.z - crosshair.z) * strength;
 
+}
+    function getTargetY(state) {
+
+    let targetY = BODY_Y_OFFSETS.HEAD;
+
+    // 🔥 anti over gần
+    if (state.distance < 5) {
+        targetY += 0.002;
+    }
+
+    // 🔥 giữ head khi đã lock
+    if (state.locked) {
+        targetY = Math.min(state.currentY, targetY);
+    }
+
+    // 🔥 drag nhỏ vẫn hút lên đầu
+    if (state.dragForce < 0.01) {
+        targetY = BODY_Y_OFFSETS.HEAD;
+    }
+
+    // 🔥 predict chuyển động
+    targetY += state.velocityY * 0.5;
+
+    return targetY;
 }
     // ===== DRAG SYSTEM =====
 function dragToHead(crosshair, entity, deltaTime) {
@@ -14673,7 +14698,16 @@ if (Math.abs(dy) < PRECISION.MICRO_STEP) {
 let headX = target.head.x + target.velocity.x * POSITION.PREDICT;
 let headY = target.head.y + target.velocity.y * POSITION.PREDICT;
       
-
+if (!locked) {
+    targetY = BODY_Y_OFFSETS.HEAD;
+} else {
+    // đã lock thì KHÔNG BAO GIỜ tụt xuống
+    targetY = Math.min(currentY, BODY_Y_OFFSETS.HEAD);
+}
+        if (dragForce < 0.01) {
+    targetY = BODY_Y_OFFSETS.HEAD;
+}
+        targetY = BODY_Y_OFFSETS.HEAD + velocityY * 0.5;
 
 
 // vùng soft → hút vào
