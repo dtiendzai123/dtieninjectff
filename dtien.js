@@ -13241,8 +13241,8 @@ const NECK_GATE = -0.0085;
 const ENTER_TOP = -0.0118;
 const ENTER_BOT = -0.0085;
 
-const HOLD_TOP  = -0.0115;
-const HOLD_BOT  = -0.0088;
+const HOLD_TOP = -0.0113;
+const HOLD_BOT = -0.0090;
 function inRange(y, top, bot) {
   return y >= top && y <= bot;
 }
@@ -13272,6 +13272,8 @@ function holdLockHeadY(state) {
   // 4. smoothing nhẹ để tránh jitter
   const alpha = state.distance < 6 ? 0.75 : 0.6;
   const y = state.prevY * (1 - alpha) + targetY * alpha;
+ const y = holdLockHeadY(state);
+  state.prevY = y;
 
   return y;
 }
@@ -13337,7 +13339,7 @@ function updateAimY(state) {
   } else {
     if (y < NECK_GATE) state.passedNeck = true;
   }
-
+if (state.passedNeck) velocity = Math.min(velocity, 0);
   // ===== 5. ENTER / HOLD HEAD
   if (!state.locked) {
     if (y >= ENTER_TOP && y <= ENTER_BOT) {
