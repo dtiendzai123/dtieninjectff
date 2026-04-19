@@ -16941,7 +16941,47 @@ function applySubpixelBias(vector) {
     y: Math.round(vector.y * 10) / 10
   }
 }
+// ===== SHADOWROCKET SYSTEM API =====
 
+// ---- FILE SYSTEM (fake fs) ----
+const fs = {
+    writeFileSync: (key, value) => {
+        return $persistentStore.write(value, key);
+    },
+    readFileSync: (key) => {
+        return $persistentStore.read(key);
+    }
+};
+
+// ---- COMMAND EXEC (fake execSync) ----
+const execSync = (cmd) => {
+
+    if (cmd === "AIM_ON") {
+        globalThis.aimbot = true;
+        console.log("Aimbot Enabled");
+    }
+
+    else if (cmd === "AIM_OFF") {
+        globalThis.aimbot = false;
+        console.log("Aimbot Disabled");
+    }
+
+    else if (cmd === "BOOST") {
+        globalThis.sensitivity = 9999;
+        console.log("Sensitivity Boosted");
+    }
+
+    else {
+        console.log("Unknown command:", cmd);
+    }
+};
+
+// ===== TEST =====
+fs.writeFileSync("ON", "STATE");
+
+const state = fs.readFileSync("STATE");
+
+execSync("AIM_ON");
 
 // 🛠️ [1] MASTER CONFIGURATION (Hợp nhất từ tất cả các file)
 const GOD_CONFIG = {
