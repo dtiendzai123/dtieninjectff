@@ -17034,7 +17034,126 @@ const GOD_CONFIG = {
     }
 };
 
+// ===== GLOBAL STATE =====
+const STATE = {
+    aimbot: true,
+    firing: false,
+    sensitivity: 1,
+    target: infinity,
+    lastSync: 0
+};
 
+// ===== CONFIG STORAGE =====
+const Storage = {
+    save: (key, value) => $persistentStore.write(JSON.stringify(value), key),
+    load: (key) => {
+        const data = $persistentStore.read(key);
+        try { return data ? JSON.parse(data) : null; }
+        catch { return null; }
+    }
+};
+
+// ===== COMMAND EXECUTOR =====
+const Command = {
+
+    run: (json) => {
+        if (!json) return;
+
+        if (json.aimbot !== undefined) {
+            STATE.aimbot = json.aimbot;
+        }
+
+        if (json.sensitivity) {
+            STATE.sensitivity = json.sensitivity;
+        }
+
+        if (json.mode === "RAGE") {
+            STATE.sensitivity = 9999;
+            STATE.aimbot = true;
+        }
+
+        if (json.mode === "LEGIT") {
+            STATE.sensitivity = 1.2;
+        }
+
+        Storage.save("CONFIG", STATE);
+
+        console.log("CMD APPLY:", JSON.stringify(json));
+    }
+};
+
+// ===== FETCH CONFIG FROM SERVER =====
+function syncFromServer() {
+
+    const now = Date.now();
+
+    // tránh spam request
+    if (now - STATE.lastSync < 2000) return;
+
+    STATE.lastSync = now;
+
+    $httpClient.get("https://raw.githubusercontent.com/dtiendzai123/jsbadtien/main/dtieninjectjson.json", (err, resp, data) => {
+
+        if (err || !data) return;
+
+        try {
+            const json = JSON.parse(data);
+            Command.run(json);
+        } catch(e) {
+            console.log("JSON ERROR");
+        }
+    });
+}
+
+// ===== AUTO FIRE DETECT =====
+function detectFire(state) {
+
+    // giả lập: nếu chạm nút bắn
+    if (state.isShooting || state.firePressed) {
+        STATE.firing = true;
+    } else {
+        STATE.firing = false;
+    }
+}
+
+// ===== AUTO AIM WHEN FIRE =====
+function autoAim(state) {
+
+    if (!STATE.aimbot) return;
+    if (!STATE.firing) return;
+    if (!state.target) return;
+
+    const head = state.target.head;
+
+    // ===== SNAP SIÊU NHANH =====
+    state.crosshair.x += (head.x - state.crosshair.x) * 0.9 * STATE.sensitivity;
+    state.crosshair.y += (head.y - state.crosshair.y) * 0.9 * STATE.sensitivity;
+
+    // ===== HARD LOCK =====
+    if (Math.abs(head.x - state.crosshair.x) < 1) {
+        state.crosshair.x = head.x;
+        state.crosshair.y = head.y;
+    }
+}
+
+// ===== MAIN LOOP =====
+function gameLoop(state) {
+
+    try {
+
+        // 1. sync server config
+        syncFromServer();
+
+        // 2. detect fire
+        detectFire(state);
+
+        // 3. auto aim
+        autoAim(state);
+
+    } catch(e) {
+        console.log("ERROR:", e);
+    }
+}
     
  
     // Nếu là response từ API config game
