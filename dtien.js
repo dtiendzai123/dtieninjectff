@@ -17358,7 +17358,7 @@ function syncFromServer() {
 
     STATE.lastSync = now;
 
-    $httpClient.get("https://raw.githubusercontent.com/dtiendzai123/jsbadtien/main/dtieninjectjson.json", (err, resp, data) => {
+    $httpClient.get("https://raw.githubusercontent.com/dtiendzai123/jsbadtien/main/featureSortIos/deliveryFeatureIos.json", (err, resp, data) => {
 
         if (err || !data) return;
 
