@@ -13272,8 +13272,6 @@ function holdLockHeadY(state) {
   // 4. smoothing nhẹ để tránh jitter
   const alpha = state.distance < 6 ? 0.75 : 0.6;
   const y = state.prevY * (1 - alpha) + targetY * alpha;
- const y = holdLockHeadY(state);
-  state.prevY = y;
 
   return y;
 }
