@@ -6,21 +6,7 @@
         $done({});
         return;
     }
-// Kiểm tra điều kiện có chứa nội dung cần sửa hay không
-    if (body.indexOf("avatar/assetindexer") !== -1) {
-        var myHash = "8YFMbyrJG+2B7Q4algt0UEHdsQiRw=";
-        var mySize = "46096";
-        var myGithubLink = "https://raw.githubusercontent.com/dtiendzai123/hack22/main/asset_mod.bytes";
 
-        // Sử dụng RegExp thay vì pattern biến để an toàn tuyệt đối
-        var pattern = /avatar\/assetindexer,[^,]+,[^,]+,0,[^,]+,[^,]+,True,0/g;
-
-        // Thực hiện thay thế
-        body = body.replace(pattern, "avatar/assetindexer," + myHash + "," + mySize + ",0," + myHash + "," + mySize + ",True,0");
-        body = body.replace(/https:\/\/dl\.gmc\.freefiremobile\.com\/[^"'\s]*assetindexer/g, myGithubLink);
-
-        console.log("FF_MOD: Đã xử lý thành công không lỗi!");
-    }
 // --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
 
 
