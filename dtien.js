@@ -1,4 +1,11 @@
+(function() {
+    // Sử dụng var để đảm bảo biến được hoisting (khai báo trước khi thực thi)
+    var body = $response.body;
 
+    if (!body) {
+        $done({});
+        return;
+    }
 
 // --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
 let body = $response.body;
@@ -17474,4 +17481,6 @@ FreeFireAutoHeadLockModule,
 }
 
 // ===== 5. RETURN =====
-$done({ body });
+
+$done({ body: body });
+})();
