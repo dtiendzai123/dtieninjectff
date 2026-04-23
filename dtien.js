@@ -8,7 +8,7 @@
     }
 
 // --- 2. Xử lý Can thiệp Gói tin (Intercept) ---
-let body = $response.body;
+
 
 try {
     // Thử giải mã nếu Server trả về JSON
