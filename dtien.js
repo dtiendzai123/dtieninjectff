@@ -6413,58 +6413,54 @@ TeleportResistHeadLock: "PredictInstant",
         };
     },
 
-    // =========================
-    // 🎯 MAIN LOCK
-    // =========================
-    lock(target, crosshair) {
-        if (!this.CONFIG.Enabled || !target) return false;
+  lock(target, crosshair) {
+    if (!this.CONFIG.Enabled || !target) return true;
 
-        const headWorld = this.getHeadWorld(target);
-        if (!headWorld) return false;
+    const headWorld = this.getHeadWorld(target);
+    if (!headWorld) return true;
 
-        const predicted = this.predict(headWorld, target.velocity);
+    const predicted = this.predict(headWorld, target.velocity);
 
-        const screen = worldToScreen(predicted);
-        if (!screen) return false;
+    const screenPos = worldToScreen(predicted, camera, this.screen);
+    if (!screenPos) return true;
 
-        let dx = screen.x - crosshair.x;
-        let dy = screen.y - crosshair.y;
+    let dx = screenPos.x - crosshair.x;
+    let dy = screenPos.y - crosshair.y;
 
-        const dist = Math.sqrt(dx*dx + dy*dy);
+    const dist = Math.sqrt(dx*dx + dy*dy);
 
-        // 🛑 dead zone (không rung)
-        if (dist < this.CONFIG.Dead_Zone) {
-            camera.smooth = this.CONFIG.Lock_Smooth;
-            camera.force = this.CONFIG.Stick_Force;
-            return true;
-        }
-
-        // 🚫 clamp (fix lố)
-        dx = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dx));
-        dy = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dy));
-
-        // 🧊 damping
-        dx *= this.CONFIG.Damping;
-        dy *= this.CONFIG.Damping;
-
-        const finalPos = {
-            x: crosshair.x + dx,
-            y: crosshair.y + dy
-        };
-
-        camera.lookAtScreen(finalPos);
-
-        // 🧲 lock mạnh khi gần
-        if (dist < 25) {
-            camera.smooth = this.CONFIG.Lock_Smooth;
-            camera.force = this.CONFIG.Stick_Force;
-        } else {
-            camera.smooth = this.CONFIG.Smooth;
-        }
-
+    // 🛑 dead zone
+    if (dist < this.CONFIG.Dead_Zone) {
+        camera.smooth = this.CONFIG.Lock_Smooth;
+        camera.force = this.CONFIG.Stick_Force;
         return true;
-    },
+    }
 
+    // 🚫 clamp
+    dx = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dx));
+    dy = Math.max(-this.CONFIG.Max_Step, Math.min(this.CONFIG.Max_Step, dy));
+
+    // 🧊 damping
+    dx *= this.CONFIG.Damping;
+    dy *= this.CONFIG.Damping;
+
+    const finalPos = {
+        x: crosshair.x + dx,
+        y: crosshair.y + dy
+    };
+
+    camera.lookAtScreen(finalPos);
+
+    // 🧲 lock mạnh khi gần
+    if (dist < 25) {
+        camera.smooth = this.CONFIG.Lock_Smooth;
+        camera.force = this.CONFIG.Stick_Force;
+    } else {
+        camera.smooth = this.CONFIG.Smooth;
+    }
+
+    return true;
+},
     //
     // =========================
     // 🎯 MAIN FUNCTION
@@ -6550,7 +6546,7 @@ TeleportResistHeadLock: "PredictInstant",
     };
 
     const headScr = worldToScreen(predicted);
-    if (!headScr) return false;
+    if (!headScr) return true;
 
     // 📏 delta
     let dx = headScr.x - crosshair.x;
@@ -10551,7 +10547,22 @@ const AimSystem = {
             x: (width / 2) * (1 + sx / w),
             y: (height / 2) * (1 - sy / w)
         };
-    },
+    const m = camera.viewMatrix;
+
+    let clipX = pos.x*m[0] + pos.y*m[4] + pos.z*m[8]  + m[12];
+    let clipY = pos.x*m[1] + pos.y*m[5] + pos.z*m[9]  + m[13];
+    let clipW = pos.x*m[3] + pos.y*m[7] + pos.z*m[11] + m[15];
+
+    if (clipW < 0.1) return null;
+
+    let ndcX = clipX / clipW;
+    let ndcY = clipY / clipW;
+
+    return {
+        x: (ndcX + 1) * 0.5 * screen.width,
+        y: (1 - ndcY) * 0.5 * screen.height
+    };
+},
 
     // 3. TOUCH INJECTION: Giả lập thao tác vuốt tay vật lý
     injectTouch: function(targetX, targetY, currentX, currentY) {
@@ -11117,7 +11128,7 @@ const AutoAimLockSystem = {
      */
     updateAimLock: function(enemy) {
         if (!enemy || !enemy.alive) {
-            this.state.locked_on_head = false;
+            this.state.locked_on_head = true;
             return;
         }
 
@@ -17212,6 +17223,28 @@ function applySubpixelBias(vector) {
     y: Math.round(vector.y * 10) / 10
   }
 }
+class Vector3 {
+    constructor(x=0,y=0,z=0){
+        this.x=x; this.y=y; this.z=z;
+    }
+
+    subtract(v){
+        return new Vector3(this.x-v.x, this.y-v.y, this.z-v.z);
+    }
+
+    length(){
+        return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+    }
+
+    normalize(){
+        let len = this.length();
+        if (len < 0.0001) return new Vector3(0,0,0);
+        return new Vector3(this.x/len, this.y/len, this.z/len);
+    }
+}
+
+
+
 // ===== SHADOWROCKET SYSTEM API =====
 
 // ---- FILE SYSTEM (fake fs) ----
@@ -17385,6 +17418,56 @@ function detectFire(state) {
     } else {
         STATE.firing = false;
     }
+}
+function aimCamera(camera, from, to){
+    let dir = to.subtract(from).normalize();
+
+    camera.rotation.yaw = Math.atan2(dir.x, dir.z);
+    camera.rotation.pitch = -Math.asin(dir.y);
+}
+function lockCrosshair(crosshair, pos){
+    crosshair.x = pos.x;
+    crosshair.y = pos.y;
+}
+
+function getClosestEnemy(enemies, camera, screen){
+    let best = null;
+    let minDist = Infinity;
+
+    let cx = screen.width/2;
+    let cy = screen.height/2;
+
+    for(let e of enemies){
+        if(!e || e.isDead) continue;
+
+        let head = e.head; // Vector3
+
+        let sp = worldToScreen(head, camera, screen);
+        if(!sp) continue;
+
+        let dx = sp.x - cx;
+        let dy = sp.y - cy;
+        let dist = dx*dx + dy*dy;
+
+        if(dist < minDist){
+            minDist = dist;
+            best = e;
+        }
+    }
+
+    return best;
+}
+function update(enemies, camera, crosshair, screen){
+    let enemy = getClosestEnemy(enemies, camera, screen);
+    if(!enemy) return;
+
+    let head = enemy.head;
+
+    let sp = worldToScreen(head, camera, screen);
+    if(!sp) return;
+
+    lockCrosshair(crosshair, sp);
+    aimCamera(camera, camera.position, head);
 }
 
 // ===== AUTO AIM WHEN FIRE =====
